@@ -74,6 +74,15 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
         └── webhook-mercadopago/    # Edge Function (Fase 3)
 ```
 
+## Identidade visual (definida na Fase 1)
+
+- Tokens em `assets/css/tokens.css`. Componentes usam os papéis semânticos (`--cor-acao`, `--cor-texto`...).
+- **Azul-noite** `#0B1630` (texto, fundos escuros) · **Verde-mata** `#077A57` (ação principal) ·
+  **Amarelo-sol** `#FFC83D` (destaques pontuais, foco) · neutros frios `#F6F7FA` / `#DCE1EA` / `#566074`.
+- Fonte única: **Plus Jakarta Sans** (variável, self-hosted, licença OFL em `assets/fonts/`).
+- Convenções: classes em português no estilo BEM (`bloco__elemento--modificador`);
+  ganchos de JS em atributos `data-*`, nunca em classes de estilo.
+
 ## Regras de qualidade
 
 **Geral**
