@@ -2,7 +2,7 @@
 <html lang="pt-BR" class="sem-js">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Portfólio BR — Sites profissionais para pequenos negócios</title>
   <meta name="description" content="Sites profissionais, rápidos e feitos para o celular, para pequenos negócios de todo o Brasil. Escolha o plano, pague com segurança e receba seu site pronto.">
   <!-- Rascunho: remover esta linha na Fase 5 (junto com rascunho: false no config.js) -->
@@ -106,7 +106,7 @@
     <!-- ===================== HERO ===================== -->
     <section class="hero" id="inicio" aria-labelledby="hero-titulo">
       <div class="container hero__grade">
-        <div class="hero__texto">
+        <div class="hero__texto" data-evitar-flutuante>
           <p class="selo">Sites para pequenos negócios de todo o Brasil</p>
           <h1 id="hero-titulo" class="hero__titulo">
             Seu negócio com um site profissional,
@@ -134,17 +134,27 @@
         <div class="hero__visual" aria-hidden="true">
           <div class="celular">
             <div class="celular__tela">
-              <div class="mock__barra"><span class="mock__logo"></span><span class="mock__menu"></span></div>
+              <div class="mock__barra">
+                <span class="mock__marca"><span class="mock__marca-icone"></span>Seu Negócio</span>
+                <span class="mock__hamburguer"><i></i><i></i><i></i></span>
+              </div>
               <div class="mock__capa">
-                <span class="mock__linha mock__linha--titulo"></span>
-                <span class="mock__linha mock__linha--titulo mock__linha--curta"></span>
-                <span class="mock__linha"></span>
-                <span class="mock__botao">Chamar no WhatsApp</span>
+                <span class="mock__etiqueta">Aberto hoje · 9h às 18h</span>
+                <span class="mock__titulo">Qualidade e atenção que você merece</span>
+                <span class="mock__texto">Atendimento com hora marcada no centro da cidade.</span>
+                <span class="mock__acoes">
+                  <span class="mock__botao mock__botao--zap">Chamar no WhatsApp</span>
+                  <span class="mock__botao mock__botao--claro">Ver serviços</span>
+                </span>
               </div>
+              <span class="mock__secao">Nossos serviços</span>
               <div class="mock__cards">
-                <span class="mock__card"></span><span class="mock__card"></span>
-                <span class="mock__card"></span><span class="mock__card"></span>
+                <span class="mock__card"><span class="mock__card-icone"><svg class="icone"><use href="#i-pincel"/></svg></span><b>Serviços</b><small>Veja o que fazemos</small></span>
+                <span class="mock__card"><span class="mock__card-icone"><svg class="icone"><use href="#i-olho"/></svg></span><b>Galeria</b><small>Fotos dos trabalhos</small></span>
+                <span class="mock__card"><span class="mock__card-icone"><svg class="icone"><use href="#i-busca"/></svg></span><b>Onde estamos</b><small>Mapa e horários</small></span>
+                <span class="mock__card"><span class="mock__card-icone"><svg class="icone"><use href="#i-conversa"/></svg></span><b>Contato</b><small>Resposta rápida</small></span>
               </div>
+              <span class="mock__mapa"><span class="mock__pino"></span>Como chegar · ver no mapa</span>
             </div>
           </div>
           <div class="flutuante flutuante--a"><svg class="icone" aria-hidden="true"><use href="#i-busca"/></svg> Pronto para o Google</div>

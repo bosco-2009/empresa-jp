@@ -282,6 +282,25 @@
     };
 
     chatBotao.addEventListener('click', function () { definirChat(chatPainel.hidden); });
+
+    // No celular, recolhe o botão enquanto elementos marcados com data-evitar-flutuante
+    // (ex.: botões do hero) estão visíveis, para nunca cobri-los.
+    var flutuante = $('[data-chat-reservado]');
+    var evitar = document.querySelectorAll('[data-evitar-flutuante]');
+    if (flutuante && evitar.length && 'IntersectionObserver' in window) {
+      var celular = window.matchMedia('(max-width: 47.99rem)');
+      var visiveis = new Set();
+      var atualizar = function () {
+        var recolher = celular.matches && visiveis.size > 0 && chatPainel.hidden;
+        flutuante.setAttribute('data-recolhido', String(recolher));
+      };
+      var obs = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (en) { if (en.isIntersecting) visiveis.add(en.target); else visiveis.delete(en.target); });
+        atualizar();
+      });
+      evitar.forEach(function (el) { obs.observe(el); });
+      if (celular.addEventListener) celular.addEventListener('change', atualizar);
+    }
     if (chatFechar) {
       chatFechar.addEventListener('click', function () { definirChat(false); chatBotao.focus(); });
     }

@@ -127,6 +127,9 @@
   --duracao-media: 250ms;
   --curva-padrao: cubic-bezier(0.2, 0.7, 0.2, 1);
 
+  /* Altura reservada para o botão flutuante (botão 3.5rem + margem 1rem + área segura do aparelho) */
+  --area-botao-flutuante: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+
   /* ---------- Camadas ---------- */
   --z-header: 50;
   --z-flutuante: 80;
