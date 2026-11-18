@@ -71,6 +71,9 @@
   --cor-destaque-suave: var(--cor-sol-100);
 
   --cor-foco: var(--cor-sol-500);
+  --cor-erro: #B42318;
+  --cor-erro-suave: #FEF3F2;
+  --cor-sucesso: var(--cor-verde-600);
   --cor-whatsapp: #167A43; /* verde escurecido para contraste AA com texto branco */
 
   /* ---------- Tipografia ---------- */

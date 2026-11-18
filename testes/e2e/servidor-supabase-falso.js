@@ -1,0 +1,236 @@
+// SOMENTE PARA TESTES LOCAIS. Uso: veja testes/README.md
+// Servidor que imita as partes do Supabase usadas pelo site, executando tudo no Postgres local
+// (com os papéis anon/authenticated e o RLS reais da migration):
+//   /rest/v1/rpc/*      -> funções SQL
+//   /rest/v1/conversas  -> consultas do painel (RLS como "authenticated")
+//   /rest/v1/mensagens
+//   /auth/v1/token      -> login por senha (usuário fixo de teste)
+//   /realtime/v1/websocket -> protocolo Phoenix vsn 2.0.0 (join, heartbeat, broadcast, postgres_changes)
+const http = require('http');
+const { Pool } = require('pg');
+const { WebSocketServer } = require('ws');
+
+const PORTA = Number(process.env.PORTA || 54321);
+// Conexão via variáveis padrão do Postgres (PGHOST, PGUSER, PGPASSWORD...). Banco: BANCO ou pbr_e2e.
+const pool = new Pool({ database: process.env.BANCO || 'pbr_e2e' });
+
+const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
+const jwt = (claims) => b64({ alg: 'HS256', typ: 'JWT' }) + '.' + b64(claims) + '.assinatura';
+const ANON_KEY = jwt({ role: 'anon', iss: 'teste' });
+const ADMIN = { id: 'aaaaaaaa-0000-0000-0000-000000000001', email: 'dono@teste.local', senha: 'senha-de-teste' };
+const INTRUSO = { id: 'aaaaaaaa-0000-0000-0000-000000000002', email: 'intruso@teste.local', senha: 'senha-de-teste' };
+const USUARIOS = [ADMIN, INTRUSO];
+
+function claimsDe(req) {
+  const h = req.headers.authorization || '';
+  const t = h.replace(/^Bearer /, '');
+  try { return JSON.parse(Buffer.from(t.split('.')[1], 'base64url').toString()); } catch { return { role: 'anon' }; }
+}
+
+async function comoUsuario(req, sql, params) {
+  const c = claimsDe(req);
+  const cli = await pool.connect();
+  try {
+    await cli.query('begin');
+    await cli.query(c.role === 'authenticated' ? 'set local role authenticated' : 'set local role anon');
+    await cli.query("select set_config('request.jwt.claim.sub', $1, true)", [c.sub || '']);
+    const r = await cli.query(sql, params);
+    await cli.query('commit');
+    return r;
+  } catch (e) {
+    await cli.query('rollback').catch(() => {});
+    throw e;
+  } finally {
+    cli.release();
+  }
+}
+
+function enviar(res, status, corpo, extra) {
+  res.writeHead(status, Object.assign({
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS',
+    'Access-Control-Expose-Headers': '*'
+  }, extra || {}));
+  res.end(corpo === undefined ? '' : JSON.stringify(corpo));
+}
+function erroPg(res, e) {
+  const status = e.code === '42501' ? 403 : 400;
+  enviar(res, status, { code: e.code, message: e.message, details: null, hint: null });
+}
+const lerCorpo = (req) => new Promise((ok) => { let d = ''; req.on('data', (x) => (d += x)); req.on('end', () => ok(d ? JSON.parse(d) : {})); });
+
+const ARGS_RPC = {
+  chat_iniciar: ['p_visitante_id', 'p_token', 'p_nome', 'p_whatsapp', 'p_pagina', 'p_criar'],
+  chat_listar: ['p_visitante_id', 'p_token', 'p_depois', 'p_limite'],
+  chat_enviar: ['p_visitante_id', 'p_token', 'p_texto']
+};
+
+const registro = []; // chamadas recebidas (para o teste inspecionar)
+
+const servidor = http.createServer(async (req, res) => {
+  const url = new URL(req.url, 'http://x');
+  if (req.method === 'OPTIONS') return enviar(res, 204);
+  try {
+    // ---------- testes: inspeção ----------
+    if (url.pathname === '/__registro') return enviar(res, 200, registro);
+
+    // ---------- auth ----------
+    if (url.pathname === '/auth/v1/token') {
+      const corpo = await lerCorpo(req);
+      const u = USUARIOS.find((x) => x.email === corpo.email && x.senha === corpo.password);
+      if (!u) return enviar(res, 400, { error: 'invalid_grant', error_description: 'Invalid login credentials', code: 'invalid_credentials', msg: 'Invalid login credentials' });
+      const exp = Math.floor(Date.now() / 1000) + 3600;
+      const usuario = { id: u.id, aud: 'authenticated', role: 'authenticated', email: u.email, app_metadata: {}, user_metadata: {}, created_at: new Date().toISOString() };
+      return enviar(res, 200, {
+        access_token: jwt({ sub: u.id, role: 'authenticated', aud: 'authenticated', exp, email: u.email, session_id: 's' }),
+        token_type: 'bearer', expires_in: 3600, expires_at: exp, refresh_token: 'r-' + u.id, user: usuario
+      });
+    }
+    if (url.pathname === '/auth/v1/logout') return enviar(res, 204);
+    if (url.pathname === '/auth/v1/user') {
+      const c = claimsDe(req);
+      const u = USUARIOS.find((x) => x.id === c.sub);
+      return u ? enviar(res, 200, { id: u.id, aud: 'authenticated', role: 'authenticated', email: u.email }) : enviar(res, 401, { msg: 'no' });
+    }
+
+    // ---------- RPC ----------
+    const rpc = /^\/rest\/v1\/rpc\/(\w+)$/.exec(url.pathname);
+    if (rpc) {
+      const nome = rpc[1];
+      const corpo = await lerCorpo(req);
+      registro.push({ rpc: nome, corpo });
+      if (nome === 'eh_admin') {
+        const r = await comoUsuario(req, 'select public.eh_admin() as r');
+        return enviar(res, 200, r.rows[0].r);
+      }
+      const permitidos = ARGS_RPC[nome];
+      if (!permitidos) return enviar(res, 404, { message: 'função desconhecida' });
+      const chaves = Object.keys(corpo).filter((k) => permitidos.includes(k));
+      const sql = `select * from public.${nome}(${chaves.map((k, i) => `${k} => $${i + 1}`).join(', ')})`;
+      const r = await comoUsuario(req, sql, chaves.map((k) => corpo[k]));
+      setImmediate(publicarFila);
+      return enviar(res, 200, r.rows);
+    }
+
+    // ---------- tabelas (só as consultas usadas pelo painel) ----------
+    if (url.pathname === '/rest/v1/conversas' && req.method === 'GET') {
+      const r = await comoUsuario(req, `
+        select c.id, c.nome, c.whatsapp, c.pagina_origem, c.status, c.nao_lidas_admin, c.criado_em, c.atualizado_em,
+               coalesce((select json_agg(x) from (select m.texto, m.autor, m.criado_em from public.mensagens m
+                          where m.conversa_id = c.id order by m.criado_em desc limit 1) x), '[]') as mensagens
+          from public.conversas c order by c.atualizado_em desc limit 300`);
+      return enviar(res, 200, r.rows);
+    }
+    if (url.pathname === '/rest/v1/conversas' && req.method === 'PATCH') {
+      const id = (url.searchParams.get('id') || '').replace(/^eq\./, '');
+      const corpo = await lerCorpo(req);
+      registro.push({ patch: 'conversas', id, corpo });
+      const cols = Object.keys(corpo);
+      const r = await comoUsuario(req, `update public.conversas set ${cols.map((k, i) => `${k} = $${i + 2}`).join(', ')} where id = $1 returning id`,
+        [id, ...cols.map((k) => corpo[k])]);
+      setImmediate(() => { publicarFila(); emitirAdmin('conversas', 'UPDATE', { id }); });
+      return enviar(res, r.rowCount ? 200 : 200, []);
+    }
+    if (url.pathname === '/rest/v1/mensagens' && req.method === 'GET') {
+      const id = (url.searchParams.get('conversa_id') || '').replace(/^eq\./, '');
+      const r = await comoUsuario(req, `select id, conversa_id, autor, texto, criado_em from public.mensagens
+                                         where conversa_id = $1 order by criado_em desc limit 500`, [id]);
+      return enviar(res, 200, r.rows);
+    }
+    if (url.pathname === '/rest/v1/mensagens' && req.method === 'POST') {
+      const corpo = await lerCorpo(req);
+      registro.push({ insert: 'mensagens', corpo });
+      const r = await comoUsuario(req, `insert into public.mensagens (conversa_id, autor, texto) values ($1, $2, $3)
+                                         returning id, conversa_id, autor, texto, criado_em`, [corpo.conversa_id, corpo.autor, corpo.texto]);
+      setImmediate(publicarFila);
+      const unico = /vnd\.pgrst\.object/.test(req.headers.accept || '');
+      return enviar(res, 201, unico ? r.rows[0] : r.rows);
+    }
+    enviar(res, 404, { message: 'não implementado no servidor de teste: ' + req.method + ' ' + url.pathname });
+  } catch (e) {
+    erroPg(res, e);
+  }
+});
+
+// ---------- Realtime (Phoenix vsn 2.0.0: [join_ref, ref, topic, event, payload]) ----------
+const wss = new WebSocketServer({ server: servidor, path: '/realtime/v1/websocket' });
+const sockets = new Set();
+wss.on('connection', (ws, req) => {
+  const params = new URL(req.url, 'http://x').searchParams;
+  ws.canais = new Map(); // topic -> { joinRef, pcIds, claims }
+  ws.tokenInicial = params.get('apikey');
+  sockets.add(ws);
+  ws.on('close', () => sockets.delete(ws));
+  ws.on('message', (bruto) => {
+    let joinRef, ref, topic, event, payload;
+    try { [joinRef, ref, topic, event, payload] = JSON.parse(String(bruto)); } catch { return; }
+    const responder = (p) => ws.send(JSON.stringify([joinRef, ref, topic, 'phx_reply', { status: 'ok', response: p || {} }]));
+    if (topic === 'phoenix' && event === 'heartbeat') return responder();
+    if (event === 'phx_join') {
+      const pcs = (payload.config && payload.config.postgres_changes) || [];
+      const comIds = pcs.map((pc, i) => Object.assign({ id: 1000 + i }, pc));
+      const claims = (() => { try { return JSON.parse(Buffer.from(String(payload.access_token).split('.')[1], 'base64url').toString()); } catch { return {}; } })();
+      ws.canais.set(topic, { joinRef, pcs: comIds, claims });
+      registro.push({ join: topic });
+      return responder({ postgres_changes: comIds });
+    }
+    if (event === 'access_token') {
+      const c = ws.canais.get(topic);
+      if (c) { try { c.claims = JSON.parse(Buffer.from(String(payload.access_token).split('.')[1], 'base64url').toString()); } catch { /* */ } }
+      return;
+    }
+    if (event === 'phx_leave') { ws.canais.delete(topic); return responder(); }
+    responder();
+  });
+});
+
+// Broadcast do banco: consome realtime.enviados (gravado pelo stub de realtime.send).
+// Serializa as publicações (evita emitir a mesma linha duas vezes em chamadas concorrentes).
+let filaPublicacao = Promise.resolve();
+function publicarFila() {
+  filaPublicacao = filaPublicacao.then(publicarFilaAgora, publicarFilaAgora);
+  return filaPublicacao;
+}
+async function publicarFilaAgora() {
+  const r = await pool.query('delete from realtime.enviados returning topic, event, payload');
+  for (const linha of r.rows) {
+    for (const ws of sockets) {
+      const c = ws.canais.get('realtime:' + linha.topic);
+      if (c) ws.send(JSON.stringify([null, null, 'realtime:' + linha.topic, 'broadcast', { type: 'broadcast', event: linha.event, payload: linha.payload }]));
+    }
+  }
+  await emitirMensagensNovas();
+}
+
+// postgres_changes para o painel: só para canais com token de admin (imita o RLS).
+let ultimaMensagem = new Date(0).toISOString();
+async function emitirMensagensNovas() {
+  const r = await pool.query('select id, conversa_id, autor, texto, criado_em from public.mensagens where criado_em > $1 order by criado_em', [ultimaMensagem]);
+  for (const m of r.rows) {
+    ultimaMensagem = m.criado_em.toISOString();
+    emitirAdmin('mensagens', 'INSERT', Object.assign({}, m, { criado_em: m.criado_em.toISOString() }));
+    emitirAdmin('conversas', 'UPDATE', { id: m.conversa_id });
+  }
+}
+async function emitirAdmin(tabela, tipo, registroLinha) {
+  for (const ws of sockets) {
+    for (const [topic, c] of ws.canais) {
+      if (!c.claims || c.claims.sub !== ADMIN.id) continue;
+      const alvo = c.pcs.filter((pc) => pc.table === tabela && (pc.event === '*' || pc.event === tipo));
+      if (!alvo.length) continue;
+      const colunas = Object.keys(registroLinha).map((n) => ({ name: n, type: n === 'id' || n === 'conversa_id' ? 'uuid' : n === 'criado_em' ? 'timestamptz' : 'text' }));
+      ws.send(JSON.stringify([null, null, topic, 'postgres_changes', {
+        ids: alvo.map((pc) => pc.id),
+        data: { schema: 'public', table: tabela, commit_timestamp: new Date().toISOString(), type: tipo, eventType: tipo, record: registroLinha, old_record: null, columns: colunas, errors: null }
+      }]));
+    }
+  }
+}
+
+// Mensagens inseridas fora do servidor (ex.: pelo teste via psql) também são publicadas.
+setInterval(() => publicarFila().catch(() => {}), 500);
+
+servidor.listen(PORTA, () => console.log('supabase falso em http://localhost:' + PORTA + '\nANON_KEY=' + ANON_KEY));
+module.exports = { ANON_KEY };
