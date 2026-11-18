@@ -1,0 +1,10 @@
+# Configuração das Edge Functions para a Supabase CLI (supabase functions deploy).
+# As duas funções são públicas por natureza e fazem a própria validação:
+#  - criar-pagamento: chamada pelo navegador com a chave publicável (não é um JWT de usuário);
+#    valida a origem (CORS), os campos e cobra o preço da tabela planos.
+#  - webhook-mercadopago: chamada pelos servidores do Mercado Pago; valida x-signature.
+[functions.criar-pagamento]
+verify_jwt = false
+
+[functions.webhook-mercadopago]
+verify_jwt = false

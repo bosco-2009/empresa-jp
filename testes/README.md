@@ -1,6 +1,6 @@
 # Testes locais
 
-Nada aqui vai para o site publicado. Precisa de Node 18+, Postgres 14+ e Chromium (Playwright).
+Nada aqui vai para o site publicado. Precisa de Node 22+, Postgres 14+ e Chromium (Playwright).
 
 ## 1. SQL (migrations, RLS, limites) — só Postgres
 
@@ -9,13 +9,37 @@ PGUSER=postgres ./supabase/tests/rodar_local.sh
 ```
 
 Cria o banco `pbr_teste`, aplica os stubs do Supabase (`supabase/tests/00_stubs_supabase.sql`),
-aplica cada migration **duas vezes** (idempotência) e roda `supabase/tests/10_chat_test.sql`.
+aplica cada migration **duas vezes** (idempotência) e roda todos os `supabase/tests/NN_*_test.sql`
+(chat e pedidos).
 
-## 2. Ponta a ponta (widget + painel) — Postgres + navegador
+## 2. Edge Functions e preços — só Node
 
-O `e2e/servidor-supabase-falso.js` imita a API do Supabase (RPC, tabelas usadas pelo painel, login por
-senha e Realtime pelo protocolo Phoenix) executando tudo no Postgres local com os papéis `anon`/`authenticated`
-e o RLS reais. Usuários de teste: `dono@teste.local` (admin) e `intruso@teste.local`, senha `senha-de-teste`.
+```bash
+node --test testes/funcoes/*.test.mjs
+```
+
+- `edge-functions.test.mjs`: `criar-pagamento` e `webhook-mercadopago` com `fetch` simulado (CORS, validação,
+  preço vindo do servidor, corpo da preferência, sandbox, assinatura `x-signature` calculada de forma
+  independente com `node:crypto`, idempotência, erros 4xx/5xx).
+- `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
+
+O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então o código testado é o mesmo do deploy.
+
+## 3. Ponta a ponta — Postgres + navegador
+
+- `e2e/servidor-supabase-falso.js` imita a API do Supabase:
+  - RPC e as tabelas usadas pelo painel;
+  - login por senha;
+  - Realtime pelo protocolo Phoenix;
+  - `/functions/v1/*`, que executa as **Edge Functions reais** do repositório.
+
+  Tudo roda no Postgres local, com os papéis `anon`/`authenticated`/`service_role` e o RLS reais.
+- `e2e/mercadopago-falso.js` imita o Mercado Pago:
+  - preferências e consulta de pagamento;
+  - uma tela de checkout com os botões aprovar, Pix pendente e recusar;
+  - webhooks **assinados** com `x-signature`.
+
+Usuários de teste: `dono@teste.local` (admin) e `intruso@teste.local`, senha `senha-de-teste`.
 
 ```bash
 cd testes && npm install && npx playwright install chromium
@@ -27,18 +51,22 @@ psql -d pbr_e2e -c "insert into auth.users (id, email) values
   insert into public.admins values ('aaaaaaaa-0000-0000-0000-000000000001');"
 ```
 
-Em três terminais:
+Em quatro terminais:
 
 ```bash
 python3 -m http.server 8080            # na raiz do repositório
 ```
 
 ```bash
-cd testes && npm run servidor          # usa PGHOST/PGUSER/PGPASSWORD
+cd testes && npm run servidor          # Supabase falso (usa PGHOST/PGUSER/PGPASSWORD)
 ```
 
 ```bash
-cd testes && npm run chat && npm run layout
+cd testes && npm run mp                # Mercado Pago falso
+```
+
+```bash
+cd testes && npm run chat && npm run checkout && npm run layout
 ```
 
 Capturas de tela ficam em `testes/e2e/saida/`.

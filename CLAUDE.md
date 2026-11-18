@@ -45,7 +45,7 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 ├── index.html                 # Home de vendas (Fase 1)
 ├── portfolio.html             # Portfólio (Fase 4)
 ├── planos.html                # Planos + checkout Mercado Pago (Fase 3)
-├── obrigado.html              # Retorno do checkout (Fase 3)
+├── obrigado.html              # Retorno do checkout: status pela RPC pedido_consultar (Fase 3)
 ├── briefing.html              # Briefing pós-compra (Fase 4)
 ├── termos.html                # Termos de uso (Fase 4)
 ├── privacidade.html           # Política de privacidade / LGPD (Fase 4)
@@ -62,20 +62,26 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 │   │   ├── tokens.css         # Variáveis: cores, tipografia, espaçamento, raios, sombras
 │   │   ├── main.css           # Reset, layout e componentes
 │   │   ├── chat.css           # Widget do chat (Fase 2)
+│   │   ├── checkout.css       # planos.html e obrigado.html (Fase 3)
 │   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
 │   │   ├── main.js            # Renderiza conteúdo do config.js, menu, utilidades
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
-│   │   ├── admin.js           # Painel: login, conversas em tempo real (Fase 2+)
+│   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
+│   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
+│   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+)
+│   │   ├── admin-pedidos.js   # Aba Pedidos do painel (Fase 3)
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph
-├── testes/                    # Testes locais (Node/Playwright) — não publicados
+├── testes/                    # Testes locais (Node/Playwright, MP e Supabase falsos) — não publicados
 └── supabase/
     ├── README.md              # Ordem das migrations, configurações e primeiro admin
     ├── migrations/            # SQL versionado e idempotente (tabelas, RLS, políticas) (Fase 2+)
     ├── tests/                 # Stubs do Supabase + testes SQL para Postgres local
+    ├── config.toml            # verify_jwt = false nas duas Edge Functions
     └── functions/
+        ├── _shared/                # Lógica testável (só APIs Web; roda no Deno e no Node 22+)
         ├── criar-pagamento/        # Edge Function (Fase 3)
         └── webhook-mercadopago/    # Edge Function (Fase 3)
 ```
@@ -130,6 +136,9 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 - Visitante anônimo só lê/escreve o que é dele (filtrado pelo id anônimo); admin identificado por Auth.
 - Pedidos só mudam de status pelo webhook (service role dentro da Edge Function), nunca pelo front.
 - Webhook do MP valida a assinatura (`x-signature`) e confere o pagamento consultando a API do MP.
+- O preço cobrado vem da tabela `planos`, nunca do front; `config.js` só exibe (teste `precos.test.mjs` compara).
+- Edge Functions: lógica em `functions/_shared/*.ts` sem imports externos (só `fetch`/`crypto.subtle`), para
+  rodar no Deno e ser testada no Node (`node --test testes/funcoes/`).
 
 ## Fases
 

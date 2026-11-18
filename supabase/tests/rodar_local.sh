@@ -11,4 +11,6 @@ for m in ../migrations/*.sql; do
   psql -q -v ON_ERROR_STOP=1 -d "$BANCO" -f "$m"
   psql -q -v ON_ERROR_STOP=1 -d "$BANCO" -f "$m"
 done
-psql -q -v ON_ERROR_STOP=1 -d "$BANCO" -f 10_chat_test.sql
+for t in [0-9][0-9]_*_test.sql; do
+  psql -q -v ON_ERROR_STOP=1 -d "$BANCO" -f "$t"
+done

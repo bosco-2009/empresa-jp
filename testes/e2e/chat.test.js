@@ -138,7 +138,7 @@ async function axe(p, rotulo) {
   await a.fill('#login-email', 'dono@teste.local');
   await a.fill('#login-senha', 'senha-de-teste');
   await a.click('[data-form-login] button[type=submit]');
-  await a.waitForSelector('[data-tela="chat"]:not([hidden])');
+  await a.waitForSelector('[data-tela="painel"]:not([hidden])');
   await a.waitForSelector('.admin-item');
   await a.waitForFunction(() => document.querySelector('[data-conexao]').textContent.includes('Tempo real ativo'));
   ok(true, 'admin entra, lista carrega e tempo real conecta');
@@ -262,15 +262,15 @@ async function axe(p, rotulo) {
   await am.fill('#login-senha', 'senha-de-teste');
   await am.click('[data-form-login] button[type=submit]');
   await am.waitForSelector('.admin-item');
-  ok(await am.locator('.admin-conversa').isHidden(), 'celular: começa só com a lista');
+  ok(await am.locator('.admin-chat .admin-conversa').isHidden(), 'celular: começa só com a lista');
   await am.click('.admin-item');
   await am.waitForSelector('.admin-msg');
-  ok(await am.locator('.admin-lista').isHidden() && await am.locator('[data-voltar]').isVisible(), 'celular: conversa em tela própria com botão voltar');
+  ok(await am.locator('.admin-chat .admin-lista').isHidden() && await am.locator('[data-voltar]').isVisible(), 'celular: conversa em tela própria com botão voltar');
   const la = await am.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   ok(la[0] <= la[1], 'admin sem rolagem horizontal no celular');
   await am.screenshot({ path: SAIDA + '/admin-375.png' });
   await am.click('[data-voltar]');
-  ok(await am.locator('.admin-lista').isVisible(), 'voltar mostra a lista');
+  ok(await am.locator('.admin-chat .admin-lista').isVisible(), 'voltar mostra a lista');
   await axe(am, 'admin celular');
 
   // Capturas

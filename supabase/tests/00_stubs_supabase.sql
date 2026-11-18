@@ -14,7 +14,7 @@ create or replace function auth.uid() returns uuid language sql stable as $$
 $$;
 grant execute on function auth.uid() to anon, authenticated;
 
-grant usage on schema public to anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
 
 do $$ begin
   if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then

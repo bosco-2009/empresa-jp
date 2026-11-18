@@ -132,12 +132,9 @@
       });
       li.appendChild(itens);
 
-      // Fase 3: este botão passará a levar ao checkout do Mercado Pago.
-      var contato = linkContato('Olá! Tenho interesse no plano ' + plano.nome + ' da Portfólio BR.');
-      var botao = linkExterno(contato.href, 'botao ' + (plano.destaque ? 'botao--primario' : 'botao--contorno'),
-        ['Quero o plano ' + plano.nome]);
-      botao.setAttribute('aria-label', 'Quero o plano ' + plano.nome + ' (abre ' +
-        (contato.tipo === 'whatsapp' ? 'o WhatsApp' : 'o Instagram') + ' em nova aba)');
+      // Leva à página de contratação com o plano pré-selecionado.
+      var botao = criar('a', 'botao ' + (plano.destaque ? 'botao--primario' : 'botao--contorno'), 'Quero o plano ' + plano.nome);
+      botao.href = 'planos.html?plano=' + encodeURIComponent(plano.id);
       li.appendChild(botao);
 
       listaPlanos.appendChild(li);

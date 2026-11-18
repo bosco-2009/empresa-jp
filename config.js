@@ -65,6 +65,9 @@
     },
 
     // [PROVISÓRIO] nomes, preços, itens, prazos e número de ajustes de TODOS os planos.
+    // ATENÇÃO: o valor COBRADO vem da tabela public.planos do Supabase (o front nunca define o preço).
+    // Ao mudar id, nome ou precoCentavos aqui, mude também no banco (ver supabase/README.md).
+    // O teste testes/funcoes/precos.test.mjs falha se os dois ficarem diferentes.
     planos: [
       {
         id: 'essencial',
