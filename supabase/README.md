@@ -5,6 +5,7 @@
 | Ordem | Arquivo | O que faz |
 |---|---|---|
 | 1 | `migrations/20261118120000_chat_ao_vivo.sql` | Tabelas `admins`, `conversas`, `mensagens`; `eh_admin()`; RLS; RPCs do visitante; gatilhos; Realtime |
+| 2 | `migrations/20261119120000_pedidos.sql` | Tabelas `planos` (preço oficial), `pedidos`, `pedidos_eventos`; RLS; funções da service role (`pedido_criar`, `pedido_definir_preferencia`, `pedido_registrar_pagamento`); RPC pública `pedido_consultar`; Realtime em `pedidos` |
 
 Todas são **idempotentes**: rodar de novo não dá erro nem duplica nada.
 
@@ -27,6 +28,67 @@ Como aplicar (qualquer um):
 3. **API Keys:** copiar a **URL do projeto** e a **chave pública** (`anon` ou `sb_publishable_...`) para
    `config.js` → `supabase.url` e `supabase.anonKey`. **Nunca** usar a `service_role`/secret key no front.
 
+## Edge Functions (Mercado Pago)
+
+Código em `functions/criar-pagamento/` e `functions/webhook-mercadopago/`. Os arquivos `index.ts` só ligam o
+`Deno.serve`; a lógica fica em `functions/_shared/` (pasta com `_` não vira função), escrita só com APIs Web
+(`fetch`, `crypto.subtle`), sem dependências externas.
+
+### Deploy
+
+```bash
+supabase functions deploy criar-pagamento --no-verify-jwt
+supabase functions deploy webhook-mercadopago --no-verify-jwt
+```
+
+`--no-verify-jwt` (também em `config.toml`) é necessário:
+- `criar-pagamento` é chamada pelo navegador com a chave publicável, que não é um JWT de usuário. A função
+  valida a origem (CORS), os campos e cobra o preço da tabela `planos`.
+- `webhook-mercadopago` é chamada pelos servidores do Mercado Pago, que não têm JWT do Supabase. A função
+  valida a assinatura `x-signature`.
+
+### Secrets (Edge Functions → Secrets, ou `supabase secrets set NOME=valor`)
+
+| Secret | Obrigatório | Valor |
+|---|---|---|
+| `MP_ACCESS_TOKEN` | sim | Access Token do Mercado Pago (Suas integrações → Credenciais). `TEST-...` usa o `sandbox_init_point`. |
+| `MP_WEBHOOK_SECRET` | sim | Assinatura secreta gerada em Suas integrações → Webhooks (ver abaixo). |
+| `SITE_URL` | não | URL do site com `/` no final. Padrão: `https://bosco-2009.github.io/empresa-jp/`. Usada nas `back_urls`. |
+| `ORIGENS_PERMITIDAS` | não | Origens aceitas no CORS, separadas por vírgula. Padrão: a origem de `SITE_URL`. `localhost`/`127.0.0.1` são sempre aceitos (desenvolvimento). Ex.: `https://www.meudominio.com.br,https://meudominio.com.br`. |
+| `MP_SANDBOX` | não | `true`/`false` força o uso do `sandbox_init_point`; sem ele, decide pelo prefixo `TEST-` do token. |
+
+`SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` já existem automaticamente nas Edge Functions (a função também
+aceita `SUPABASE_SECRET_KEY` com uma chave `sb_secret_...`).
+
+### Webhook no Mercado Pago
+
+Em **Suas integrações → (aplicação) → Webhooks → Configurar notificações**:
+
+- **URL (modo produção e modo teste):** `https://mqjpccrxsyajcgbdifld.supabase.co/functions/v1/webhook-mercadopago`
+- **Eventos:** marcar **Pagamentos**.
+- Salvar e copiar a **assinatura secreta** para o secret `MP_WEBHOOK_SECRET`.
+
+A preferência também envia `notification_url` com essa mesma URL. A função:
+1. aceita só `type=payment` (o resto recebe 200 e é ignorado);
+2. valida `x-signature` (HMAC-SHA256 de `id:<data.id>;request-id:<x-request-id>;ts:<ts>;`) e responde 401 se não conferir;
+3. consulta o pagamento em `GET /v1/payments/{id}` (não confia no corpo da notificação);
+4. confere `external_reference` (id do pedido), **valor e moeda (BRL)** e atualiza o pedido de forma
+   **idempotente**. Valor divergente não aprova e fica registrado em `pedidos_eventos`.
+
+Ao usar "Simular notificação" no painel do MP (que manda um id de pagamento inexistente), a resposta esperada
+é **200** com `pagamento_inexistente` (URL e assinatura ok); **401** indica `MP_WEBHOOK_SECRET` diferente da assinatura do painel.
+
+### Preços
+
+O preço **cobrado** vem de `public.planos` (o front só exibe o `config.js`). Para mudar um preço:
+
+```sql
+update public.planos set valor_centavos = 59700, atualizado_em = now() where id = 'essencial';
+```
+
+e ajustar `precoCentavos` no `config.js`. O teste `testes/funcoes/precos.test.mjs` compara os dois (com os
+valores das migrations). Para desativar um plano: `update public.planos set ativo = false where id = '...'`.
+
 ## Criar o primeiro admin
 
 1. **Authentication → Users → Add user → Create new user**: e-mail e senha forte do dono,
@@ -46,6 +108,16 @@ Remover um admin:
 ```sql
 delete from public.admins where user_id = (select id from auth.users where email = 'dono@exemplo.com.br');
 ```
+
+## Modelo de segurança dos pedidos
+
+- `anon` não acessa `planos`, `pedidos` nem `pedidos_eventos`, nem as funções `pedido_criar`/`_definir_preferencia`/`_registrar_pagamento`
+  (só a `service_role` das Edge Functions).
+- O cliente consulta o próprio pedido com `pedido_consultar(codigo, token)`: o token (256 bits) fica no navegador
+  e o banco guarda só o SHA-256. Código inexistente e token errado dão o **mesmo** erro. A resposta não tem dados pessoais.
+- Admin só **lê** pedidos e eventos (RLS `eh_admin()`); ninguém do front cria nem muda status.
+- Anti-abuso em `pedido_criar`: no máximo 5 pedidos por e-mail por hora e 60 pedidos por 10 minutos no site.
+- Pedido aprovado não volta a pendente/recusado por notificação atrasada de outra tentativa; reembolso é final.
 
 ## Modelo de segurança do chat
 

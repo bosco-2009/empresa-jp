@@ -17,6 +17,7 @@ const pool = new Pool({ database: process.env.BANCO || 'pbr_e2e' });
 const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
 const jwt = (claims) => b64({ alg: 'HS256', typ: 'JWT' }) + '.' + b64(claims) + '.assinatura';
 const ANON_KEY = jwt({ role: 'anon', iss: 'teste' });
+const SERVICE_KEY = jwt({ role: 'service_role', iss: 'teste' });
 const ADMIN = { id: 'aaaaaaaa-0000-0000-0000-000000000001', email: 'dono@teste.local', senha: 'senha-de-teste' };
 const INTRUSO = { id: 'aaaaaaaa-0000-0000-0000-000000000002', email: 'intruso@teste.local', senha: 'senha-de-teste' };
 const USUARIOS = [ADMIN, INTRUSO];
@@ -32,7 +33,8 @@ async function comoUsuario(req, sql, params) {
   const cli = await pool.connect();
   try {
     await cli.query('begin');
-    await cli.query(c.role === 'authenticated' ? 'set local role authenticated' : 'set local role anon');
+    const papel = c.role === 'authenticated' ? 'authenticated' : c.role === 'service_role' ? 'service_role' : 'anon';
+    await cli.query('set local role ' + papel);
     await cli.query("select set_config('request.jwt.claim.sub', $1, true)", [c.sub || '']);
     const r = await cli.query(sql, params);
     await cli.query('commit');
@@ -64,17 +66,59 @@ const lerCorpo = (req) => new Promise((ok) => { let d = ''; req.on('data', (x) =
 const ARGS_RPC = {
   chat_iniciar: ['p_visitante_id', 'p_token', 'p_nome', 'p_whatsapp', 'p_pagina', 'p_criar'],
   chat_listar: ['p_visitante_id', 'p_token', 'p_depois', 'p_limite'],
-  chat_enviar: ['p_visitante_id', 'p_token', 'p_texto']
+  chat_enviar: ['p_visitante_id', 'p_token', 'p_texto'],
+  pedido_criar: ['p_plano_id', 'p_nome', 'p_email', 'p_whatsapp', 'p_token_hash'],
+  pedido_definir_preferencia: ['p_pedido_id', 'p_preference_id'],
+  pedido_registrar_pagamento: ['p_pedido_id', 'p_payment_id', 'p_mp_status', 'p_mp_status_detalhe', 'p_valor_centavos', 'p_moeda'],
+  pedido_consultar: ['p_codigo', 'p_token']
 };
+// Funções que devolvem um valor único (PostgREST responde o valor, não uma lista).
+const ESCALARES = ['pedido_definir_preferencia', 'pedido_registrar_pagamento'];
+
+// Edge Functions de verdade (os .ts do repositório), com o MP falso.
+const AMBIENTE_FUNCOES = {
+  SUPABASE_URL: 'http://localhost:' + PORTA,
+  SUPABASE_SERVICE_ROLE_KEY: SERVICE_KEY,
+  MP_ACCESS_TOKEN: process.env.MP_ACCESS_TOKEN || 'TEST-falso',
+  MP_WEBHOOK_SECRET: process.env.MP_WEBHOOK_SECRET || 'segredo-teste',
+  MP_API_URL: 'http://localhost:' + (process.env.PORTA_MP || 54400),
+  SITE_URL: process.env.SITE || 'http://localhost:8080/',
+};
+let funcoes = null;
+async function carregarFuncoes() {
+  if (funcoes) return funcoes;
+  const comum = await import('../../supabase/functions/_shared/comum.ts');
+  const cp = await import('../../supabase/functions/_shared/criar-pagamento.ts');
+  const wh = await import('../../supabase/functions/_shared/webhook-mercadopago.ts');
+  const amb = comum.lerAmbiente((n) => AMBIENTE_FUNCOES[n]);
+  funcoes = { 'criar-pagamento': cp.criarHandlerCriarPagamento(amb), 'webhook-mercadopago': wh.criarHandlerWebhook(amb) };
+  return funcoes;
+}
+async function chamarFuncao(nome, req, res) {
+  const f = (await carregarFuncoes())[nome];
+  if (!f) return enviar(res, 404, { message: 'função inexistente' });
+  const corpo = ['GET', 'HEAD', 'OPTIONS'].includes(req.method) ? undefined : await new Promise((ok) => { const b = []; req.on('data', (x) => b.push(x)); req.on('end', () => ok(Buffer.concat(b))); });
+  const resposta = await f(new Request('http://localhost:' + PORTA + req.url, { method: req.method, headers: req.headers, body: corpo }));
+  registro.push({ funcao: nome, status: resposta.status });
+  const cab = {};
+  resposta.headers.forEach((v, k) => { cab[k] = v; });
+  res.writeHead(resposta.status, cab);
+  res.end(Buffer.from(await resposta.arrayBuffer()));
+  setImmediate(publicarFila);
+}
 
 const registro = []; // chamadas recebidas (para o teste inspecionar)
 
 const servidor = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
-  if (req.method === 'OPTIONS') return enviar(res, 204);
+  if (req.method === 'OPTIONS' && !url.pathname.startsWith('/functions/')) return enviar(res, 204);
   try {
     // ---------- testes: inspeção ----------
     if (url.pathname === '/__registro') return enviar(res, 200, registro);
+
+    // ---------- Edge Functions ----------
+    const fn = /^\/functions\/v1\/([\w-]+)$/.exec(url.pathname);
+    if (fn) return chamarFuncao(fn[1], req, res);
 
     // ---------- auth ----------
     if (url.pathname === '/auth/v1/token') {
@@ -108,10 +152,12 @@ const servidor = http.createServer(async (req, res) => {
       const permitidos = ARGS_RPC[nome];
       if (!permitidos) return enviar(res, 404, { message: 'função desconhecida' });
       const chaves = Object.keys(corpo).filter((k) => permitidos.includes(k));
-      const sql = `select * from public.${nome}(${chaves.map((k, i) => `${k} => $${i + 1}`).join(', ')})`;
+      const args = chaves.map((k, i) => `${k} => $${i + 1}`).join(', ');
+      const escalar = ESCALARES.includes(nome);
+      const sql = escalar ? `select public.${nome}(${args}) as r` : `select * from public.${nome}(${args})`;
       const r = await comoUsuario(req, sql, chaves.map((k) => corpo[k]));
       setImmediate(publicarFila);
-      return enviar(res, 200, r.rows);
+      return enviar(res, 200, escalar ? r.rows[0].r : r.rows);
     }
 
     // ---------- tabelas (só as consultas usadas pelo painel) ----------
@@ -132,6 +178,18 @@ const servidor = http.createServer(async (req, res) => {
         [id, ...cols.map((k) => corpo[k])]);
       setImmediate(() => { publicarFila(); emitirAdmin('conversas', 'UPDATE', { id }); });
       return enviar(res, r.rowCount ? 200 : 200, []);
+    }
+    if (url.pathname === '/rest/v1/pedidos' && req.method === 'GET') {
+      const r = await comoUsuario(req, `select id, codigo, plano_id, plano_nome, valor_centavos, nome, email, whatsapp, status,
+        mp_preference_id, mp_payment_id, mp_status, mp_status_detalhe, aceite_termos_em, pago_em, criado_em, atualizado_em
+        from public.pedidos order by criado_em desc limit 500`);
+      return enviar(res, 200, r.rows);
+    }
+    if (url.pathname === '/rest/v1/pedidos_eventos' && req.method === 'GET') {
+      const id = (url.searchParams.get('pedido_id') || '').replace(/^eq\./, '');
+      const r = await comoUsuario(req, `select mp_payment_id, mp_status, mp_status_detalhe, valor_centavos, moeda, resultado, recebido_em
+        from public.pedidos_eventos where pedido_id = $1 order by recebido_em`, [id]);
+      return enviar(res, 200, r.rows);
     }
     if (url.pathname === '/rest/v1/mensagens' && req.method === 'GET') {
       const id = (url.searchParams.get('conversa_id') || '').replace(/^eq\./, '');
@@ -202,6 +260,16 @@ async function publicarFilaAgora() {
     }
   }
   await emitirMensagensNovas();
+  await emitirPedidosAlterados();
+}
+
+let ultimoPedido = new Date(0).toISOString();
+async function emitirPedidosAlterados() {
+  const r = await pool.query('select id, status, atualizado_em from public.pedidos where atualizado_em > $1 order by atualizado_em', [ultimoPedido]);
+  for (const p of r.rows) {
+    ultimoPedido = p.atualizado_em.toISOString();
+    emitirAdmin('pedidos', 'UPDATE', { id: p.id, status: p.status });
+  }
 }
 
 // postgres_changes para o painel: só para canais com token de admin (imita o RLS).
