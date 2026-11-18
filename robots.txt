@@ -1,0 +1,5 @@
+# Rascunho: o noindex nas páginas impede a indexação até a Fase 5.
+User-agent: *
+Allow: /
+
+Sitemap: https://bosco-2009.github.io/empresa-jp/sitemap.xml
