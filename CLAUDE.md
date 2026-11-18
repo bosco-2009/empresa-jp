@@ -60,15 +60,21 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 ├── assets/
 │   ├── css/
 │   │   ├── tokens.css         # Variáveis: cores, tipografia, espaçamento, raios, sombras
-│   │   └── main.css           # Reset, layout e componentes
+│   │   ├── main.css           # Reset, layout e componentes
+│   │   ├── chat.css           # Widget do chat (Fase 2)
+│   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
 │   │   ├── main.js            # Renderiza conteúdo do config.js, menu, utilidades
-│   │   ├── chat-widget.js     # Widget do chat (Fase 2)
-│   │   └── supabase-client.js # Cliente Supabase via CDN com versão fixa (Fase 2)
+│   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
+│   │   ├── admin.js           # Painel: login, conversas em tempo real (Fase 2+)
+│   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph
+├── testes/                    # Testes locais (Node/Playwright) — não publicados
 └── supabase/
-    ├── migrations/            # SQL versionado (tabelas, RLS, políticas) (Fase 2+)
+    ├── README.md              # Ordem das migrations, configurações e primeiro admin
+    ├── migrations/            # SQL versionado e idempotente (tabelas, RLS, políticas) (Fase 2+)
+    ├── tests/                 # Stubs do Supabase + testes SQL para Postgres local
     └── functions/
         ├── criar-pagamento/        # Edge Function (Fase 3)
         └── webhook-mercadopago/    # Edge Function (Fase 3)
@@ -115,7 +121,12 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 - Descrever no PR o que foi feito, como testar e o que ficou `[PROVISÓRIO]`.
 
 **Supabase (a partir da Fase 2)**
+- Migrations idempotentes (`if not exists`, `create or replace`, `drop policy if exists`), testadas com
+  `supabase/tests/rodar_local.sh` (aplica duas vezes e roda os testes).
 - Toda tabela nasce com `alter table ... enable row level security` e políticas na mesma migration.
+- Funções `security definer` sempre com `set search_path = ''` e nomes qualificados; `revoke ... from public`
+  e `grant execute` só para quem precisa.
+- Visitante anônimo nunca acessa tabelas diretamente: só RPCs que validam o token secreto do navegador.
 - Visitante anônimo só lê/escreve o que é dele (filtrado pelo id anônimo); admin identificado por Auth.
 - Pedidos só mudam de status pelo webhook (service role dentro da Edge Function), nunca pelo front.
 - Webhook do MP valida a assinatura (`x-signature`) e confere o pagamento consultando a API do MP.

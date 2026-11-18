@@ -284,7 +284,6 @@ a:hover { color: var(--cor-acao-hover); }
 
 /* Sem JavaScript, o menu fica sempre visível (sem botão). */
 .sem-js .topo__menu-botao { display: none; }
-.sem-js .chat-reservado { display: none; }
 .sem-js .topo__nav { position: static; display: flex; box-shadow: none; border: 0; padding: 0; }
 
 @media (min-width: 56rem) {
@@ -763,14 +762,15 @@ a:hover { color: var(--cor-acao-hover); }
 /* ===================== Rodapé ===================== */
 .rodape {
   padding-top: var(--esp-8);
-  /* Espaço para que o fim da página nunca fique sob o botão flutuante */
-  padding-bottom: calc(var(--esp-7) + var(--area-botao-flutuante));
+  padding-bottom: var(--esp-7);
   background: var(--cor-noite-950);
   color: var(--cor-texto-invertido-suave);
   font-size: var(--texto-sm);
 }
 
 .rodape__grade { display: grid; gap: var(--esp-6); }
+/* Com o chat na página, o fim do rodapé nunca fica sob o botão flutuante */
+.tem-chat .rodape { padding-bottom: calc(var(--esp-7) + var(--area-botao-flutuante)); }
 @media (min-width: 48rem) { .rodape__grade { grid-template-columns: 2fr 1fr 1fr; } }
 
 .rodape__descricao { margin-top: var(--esp-3); max-width: 22rem; }
@@ -801,57 +801,3 @@ a:hover { color: var(--cor-acao-hover); }
   border-top: 1px solid rgb(255 255 255 / 0.1);
   font-size: var(--texto-xs);
 }
-
-/* ===================== Botão flutuante (reservado para o chat — Fase 2) ===================== */
-.chat-reservado {
-  position: fixed;
-  right: calc(var(--esp-4) + env(safe-area-inset-right, 0px));
-  bottom: calc(var(--esp-4) + env(safe-area-inset-bottom, 0px));
-  z-index: var(--z-flutuante);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--esp-3);
-  transition: opacity var(--duracao-media) var(--curva-padrao), visibility var(--duracao-media);
-}
-
-/* No celular, some enquanto os botões do hero estão na tela (main.js) para não cobri-los */
-.chat-reservado[data-recolhido='true'] { opacity: 0; visibility: hidden; }
-
-.chat-reservado__botao {
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border: 0;
-  border-radius: 50%;
-  background: var(--cor-acao);
-  color: var(--cor-acao-texto);
-  box-shadow: var(--sombra-lg);
-  transition: background-color var(--duracao-rapida) var(--curva-padrao), transform var(--duracao-rapida) var(--curva-padrao);
-}
-.chat-reservado__botao:hover { background: var(--cor-acao-hover); transform: scale(1.04); }
-.chat-reservado__botao .icone { width: 1.75rem; height: 1.75rem; }
-
-.chat-reservado__painel {
-  width: min(20rem, calc(100vw - 2 * var(--esp-4)));
-  padding: var(--esp-5);
-  border: 1px solid var(--cor-borda);
-  border-radius: var(--raio-lg);
-  background: var(--cor-superficie);
-  box-shadow: var(--sombra-lg);
-}
-.chat-reservado__cabecalho { display: flex; justify-content: space-between; align-items: center; gap: var(--esp-3); }
-.chat-reservado__titulo { font-weight: var(--peso-extra); }
-.chat-reservado__fechar {
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 0;
-  border-radius: 50%;
-  background: var(--cor-fundo-suave);
-}
-.chat-reservado__texto { margin-top: var(--esp-2); color: var(--cor-texto-suave); font-size: var(--texto-sm); }
-.chat-reservado__opcoes { display: grid; gap: var(--esp-2); margin-top: var(--esp-4); }
-.chat-reservado__opcoes .botao { width: 100%; }

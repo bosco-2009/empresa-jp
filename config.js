@@ -22,6 +22,14 @@
     // Mudar para false só na Fase 5, junto com a remoção do <meta name="robots" content="noindex">.
     rascunho: true,
 
+    // Supabase (Fase 2). Só a URL do projeto e a chave PÚBLICA (anon ou publishable "sb_publishable_...").
+    // NUNCA coloque aqui a service_role/secret key nem o token do Mercado Pago.
+    // Com url/anonKey vazios, o chat ao vivo fica oculto e o painel /admin/ mostra um aviso.
+    supabase: {
+      url: '', // [PROVISÓRIO] ex.: 'https://abcdefghijkl.supabase.co'
+      anonKey: '' // [PROVISÓRIO] chave pública do projeto (Settings > API Keys)
+    },
+
     site: {
       nome: 'Portfólio BR',
       url: 'https://bosco-2009.github.io/empresa-jp/' // [PROVISÓRIO] trocar se houver domínio próprio
