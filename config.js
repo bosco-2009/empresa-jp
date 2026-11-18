@@ -26,8 +26,8 @@
     // NUNCA coloque aqui a service_role/secret key nem o token do Mercado Pago.
     // Com url/anonKey vazios, o chat ao vivo fica oculto e o painel /admin/ mostra um aviso.
     supabase: {
-      url: '', // [PROVISÓRIO] ex.: 'https://abcdefghijkl.supabase.co'
-      anonKey: '' // [PROVISÓRIO] chave pública do projeto (Settings > API Keys)
+      url: 'https://mqjpccrxsyajcgbdifld.supabase.co',
+      anonKey: 'sb_publishable_Vbab8OYKOwI9st4UfW45Xg_3FojwOXj' // chave publicável (pública por definição)
     },
 
     site: {

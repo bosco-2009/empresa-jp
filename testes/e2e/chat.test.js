@@ -14,13 +14,16 @@ const RAIZ = require('path').resolve(__dirname, '../..');
 fs.mkdirSync(SAIDA, { recursive: true });
 
 const configOriginal = fs.readFileSync(RAIZ + '/config.js', 'utf8');
-const configTeste = configOriginal
-  .replace("url: '', // [PROVISÓRIO] ex.: 'https://abcdefghijkl.supabase.co'", `url: '${API}',`)
-  .replace("anonKey: '' // [PROVISÓRIO]", `anonKey: '${ANON}' //`)
+// Aponta o site para o servidor falso (troca url/anonKey, sejam quais forem no config.js real).
+const comSupabase = (cfg, url, chave) => cfg
+  .replace(/(supabase:\s*\{\s*url:\s*)'[^']*'/, `$1'${url}'`)
+  .replace(/(anonKey:\s*)'[^']*'/, `$1'${chave}'`);
+const configSemSupabase = comSupabase(configOriginal, '', '');
+const configTeste = comSupabase(configOriginal, API, ANON)
   .replace("whatsapp: '', // [PROVISÓRIO]", "whatsapp: '5511999999999', //")
   // atendimento sempre aberto, exceto quando o teste fixa a hora
   .replace("{ dias: [1, 2, 3, 4, 5], inicio: '09:00', fim: '18:00' },", "{ dias: [0, 1, 2, 3, 4, 5, 6], inicio: '00:00', fim: '23:59' },");
-if (configTeste === configOriginal) throw new Error('substituição do config falhou');
+if (!configTeste.includes(API) || configSemSupabase.includes('supabase.co')) throw new Error('substituição do config falhou');
 
 function psql(sql) {
   return execSync(process.env.PSQL || `psql -At -d ${process.env.BANCO || 'pbr_e2e'}`, { input: sql }).toString().trim();
@@ -67,7 +70,7 @@ async function axe(p, rotulo) {
   // =================================================================== sem configuração
   console.log('\n[1] Sem supabase.url/anonKey: chat oculto, sem erros');
   {
-    const p = await novaPagina(browser, { viewport: { width: 375, height: 700 } }, configOriginal);
+    const p = await novaPagina(browser, { viewport: { width: 375, height: 700 } }, configSemSupabase);
     await p.goto(SITE, { waitUntil: 'networkidle' });
     ok(await p.locator('[data-chat]').count() === 0, 'widget não é criado');
     ok(!(await p.evaluate(() => !!window.supabase)), 'supabase-js não é baixado');
