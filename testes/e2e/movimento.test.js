@@ -106,7 +106,8 @@ const estado = (p) => p.evaluate(() => ({
     await p.waitForLoadState('networkidle');
     const r = await p.evaluate(() => ({
       tela: getComputedStyle(document.querySelector('[data-abertura-tela]')).display,
-      escondidos: [...document.querySelectorAll('main *')].filter((el) => getComputedStyle(el).opacity === '0').length,
+      // as telas 2 e 3 do mockup (decorativas, item 2) ficam ocultas sem JS de propósito
+      escondidos: [...document.querySelectorAll('main *')].filter((el) => !el.closest('[data-mock-tela]') && getComputedStyle(el).opacity === '0').length,
     }));
     ok(r.tela === 'none' && r.escondidos === 0, 'sem JS: nenhuma abertura e nada escondido');
     await p.context().close();

@@ -79,6 +79,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades
 │   │   ├── abertura.js        # Pular/encerrar a abertura de marca (a animação é CSS)
 │   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D
+│   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
@@ -152,6 +153,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Transições de "aparecer" ficam só no estado final (esconder é instantâneo), para nada esmaecer na carga
   nem ser pego pelo axe/Lighthouse no meio da transição. CLS sempre 0 (`testes/e2e/movimento.test.js`).
 - A abertura é `aria-hidden`, uma vez por sessão (`sessionStorage`), pulável por toque, clique ou tecla.
+- Movimento automático com mais de 5 s precisa de botão de pausa (WCAG 2.2.2), como no mockup do hero.
+- Exemplos fictícios (ex.: telas do mockup) sempre com o rótulo "exemplo" visível e nomes genéricos ("Sua Loja").
 
 **SEO e desempenho**
 - Cada página com `title`, `meta description`, Open Graph, `canonical`, favicon e manifest.

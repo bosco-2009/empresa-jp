@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -90,6 +90,12 @@ cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movime
 - CLS 0 e quadros por segundo;
 - 4 larguras com axe;
 - grava `testes/video-abertura.webm` (1280×720) para revisão.
+
+`mockup.test.js` cobre o mockup vivo do hero:
+- 3 telas de exemplo com o rótulo "exemplo", trocando só com transform/opacity;
+- botão de pausa pelo teclado (WCAG 2.2.2); pausa fora da tela;
+- movimento reduzido e sem JS: parado na primeira tela;
+- 4 larguras com axe, sem sobreposição dos selos.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
 
