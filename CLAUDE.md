@@ -83,7 +83,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── inicio.js          # Síncrono no <head>: classes sem-js/modo-rascunho antes da 1ª pintura
 │   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades
 │   │   ├── abertura.js        # Pular/encerrar a abertura de marca (a animação é CSS)
-│   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D
+│   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D, linha do tempo
 │   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
 │   │   ├── simulador.js       # Home: "Qual plano é para mim?" (regras em config.simulador)
 │   │   ├── comparativo.js     # planos.html#comparativo: tabela (≥48rem) e abas no celular (config.comparativo)
