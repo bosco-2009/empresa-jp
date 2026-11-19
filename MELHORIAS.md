@@ -22,7 +22,7 @@ Regras de toda execução (além do CLAUDE.md):
 - [x] (concluído 2026-11-19 UTC, merge 37f4acd) 5. **Comparativo de planos**: tabela acessível com tudo o que cada plano inclui; no celular, cards com abas.
 - [x] (concluído 2026-11-19 UTC, merge 43a08be) 6. **Seção "Para quem é"**: segmentos atendidos com ícones SVG próprios e uma frase de benefício por segmento.
 - [~] (início 2026-11-19 19:42 UTC) 7. **Respostas rápidas no chat do admin**: modelos de resposta (saudação, preços, prazos, pedir WhatsApp) que se inserem com um clique, editáveis e salvos no localStorage do admin.
-- [ ] 8. **Avisos no painel**: contador de não lidas no título e no favicon, som opcional e notificação do navegador (com permissão) para conversa nova, pedido pago e briefing novo.
+- [~] (início 2026-11-19 19:48 UTC) 8. **Avisos no painel**: contador de não lidas no título e no favicon, som opcional e notificação do navegador (com permissão) para conversa nova, pedido pago e briefing novo.
 - [ ] 9. **Blog com 3 artigos originais de SEO**: "Site ou só Instagram?", "O que um site profissional precisa ter", "Como funciona a criação do seu site com a Portfólio BR". Sem estatísticas inventadas. Página `blog/`, JSON-LD Article, sitemap.
 - [ ] 10. **Origem do visitante**: guardar `utm_*` e o referrer na chegada (localStorage) e enviar junto com `pagina_origem` no chat e nos dados do pedido, para o dono saber de onde vêm os clientes (Instagram, Google…).
 - [ ] 11. **Modo escuro** automático (`prefers-color-scheme`), com botão para alternar, usando só os tokens.
