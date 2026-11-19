@@ -29,7 +29,7 @@ Regras de toda execução (além do CLAUDE.md):
 - [x] (feito 2026-11-19, commit 45c99f6) 12. **Linha do tempo "Como funciona"** animada: do pedido à entrega, com prazos vindos do `config.js`.
 - [~] (início 2026-11-19 20:29 UTC) 13. **FAQ com busca** e links diretos para cada pergunta (`#faq-...`), com JSON-LD FAQPage.
 - [x] (concluído 2026-11-19 UTC, merge 8590e54) 14. **Imagens Open Graph por página** (1200×630, geradas em SVG→PNG no repositório) para planos, exemplos e blog.
-- [ ] 15. **PWA**: service worker de cache só para os arquivos estáticos (nunca para o Supabase), com página offline. Ajustar a CSP (`worker-src 'self'`).
+- [~] (início 2026-11-19 20:48 UTC) 15. **PWA**: service worker de cache só para os arquivos estáticos (nunca para o Supabase), com página offline. Ajustar a CSP (`worker-src 'self'`).
 - [ ] 16. **Microinterações**: estados de hover, foco e toque nos botões e cards, feedback de carregamento no checkout e no envio do briefing.
 - [ ] 17. **Captura "Diagnóstico grátis"**: formulário curto (Instagram do negócio + objetivo) que abre uma conversa no chat ao vivo já preenchida, usando as RPCs do chat.
 - [ ] 18. **Auditoria contínua**: script único `testes/auditoria-rapida.mjs` que roda todas as páginas × 4 larguras e grava um relatório; documentar no README.
