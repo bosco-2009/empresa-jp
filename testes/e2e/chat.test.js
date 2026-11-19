@@ -168,6 +168,17 @@ async function axe(p, rotulo) {
   ok((await v.locator('.chat__lista .chat__bolha--admin').first().textContent()).includes('Qual o nome'), 'visitante recebe a resposta em tempo real (broadcast + RPC)');
 
   // Visitante escreve -> admin recebe em tempo real; som e título piscando quando fora de foco
+  // Notificações do navegador: Notification falsa com permissão concedida (registra as chamadas)
+  await a.evaluate(() => {
+    window.__notifs = [];
+    window.Notification = function (titulo, op) { window.__notifs.push({ titulo, corpo: op && op.body, tag: op && op.tag }); this.close = () => {}; };
+    window.Notification.permission = 'granted';
+    window.Notification.requestPermission = () => Promise.resolve('granted');
+  });
+  await a.click('[data-botao-notificacoes]'); // granted + ligado -> desliga
+  ok(await a.getAttribute('[data-botao-notificacoes]', 'aria-pressed') === 'false', 'botão de notificações desliga');
+  await a.click('[data-botao-notificacoes]');
+  ok(await a.getAttribute('[data-botao-notificacoes]', 'aria-pressed') === 'true', 'botão de notificações liga (preferência salva)');
   await a.evaluate(() => { document.hasFocus = () => false; });
   await v.fill('#chat-texto', 'Doces da Maria!');
   await v.press('#chat-texto', 'Enter');
@@ -179,10 +190,16 @@ async function axe(p, rotulo) {
   ok(sons > 0, 'som tocado na mensagem nova (' + sons + ' osciladores)');
   ok(/Nova mensagem|Portfólio/.test(titulos), 'título alternando');
   const piscou = await a.evaluate(() => new Promise((r) => { const vistos = new Set(); const t = setInterval(() => vistos.add(document.title), 200); setTimeout(() => { clearInterval(t); r([...vistos]); }, 2500); }));
-  ok(piscou.some((t) => t === '(1) Nova mensagem!') && piscou.some((t) => t === 'Painel — Portfólio BR'), 'título da aba pisca: ' + piscou.join(' / '));
+  ok(piscou.some((t) => t === '(1) Nova mensagem!') && piscou.some((t) => t === '(1) Painel — Portfólio BR'), 'título da aba pisca com o contador de não lidas: ' + piscou.join(' / '));
+  ok(await a.evaluate(() => document.documentElement.getAttribute('data-favicon-selo')) === '1', 'favicon com selo "1"');
+  ok(await a.evaluate(() => [...document.querySelectorAll('link[rel~="icon"]')].every((l) => l.href.startsWith('data:image/png'))), 'favicon trocado pela versão com selo');
+  const notifs = await a.evaluate(() => window.__notifs);
+  ok(notifs.length === 1 && notifs[0].titulo === 'Nova mensagem no chat' && notifs[0].corpo.includes('Maria Teste'), 'notificação do navegador para a mensagem nova: ' + JSON.stringify(notifs));
+  ok(!notifs.some((n) => (n.corpo || '').includes('Doces')), 'notificação não mostra o texto da mensagem');
   await a.evaluate(() => { document.hasFocus = () => true; window.dispatchEvent(new Event('focus')); });
   await a.waitForTimeout(300);
   ok((await a.title()) === 'Painel — Portfólio BR', 'ao focar a aba, o título volta ao normal');
+  ok(await a.evaluate(() => !document.documentElement.hasAttribute('data-favicon-selo') && [...document.querySelectorAll('link[rel~="icon"]')].every((l) => !l.href.startsWith('data:'))), 'lida a mensagem, o favicon volta ao original');
 
   // Visitante com painel fechado recebe selo de não lida
   await v.click('.chat__fechar');
