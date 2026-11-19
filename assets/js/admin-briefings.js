@@ -84,6 +84,15 @@
         if (estado.conhecidos) {
           var novidade = lista.some(function (b) { return b.status === 'novo' && estado.conhecidos[b.id] !== b.atualizado_em; });
           if (novidade) {
+            lista.forEach(function (b) {
+              if (b.status !== 'novo' || estado.conhecidos[b.id] === b.atualizado_em || !estado.avisos.notificar) return;
+              estado.avisos.notificar({
+                titulo: 'Briefing novo' + (b.pedidos && b.pedidos.codigo ? ': ' + b.pedidos.codigo : ''),
+                corpo: b.nome_negocio || '',
+                tag: 'briefing-' + b.id,
+                aoClicar: function () { location.hash = '#briefings'; }
+              });
+            });
             if (estado.avisos.tocarSom) estado.avisos.tocarSom();
             if (estado.avisos.atento && !estado.avisos.atento() && estado.avisos.piscarTitulo) estado.avisos.piscarTitulo();
           }

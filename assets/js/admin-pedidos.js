@@ -108,6 +108,15 @@
     if (estado.conhecidos) {
       var houveNovo = Object.keys(aprovadosAgora).some(function (id) { return !estado.conhecidos[id]; });
       if (houveNovo) {
+        novos.forEach(function (p) {
+          if (!aprovadosAgora[p.id] || estado.conhecidos[p.id] || !estado.avisos.notificar) return;
+          estado.avisos.notificar({
+            titulo: 'Pedido pago: ' + p.codigo,
+            corpo: [p.nome, p.plano_nome].filter(Boolean).join(' · '),
+            tag: 'pedido-' + p.id,
+            aoClicar: function () { location.hash = '#pedidos'; }
+          });
+        });
         if (estado.avisos.tocarSom) estado.avisos.tocarSom();
         if (estado.avisos.atento && !estado.avisos.atento() && estado.avisos.piscarTitulo) estado.avisos.piscarTitulo();
       }

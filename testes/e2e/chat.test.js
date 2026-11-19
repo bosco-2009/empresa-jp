@@ -179,7 +179,8 @@ async function axe(p, rotulo) {
   ok(sons > 0, 'som tocado na mensagem nova (' + sons + ' osciladores)');
   ok(/Nova mensagem|Portfólio/.test(titulos), 'título alternando');
   const piscou = await a.evaluate(() => new Promise((r) => { const vistos = new Set(); const t = setInterval(() => vistos.add(document.title), 200); setTimeout(() => { clearInterval(t); r([...vistos]); }, 2500); }));
-  ok(piscou.some((t) => t === '(1) Nova mensagem!') && piscou.some((t) => t === 'Painel — Portfólio BR'), 'título da aba pisca: ' + piscou.join(' / '));
+  // o título "normal" leva o contador de não lidas (melhoria 8): "(1) Painel — Portfólio BR"
+  ok(piscou.some((t) => t === '(1) Nova mensagem!') && piscou.some((t) => /^(\(\d+\) )?Painel — Portfólio BR$/.test(t)), 'título da aba pisca: ' + piscou.join(' / '));
   await a.evaluate(() => { document.hasFocus = () => true; window.dispatchEvent(new Event('focus')); });
   await a.waitForTimeout(300);
   ok((await a.title()) === 'Painel — Portfólio BR', 'ao focar a aba, o título volta ao normal');

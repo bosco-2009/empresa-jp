@@ -98,7 +98,7 @@
         if (r.data !== true) { encerrarChat(); encerrarPedidos(); mostrarTela('negado'); return; }
         mostrarTela('painel');
         iniciarChat();
-        var avisos = { tocarSom: tocarSom, piscarTitulo: piscarTitulo, atento: atento };
+        var avisos = { tocarSom: tocarSom, piscarTitulo: piscarTitulo, atento: atento, notificar: notificar };
         if (window.PBRAdminPedidos) window.PBRAdminPedidos.iniciar(sb, avisos);
         if (window.PBRAdminBriefings) window.PBRAdminBriefings.iniciar(sb, avisos);
       }).catch(function () {
@@ -208,15 +208,19 @@
         alterna = !alterna;
         document.title = alterna
           ? '(' + novasNoTitulo + ') ' + (novasNoTitulo === 1 ? 'Nova mensagem!' : 'Novas mensagens!')
-          : TITULO_ORIGINAL;
+          : tituloBase();
       }, 1000);
     }
     function pararTitulo() {
       clearInterval(timerTitulo);
       timerTitulo = null;
       novasNoTitulo = 0;
-      document.title = TITULO_ORIGINAL;
+      document.title = tituloBase();
     }
+    // Título "normal" com o contador de não lidas (admin-avisos.js); sem o módulo, o título original
+    function tituloBase() { return window.PBRAdminAvisos ? window.PBRAdminAvisos.tituloBase() : TITULO_ORIGINAL; }
+    if (window.PBRAdminAvisos) window.PBRAdminAvisos.aoMudarTitulo(function (t) { if (!timerTitulo) document.title = t; });
+    function notificar(o) { return window.PBRAdminAvisos ? window.PBRAdminAvisos.notificar(o) : null; }
     function atento() { return !document.hidden && document.hasFocus(); }
     window.addEventListener('focus', function () {
       pararTitulo();
@@ -328,6 +332,7 @@
     function conversaPorId(id) { return estado.conversas.filter(function (c) { return c.id === id; })[0]; }
 
     function renderizarLista() {
+      if (window.PBRAdminAvisos) window.PBRAdminAvisos.definirNaoLidas(totalNaoLidas());
       var visiveis = estado.conversas.filter(function (c) { return estado.filtro === 'todas' || c.status === estado.filtro; });
       lista.textContent = '';
       listaVazia.hidden = visiveis.length > 0;
@@ -461,6 +466,13 @@
         notificadas[m.id] = true;
         var vendo = atento() && m.conversa_id === estado.selecionada && secaoChat.classList.contains('mostrando-conversa');
         if (!vendo) { tocarSom(); if (!atento()) piscarTitulo(); }
+        var conhecida = conversaPorId(m.conversa_id);
+        notificar({
+          titulo: conhecida ? 'Nova mensagem de ' + nomeDe(conhecida) : 'Nova conversa no chat',
+          corpo: m.texto,
+          tag: 'conversa-' + m.conversa_id,
+          aoClicar: function () { if (location.hash !== '#conversas') location.hash = '#conversas'; abrirConversa(m.conversa_id); }
+        });
       }
       agendarRecarga();
     }

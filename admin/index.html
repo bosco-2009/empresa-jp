@@ -20,6 +20,7 @@
 
   <script src="../config.js" defer></script>
   <script src="../assets/js/supabase-client.js" defer></script>
+  <script src="../assets/js/admin-avisos.js" defer></script>
   <script src="../assets/js/admin.js" defer></script>
   <script src="../assets/js/admin-respostas.js" defer></script>
   <script src="../assets/js/admin-pedidos.js" defer></script>
@@ -30,6 +31,8 @@
     <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M3.5 20.5 4.8 16A8.5 8.5 0 1 1 8 19.2l-4.5 1.3Z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 1c-1.2-.4-2.5-1.7-2.9-2.9l1-1-1-2L9 8.5Z"/></symbol>
     <symbol id="i-seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="i-voltar" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-sino" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></symbol>
+    <symbol id="i-sino-mudo" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16Z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0M4 4l16 16"/></symbol>
     <symbol id="i-som" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
     <symbol id="i-mudo" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4Z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></symbol>
   </svg>
@@ -44,6 +47,10 @@
       <button class="admin-botao-icone" type="button" aria-pressed="true" data-botao-som>
         <svg class="icone" aria-hidden="true"><use href="#i-som"/></svg>
         <span class="visualmente-oculto">Som de nova mensagem</span>
+      </button>
+      <button class="admin-botao-icone" type="button" aria-pressed="false" data-botao-notificar hidden>
+        <svg class="icone" aria-hidden="true"><use href="#i-sino-mudo"/></svg>
+        <span class="visualmente-oculto">Notificações do navegador<span data-notificar-dica></span></span>
       </button>
       <button class="botao botao--contorno botao--pequeno" type="button" data-sair>Sair</button>
     </div>

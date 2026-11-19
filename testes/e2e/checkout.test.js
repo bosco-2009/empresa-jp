@@ -45,6 +45,11 @@ async function novaPagina(browser, opcoes) {
     window.__sons = 0;
     const C = window.AudioContext;
     if (C) { const o = C.prototype.createOscillator; C.prototype.createOscillator = function () { window.__sons++; return o.call(this); }; }
+    // Notificações do navegador (melhoria 8): permissão concedida e ligadas; registra em window.__notifs
+    window.__notifs = [];
+    try { localStorage.setItem('pbr_admin_notificacoes', 'on'); } catch (e) { /* */ }
+    window.Notification = class { constructor(t, o) { this.titulo = t; Object.assign(this, o); if (t) window.__notifs.push(this); } close() {} static requestPermission() { return Promise.resolve('granted'); } };
+    window.Notification.permission = 'granted';
   });
   return p;
 }
@@ -229,6 +234,8 @@ async function pedidosLocais(p) {
   ok(true, 'novo pagamento aprovado aparece no painel em tempo real');
   await a.waitForTimeout(1300);
   ok(await a.evaluate(() => window.__sons) > sonsAntes, 'som tocado no pedido aprovado');
+  const notifPedido = await a.evaluate(() => window.__notifs.filter((n) => n.titulo.startsWith('Pedido pago')).map((n) => n.titulo + ' | ' + n.body));
+  ok(notifPedido.length === 1, 'notificação do navegador "Pedido pago" (painel fora de foco): ' + notifPedido.join(''));
   ok(/Nova mensagem|Novas mensagens|Portfólio/.test(await a.title()), 'título da aba sinaliza a novidade');
   ok(await a.locator('[data-selo-aba="pedidos"]').isHidden(), 'selo some sem pendentes');
 
