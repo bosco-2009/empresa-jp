@@ -50,6 +50,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 /
 ├── index.html                 # Home de vendas (Fase 1)
 ├── portfolio.html             # Portfólio (Fase 4)
+├── exemplos.html              # 6 sites de EXEMPLO por segmento (melhoria 3)
+├── exemplos/                  # moda, restaurante, beleza, saude, servicos, pet: fictícios, sempre noindex
 ├── planos.html                # Planos + checkout Mercado Pago (Fase 3)
 ├── obrigado.html              # Retorno do checkout: status pela RPC pedido_consultar (Fase 3)
 ├── briefing.html              # Briefing pós-compra (Fase 4)
@@ -73,6 +75,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── checkout.css       # planos.html, obrigado.html e portfolio.html (Fase 3)
 │   │   ├── briefing.css       # briefing.html em etapas (Fase 4)
 │   │   ├── legal.css          # termos.html e privacidade.html (Fase 4)
+│   │   ├── exemplos.css       # exemplos.html e exemplos/*.html (paletas --exemplo-* em tokens.css)
 │   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
 │   │   ├── inicio.js          # Síncrono no <head>: classes sem-js/modo-rascunho antes da 1ª pintura

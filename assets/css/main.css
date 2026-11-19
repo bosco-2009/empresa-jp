@@ -215,6 +215,7 @@ a:hover { color: var(--cor-acao-hover); }
 .marca:hover { color: var(--cor-texto); }
 .marca__icone { width: 2.25rem; height: 2.25rem; }
 .marca__nome {
+  white-space: nowrap;
   font-size: var(--texto-lg);
   font-weight: var(--peso-extra);
   letter-spacing: -0.03em;
@@ -289,7 +290,8 @@ a:hover { color: var(--cor-acao-hover); }
 .sem-js .topo__menu-botao { display: none; }
 .sem-js .topo__nav { position: static; display: flex; box-shadow: none; border: 0; padding: 0; }
 
-@media (min-width: 56rem) {
+/* Menu horizontal só quando cabe sem quebrar linha (6 itens + botão) */
+@media (min-width: 64rem) {
   .topo__menu-botao { display: none; }
   .topo__nav,
   .topo__nav[data-aberto='true'] {
@@ -304,6 +306,7 @@ a:hover { color: var(--cor-acao-hover); }
     box-shadow: none;
   }
   .topo__links { display: flex; gap: var(--esp-2); }
+  .topo__links a, .topo__cta { white-space: nowrap; }
   .topo__links a { padding: var(--esp-2) var(--esp-3); }
 }
 
