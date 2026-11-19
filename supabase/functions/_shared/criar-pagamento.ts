@@ -1,6 +1,8 @@
 // Lógica da Edge Function criar-pagamento (Checkout Pro do Mercado Pago).
 //
-// Entrada (POST JSON): { plano_id, nome, email, whatsapp, aceite_termos: true }
+// Entrada (POST JSON): { plano_id, nome, email, whatsapp, aceite_termos: true, origem? }
+//   origem (opcional, melhoria 10): texto curto de como o cliente chegou (utm_*, domínio de referência), gravado
+//   no pedido por pedido_definir_origem. Falha ao gravar a origem nunca impede o pagamento.
 // Saída: { pedido_id, codigo, token, plano_nome, valor_centavos, init_point }
 //
 // O PREÇO vem da tabela public.planos (função pedido_criar). Qualquer valor enviado pelo front é ignorado.
@@ -25,6 +27,13 @@ export function validarEntrada(c: Record<string, unknown>): string | null {
   if (typeof c.whatsapp !== 'string' || !/^\d{10,13}$/.test(c.whatsapp.replace(/\D/g, ''))) return 'whatsapp_invalido';
   if (c.aceite_termos !== true) return 'aceite_obrigatorio';
   return null;
+}
+
+// Origem do visitante: só texto curto e "limpo" (sem controles nem marcação), até 300 caracteres.
+export function limparOrigem(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  const t = v.replace(/[\u0000-\u001f\u007f<>]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+  return t || null;
 }
 
 export function criarHandlerCriarPagamento(amb: Ambiente, f: typeof fetch = fetch) {
@@ -67,6 +76,16 @@ export function criarHandlerCriarPagamento(amb: Ambiente, f: typeof fetch = fetc
       if (msg.includes('limite_pedidos')) return json({ erro: 'limite_pedidos' }, 429, cors);
       console.error('criar-pagamento: pedido_criar falhou', e instanceof ErroBanco ? e.codigo : '', msg);
       return json({ erro: 'falha_pedido' }, 500, cors);
+    }
+
+    // 1b) Origem do visitante (opcional; se falhar, segue o pagamento)
+    const origem = limparOrigem(corpo.origem);
+    if (origem) {
+      try {
+        await rpc(amb, 'pedido_definir_origem', { p_pedido_id: pedido.pedido_id, p_origem: origem }, f);
+      } catch (e) {
+        console.error('criar-pagamento: origem não gravada', e instanceof Error ? e.message : '');
+      }
     }
 
     // 2) Preferência do Checkout Pro

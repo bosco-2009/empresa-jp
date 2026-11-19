@@ -69,6 +69,7 @@ const ARGS_RPC = {
   chat_enviar: ['p_visitante_id', 'p_token', 'p_texto'],
   pedido_criar: ['p_plano_id', 'p_nome', 'p_email', 'p_whatsapp', 'p_token_hash'],
   pedido_definir_preferencia: ['p_pedido_id', 'p_preference_id'],
+  pedido_definir_origem: ['p_pedido_id', 'p_origem'],
   pedido_registrar_pagamento: ['p_pedido_id', 'p_payment_id', 'p_mp_status', 'p_mp_status_detalhe', 'p_valor_centavos', 'p_moeda'],
   pedido_consultar: ['p_codigo', 'p_token'],
   briefing_enviar: ['p_codigo', 'p_token', 'p_dados'],
@@ -76,7 +77,7 @@ const ARGS_RPC = {
   briefing_autorizar_upload: ['p_codigo', 'p_token']
 };
 // Funções que devolvem um valor único (PostgREST responde o valor, não uma lista).
-const ESCALARES = ['pedido_definir_preferencia', 'pedido_registrar_pagamento'];
+const ESCALARES = ['pedido_definir_preferencia', 'pedido_definir_origem', 'pedido_registrar_pagamento'];
 
 // Edge Functions de verdade (os .ts do repositório), com o MP falso.
 const AMBIENTE_FUNCOES = {
@@ -205,9 +206,15 @@ const servidor = http.createServer(async (req, res) => {
       return enviar(res, 200, r.rows);
     }
     if (url.pathname === '/rest/v1/pedidos' && req.method === 'GET') {
-      const r = await comoUsuario(req, `select id, codigo, plano_id, plano_nome, valor_centavos, nome, email, whatsapp, status,
-        mp_preference_id, mp_payment_id, mp_status, mp_status_detalhe, aceite_termos_em, pago_em, criado_em, atualizado_em
-        from public.pedidos order by criado_em desc limit 500`);
+      // Como o PostgREST: usa as colunas pedidas em ?select= (só identificadores simples; coluna inexistente → erro 42703)
+      const pedidas = (url.searchParams.get('select') || '').split(',').map((c) => c.trim()).filter(Boolean);
+      const lista = pedidas.length && pedidas.every((c) => /^[a-z_]+$/.test(c)) ? pedidas.join(', ')
+        : `id, codigo, plano_id, plano_nome, valor_centavos, nome, email, whatsapp, status,
+        mp_preference_id, mp_payment_id, mp_status, mp_status_detalhe, aceite_termos_em, pago_em, criado_em, atualizado_em`;
+      let r;
+      try {
+        r = await comoUsuario(req, `select ${lista} from public.pedidos order by criado_em desc limit 500`);
+      } catch (e) { return erroPg(res, e); }
       return enviar(res, 200, r.rows);
     }
     if (url.pathname === '/rest/v1/pedidos_eventos' && req.method === 'GET') {

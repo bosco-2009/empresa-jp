@@ -87,6 +87,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
 │   │   ├── simulador.js       # Home: "Qual plano é para mim?" (regras em config.simulador)
 │   │   ├── comparativo.js     # planos.html#comparativo: tabela (≥48rem) e abas no celular (config.comparativo)
+│   │   ├── origem.js          # utm_* + domínio de referência na chegada → chat (pagina_origem) e pedido (origem)
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
