@@ -19,7 +19,8 @@
     "comparativo": "node e2e/comparativo.test.js",
     "para-quem": "node e2e/para-quem.test.js",
     "respostas-rapidas": "node e2e/respostas-rapidas.test.js",
-    "origem": "node e2e/origem.test.js"
+    "origem": "node e2e/origem.test.js",
+    "tema": "node e2e/tema.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",

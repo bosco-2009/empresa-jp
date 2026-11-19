@@ -87,6 +87,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
 │   │   ├── simulador.js       # Home: "Qual plano é para mim?" (regras em config.simulador)
 │   │   ├── comparativo.js     # planos.html#comparativo: tabela (≥48rem) e abas no celular (config.comparativo)
+│   │   ├── tema.js            # Botão do modo escuro (a escolha é aplicada antes da pintura pelo inicio.js)
 │   │   ├── origem.js          # utm_* + domínio de referência na chegada → chat (pagina_origem) e pedido (origem)
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
@@ -147,6 +148,9 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Mobile-first: CSS base para celular, `min-width` nas media queries.
 - **Sem rolagem horizontal a 320 px.** Testar pelo menos em 320, 375, 768 e 1280 px.
 - Usar só as variáveis de `assets/css/tokens.css` para cor, fonte, espaçamento, raio e sombra.
+- **Modo escuro:** só os papéis semânticos (`--cor-fundo`, `--cor-texto`, `--cor-acao`...) mudam no escuro. Componentes
+  usam papéis, não a paleta crua (`--cor-noite-900` etc.), exceto o que é fixo de propósito (selos amarelos, telas de
+  exemplo). Sites de exemplo e `/admin/` têm `data-tema-fixo` (sempre claros). `testes/e2e/tema.test.js` roda o axe no escuro.
 
 **Acessibilidade (WCAG 2.1 AA como meta)**
 - `lang="pt-BR"`, landmarks (`header`, `nav`, `main`, `footer`), um único `h1` por página, hierarquia de títulos.
