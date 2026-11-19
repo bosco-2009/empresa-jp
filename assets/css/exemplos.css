@@ -61,8 +61,7 @@
 .ex-cartao__link { font-weight: var(--peso-negrito); }
 /* o cartão inteiro é clicável (link "esticado"), mantendo o texto do link para leitores de tela */
 .ex-cartao__link::after { content: ''; position: absolute; inset: 0; border-radius: var(--raio-lg); }
-.ex-cartao__link:focus-visible { outline: none; }
-.ex-cartao__link:focus-visible::after { outline: 3px solid var(--cor-foco); outline-offset: 2px; }
+/* foco: o anel padrão do site no próprio link; o cartão também se eleva (:focus-within acima) */
 
 .ex-chamada {
   display: grid;
