@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -89,7 +89,8 @@ cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movime
 - revelar, cascata, sublinhado e o celular em 3D;
 - CLS 0 e quadros por segundo;
 - 4 larguras com axe;
-- grava `testes/video-abertura.webm` (1280×720) para revisão.
+- grava o vídeo da abertura (1280×720) em `testes/e2e/saida/`; com `GRAVAR_VIDEO=1` atualiza o `testes/video-abertura.webm`
+  versionado (só quando a abertura mudar, para não pesar o repositório).
 
 `mockup.test.js` cobre o mockup vivo do hero:
 - 3 telas de exemplo com o rótulo "exemplo", trocando só com transform/opacity;
@@ -122,6 +123,9 @@ claros, cabeçalho em uma linha e axe no escuro em todas as páginas × 4 largur
 
 `faq.test.js` cobre o FAQ: ids `#faq-...` estáveis, link direto abrindo a pergunta, busca sem acentos (com as
 `palavras` extras do `config.js`), "Copiar link", JSON-LD FAQPage e axe claro/escuro em 4 larguras.
+
+`microinteracoes.test.js` cobre hover/pressionar de botões e cards (inclusive cards já revelados), o "carregando"
+do checkout (Edge Function simulada), o tremor do campo inválido, o FAQ e o desligamento com movimento reduzido.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
 
