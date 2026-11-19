@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac, createHash } from 'node:crypto';
 import { lerAmbiente, origemPermitida } from '../../supabase/functions/_shared/comum.ts';
-import { criarHandlerCriarPagamento, validarEntrada } from '../../supabase/functions/_shared/criar-pagamento.ts';
+import { criarHandlerCriarPagamento, validarEntrada, limparOrigem } from '../../supabase/functions/_shared/criar-pagamento.ts';
 import { criarHandlerWebhook, montarManifesto, lerAssinatura } from '../../supabase/functions/_shared/webhook-mercadopago.ts';
 
 const SEGREDO = 'segredo-do-webhook';
@@ -130,6 +130,31 @@ test('cria pedido com preço do servidor e preferência correta; ignora valor do
 
   const pref = chamadas.find((c) => c.url.endsWith('/rpc/pedido_definir_preferencia'));
   assert.deepEqual(pref.corpo, { p_pedido_id: PEDIDO_ID, p_preference_id: 'pref-1' });
+});
+
+test('origem do visitante (melhoria 10): gravada depois do pedido; falha não impede o pagamento', async () => {
+  assert.equal(limparOrigem('  utm: instagram\n/ <b>social</b> '), 'utm: instagram / b social /b');
+  assert.equal(limparOrigem('x'.repeat(400)).length, 300);
+  assert.equal(limparOrigem(''), null);
+  assert.equal(limparOrigem(42), null);
+
+  const { f, chamadas } = fetchFalso([['/rpc/pedido_definir_origem', { corpo: null }], ...roteiroOk()]);
+  const r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar({ ...ENTRADA, origem: 'utm: instagram / social · ref: l.instagram.com' }));
+  assert.equal(r.status, 200);
+  const origem = chamadas.find((c) => c.url.includes('/rpc/pedido_definir_origem'));
+  assert.deepEqual(origem.corpo, { p_pedido_id: PEDIDO_ID, p_origem: 'utm: instagram / social · ref: l.instagram.com' });
+  assert.ok(chamadas.findIndex((c) => c.url.includes('pedido_criar')) < chamadas.indexOf(origem), 'depois de criar o pedido');
+
+  // sem origem: nem chama; com a função ausente (migration não aplicada): segue o pagamento
+  const sem = fetchFalso(roteiroOk());
+  assert.equal((await criarHandlerCriarPagamento(ambiente(), sem.f)(requisicaoCriar(ENTRADA))).status, 200);
+  assert.ok(!sem.chamadas.some((c) => c.url.includes('pedido_definir_origem')));
+  const falha = fetchFalso([['/rpc/pedido_definir_origem', { status: 404, corpo: { code: 'PGRST202', message: 'function not found' } }], ...roteiroOk()]);
+  const erroOriginal = console.error; console.error = () => {};
+  try {
+    const r2 = await criarHandlerCriarPagamento(ambiente(), falha.f)(requisicaoCriar({ ...ENTRADA, origem: 'utm: google' }));
+    assert.equal(r2.status, 200, 'pagamento segue mesmo sem gravar a origem');
+  } finally { console.error = erroOriginal; }
 });
 
 test('token de produção usa init_point; MP_SANDBOX força; chave sb_secret vai só no apikey', async () => {

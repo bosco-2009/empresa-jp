@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -113,6 +113,9 @@ links para os sites de exemplo (nome acessível único), revelação na rolagem 
 `respostas-rapidas.test.js` (precisa do Supabase falso, como o `chat.test.js`) cobre as respostas rápidas do painel:
 inserção no cursor sem enviar, `{nome}`, padrões com preços/prazos do `config.js`, editor em `<dialog>` (teclado, axe),
 localStorage e 4 larguras.
+
+`origem.test.js` (Supabase e MP falsos) cobre a origem do visitante: utm_* e domínio de referência guardados na
+chegada, chat (`pagina_origem`), pedido (Edge Function real → `pedidos.origem`), painel e banco sem a migration.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
 

@@ -65,6 +65,12 @@ de produção foi alterado só pelo SQL Editor, confira à mão: `select id, nom
    - o pedido na aba Pedidos do painel;
    - o reembolso pelo painel do MP, que deve mudar o pedido para "reembolsado".
 
+**Origem dos clientes (melhoria 10):** confira se a migration `20261121120000_origem_visitante.sql` foi aplicada
+(SQL Editor: `select origem from public.pedidos limit 1;` não pode dar erro) e publique de novo a `criar-pagamento`
+(`supabase functions deploy criar-pagamento --no-verify-jwt`). Para links de divulgação, use parâmetros de campanha,
+por exemplo na bio do Instagram: `…/empresa-jp/?utm_source=instagram&utm_medium=bio`. O painel mostra a origem em
+cada pedido e no "veio de" de cada conversa.
+
 ## 5. Portfólio (quando houver projetos)
 
 1. Salve a imagem em `assets/img/portfolio/` (WebP ou JPG, cerca de 1200×900, até 200 KB).
