@@ -21,6 +21,7 @@
   <script src="../config.js" defer></script>
   <script src="../assets/js/supabase-client.js" defer></script>
   <script src="../assets/js/admin.js" defer></script>
+  <script src="../assets/js/admin-respostas.js" defer></script>
   <script src="../assets/js/admin-pedidos.js" defer></script>
   <script src="../assets/js/admin-briefings.js" defer></script>
 </head>
@@ -129,6 +130,12 @@
 
           <div class="admin-mensagens" role="log" aria-live="polite" aria-label="Mensagens" tabindex="0" data-mensagens></div>
 
+          <!-- Respostas rápidas (admin-respostas.js): modelos salvos só neste navegador (localStorage) -->
+          <div class="admin-rapidas" data-rapidas hidden>
+            <div class="admin-rapidas__lista" role="group" aria-label="Respostas rápidas (inserem o texto na resposta)" data-rapidas-lista></div>
+            <button type="button" class="admin-rapidas__editar" aria-haspopup="dialog" data-rapidas-editar>Editar respostas</button>
+          </div>
+
           <form class="admin-resposta" data-form-resposta novalidate>
             <label class="visualmente-oculto" for="resposta-texto">Resposta</label>
             <textarea id="resposta-texto" rows="2" maxlength="2000" placeholder="Escreva a resposta… (Enter envia, Shift+Enter quebra linha)" required data-resposta-texto></textarea>
@@ -140,6 +147,21 @@
         </div>
       </div>
     </section>
+
+    <dialog class="admin-dialogo" aria-labelledby="rapidas-titulo" data-rapidas-dialogo>
+      <form class="admin-dialogo__form" data-rapidas-form novalidate>
+        <h2 id="rapidas-titulo" class="admin-dialogo__titulo">Respostas rápidas</h2>
+        <p class="admin-dialogo__dica">Ficam salvas só neste navegador. Use <code>{nome}</code> para o primeiro nome do visitante.</p>
+        <ol class="admin-dialogo__itens" role="list" data-rapidas-itens></ol>
+        <button type="button" class="botao botao--contorno botao--pequeno" data-rapidas-adicionar>Adicionar resposta</button>
+        <p class="admin-erro" role="alert" data-rapidas-erro hidden></p>
+        <div class="admin-dialogo__acoes">
+          <button type="button" class="admin-dialogo__restaurar" data-rapidas-restaurar>Restaurar padrões</button>
+          <button type="button" class="botao botao--contorno botao--pequeno" data-rapidas-cancelar>Cancelar</button>
+          <button type="submit" class="botao botao--primario botao--pequeno">Salvar</button>
+        </div>
+      </form>
+    </dialog>
 
     <!-- Pedidos -->
     <section class="admin-pedidos" data-aba="pedidos" hidden aria-labelledby="pedidos-titulo">

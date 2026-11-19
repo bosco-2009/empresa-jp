@@ -17,7 +17,8 @@
     "exemplos": "node e2e/exemplos.test.js",
     "simulador": "node e2e/simulador.test.js",
     "comparativo": "node e2e/comparativo.test.js",
-    "para-quem": "node e2e/para-quem.test.js"
+    "para-quem": "node e2e/para-quem.test.js",
+    "respostas-rapidas": "node e2e/respostas-rapidas.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
