@@ -130,3 +130,13 @@ npx lighthouse@12.6.1 http://localhost:8080/ --only-categories=performance,acces
 
 Com o rascunho, o SEO acusa só o `noindex` (esperado). Para medir como ficará publicado, rode numa cópia do site sem
 as linhas de `noindex` das páginas públicas (passo 6 do `PUBLICAR.md`).
+
+## Imagens Open Graph por página
+
+```bash
+node testes/og/gerar.mjs
+```
+
+Gera um SVG por página em `testes/og/svg/` e o PNG 1200×630 (< 100 KB) em `assets/img/og/` para planos, exemplos,
+blog e cada artigo. Ao criar um artigo novo, acrescente-o à lista `IMAGENS` do script e aponte `og:image` (e o
+`image` do JSON-LD) para o PNG gerado; o `paginas.test.mjs` confere tamanho, peso e os caminhos.

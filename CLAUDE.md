@@ -101,7 +101,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4)
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)
-│   └── img/                   # Logo, favicon, ícones, imagem Open Graph
+│   └── img/                   # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs)
 ├── testes/                    # Testes locais (Node/Playwright, MP e Supabase falsos) — não publicados
 └── supabase/
     ├── README.md              # Ordem das migrations, configurações e primeiro admin
