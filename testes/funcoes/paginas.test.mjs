@@ -19,6 +19,11 @@ const PUBLICAS = ['index.html', 'planos.html', 'exemplos.html', 'termos.html', '
 // Sites de EXEMPLO (fictícios): sempre noindex, com o próprio cabeçalho
 const DEMOS = ['moda', 'restaurante', 'beleza', 'saude', 'servicos', 'pet'].map((s) => `exemplos/${s}.html`);
 const PRIVADAS = ['obrigado.html', 'briefing.html', '404.html'];
+// Imagens Open Graph por página (melhoria 14): geradas por testes/og/gerar.mjs em assets/img/og/. As demais usam og-image.png
+const OG_POR_PAGINA = {
+  'planos.html': 'planos', 'exemplos.html': 'exemplos', 'blog/index.html': 'blog',
+  ...Object.fromEntries(ARTIGOS.map((f) => [f, 'blog-' + f.slice(5, -5)])),
+};
 const TODAS = [...PUBLICAS, ...PRIVADAS];
 
 const bloco = (html, re) => (re.exec(html) || [])[0] || '';
@@ -96,16 +101,21 @@ test('SEO: canonical e Open Graph no subcaminho final; imagem OG 1200x630', () =
     const esperado = SITE + (f === 'index.html' ? '' : f.replace(/index\.html$/, ''));
     assert.equal((/<link rel="canonical" href="([^"]+)">/.exec(h) || [])[1], esperado, `${f}: canonical`);
     assert.equal(meta(h, 'og:url'), esperado, `${f}: og:url`);
-    assert.equal(meta(h, 'og:image'), SITE + 'assets/img/og-image.png', `${f}: og:image`);
+    assert.equal(meta(h, 'og:image'), SITE + 'assets/img/' + (OG_POR_PAGINA[f] ? `og/${OG_POR_PAGINA[f]}.png` : 'og-image.png'), `${f}: og:image`);
+    assert.ok(meta(h, 'og:image:alt'), `${f}: og:image:alt`);
     assert.equal(meta(h, 'og:image:width'), '1200');
     assert.equal(meta(h, 'og:image:height'), '630');
     assert.equal(meta(h, 'og:locale'), 'pt_BR');
     assert.equal(meta(h, 'twitter:card'), 'summary_large_image');
   }
-  const png = readFileSync(new URL('assets/img/og-image.png', raiz));
-  assert.equal(png.readUInt32BE(16), 1200, 'largura da imagem OG');
-  assert.equal(png.readUInt32BE(20), 630, 'altura da imagem OG');
-  assert.ok(png.length < 100 * 1024, 'imagem OG com menos de 100 KB');
+  for (const img of ['og-image', ...Object.values(OG_POR_PAGINA).map((n) => `og/${n}`)]) {
+    const png = readFileSync(new URL(`assets/img/${img}.png`, raiz));
+    assert.equal(png.readUInt32BE(16), 1200, `largura da imagem OG ${img}`);
+    assert.equal(png.readUInt32BE(20), 630, `altura da imagem OG ${img}`);
+    assert.ok(png.length < 100 * 1024, `imagem OG ${img} com menos de 100 KB`);
+  }
+  // Artigos: o JSON-LD Article usa a mesma imagem do og:image
+  for (const f of ARTIGOS) assert.ok(ler(f).includes(`"image": "${SITE}assets/img/og/${OG_POR_PAGINA[f]}.png"`), `${f}: JSON-LD image`);
 });
 
 test('noindex: privadas sempre; públicas só enquanto config.rascunho = true', () => {
