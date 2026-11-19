@@ -55,7 +55,7 @@
       icone: 'check',
       titulo: 'Pagamento aprovado! Obrigado pela confiança.',
       texto: 'Seu pedido está confirmado. O comprovante do Mercado Pago foi enviado para o seu e-mail.',
-      proximo: ['Próximo passo: o briefing', 'Vamos te enviar o link do briefing para você contar sobre o seu negócio (serviços, contatos, logo e fotos). Assim que recebermos, começamos o seu site.']
+      proximo: ['Próximo passo: o briefing', 'Conte sobre o seu negócio (serviços, contatos, logo e fotos). Leva uns 10 minutos, e o prazo do seu site começa a contar quando o briefing estiver completo.']
     },
     pendente: {
       icone: 'relogio',
@@ -108,6 +108,7 @@
     if (info.proximo) {
       prox.appendChild(el('h2', 'resultado__proximo-titulo', info.proximo[0]));
       prox.appendChild(el('p', null, info.proximo[1]));
+      if (estado === 'aprovado' && pedido) adicionarLinkBriefing(prox);
     }
     prox.hidden = !info.proximo;
 
@@ -125,6 +126,28 @@
       ultimoEstado = estado;
       document.title = info.titulo + ' — Portfólio BR';
     }
+  }
+
+  // Botão do briefing + link para abrir em outro aparelho. O token vai no fragmento (#),
+  // que não é enviado a servidores nem aparece no Referer.
+  function adicionarLinkBriefing(alvo) {
+    var botao = el('a', 'botao botao--primario', 'Preencher o briefing agora', { href: 'briefing.html?pedido=' + encodeURIComponent(pedido.codigo), 'data-link-briefing': '' });
+    alvo.appendChild(botao);
+    var url = new URL('briefing.html', location.href);
+    url.hash = 'c=' + pedido.codigo + '&t=' + pedido.token;
+    var bloco = el('div', 'resultado__link-briefing');
+    bloco.appendChild(el('label', 'campo__dica', 'Quer preencher em outro aparelho? Guarde este link (ele é pessoal):', { for: 'link-briefing' }));
+    var campo = el('input', null, null, { id: 'link-briefing', type: 'text', readonly: '', value: url.toString() });
+    campo.addEventListener('focus', function () { campo.select(); });
+    bloco.appendChild(campo);
+    var copiar = el('button', 'botao botao--contorno botao--pequeno', 'Copiar link', { type: 'button' });
+    copiar.addEventListener('click', function () {
+      var feito = function () { copiar.textContent = 'Link copiado!'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(campo.value).then(feito, function () { campo.select(); });
+      else { campo.select(); }
+    });
+    bloco.appendChild(copiar);
+    alvo.appendChild(bloco);
   }
 
   function semConfirmacao() {

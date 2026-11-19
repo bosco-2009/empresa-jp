@@ -52,7 +52,7 @@ function enviar(res, status, corpo, extra) {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': '*',
-    'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'Access-Control-Expose-Headers': '*'
   }, extra || {}));
   res.end(corpo === undefined ? '' : JSON.stringify(corpo));
@@ -70,7 +70,10 @@ const ARGS_RPC = {
   pedido_criar: ['p_plano_id', 'p_nome', 'p_email', 'p_whatsapp', 'p_token_hash'],
   pedido_definir_preferencia: ['p_pedido_id', 'p_preference_id'],
   pedido_registrar_pagamento: ['p_pedido_id', 'p_payment_id', 'p_mp_status', 'p_mp_status_detalhe', 'p_valor_centavos', 'p_moeda'],
-  pedido_consultar: ['p_codigo', 'p_token']
+  pedido_consultar: ['p_codigo', 'p_token'],
+  briefing_enviar: ['p_codigo', 'p_token', 'p_dados'],
+  briefing_obter: ['p_codigo', 'p_token'],
+  briefing_autorizar_upload: ['p_codigo', 'p_token']
 };
 // Funções que devolvem um valor único (PostgREST responde o valor, não uma lista).
 const ESCALARES = ['pedido_definir_preferencia', 'pedido_registrar_pagamento'];
@@ -90,8 +93,13 @@ async function carregarFuncoes() {
   const comum = await import('../../supabase/functions/_shared/comum.ts');
   const cp = await import('../../supabase/functions/_shared/criar-pagamento.ts');
   const wh = await import('../../supabase/functions/_shared/webhook-mercadopago.ts');
+  const bu = await import('../../supabase/functions/_shared/briefing-upload.ts');
   const amb = comum.lerAmbiente((n) => AMBIENTE_FUNCOES[n]);
-  funcoes = { 'criar-pagamento': cp.criarHandlerCriarPagamento(amb), 'webhook-mercadopago': wh.criarHandlerWebhook(amb) };
+  funcoes = {
+    'criar-pagamento': cp.criarHandlerCriarPagamento(amb),
+    'webhook-mercadopago': wh.criarHandlerWebhook(amb),
+    'briefing-upload': bu.criarHandlerBriefingUpload(amb),
+  };
   return funcoes;
 }
 async function chamarFuncao(nome, req, res) {
@@ -115,6 +123,10 @@ const servidor = http.createServer(async (req, res) => {
   try {
     // ---------- testes: inspeção ----------
     if (url.pathname === '/__registro') return enviar(res, 200, registro);
+
+    // ---------- Storage (bucket "briefings") ----------
+    const st = /^\/storage\/v1\/object\/(upload\/sign|sign)\/([\w-]+)\/(.+)$/.exec(url.pathname);
+    if (st) return storage(st[1], st[2], decodeURIComponent(st[3]), url, req, res);
 
     // ---------- Edge Functions ----------
     const fn = /^\/functions\/v1\/([\w-]+)$/.exec(url.pathname);
@@ -179,6 +191,19 @@ const servidor = http.createServer(async (req, res) => {
       setImmediate(() => { publicarFila(); emitirAdmin('conversas', 'UPDATE', { id }); });
       return enviar(res, r.rowCount ? 200 : 200, []);
     }
+    if (url.pathname === '/rest/v1/briefings' && req.method === 'GET') {
+      const r = await comoUsuario(req, `select b.*, json_build_object('codigo', p.codigo, 'nome', p.nome, 'email', p.email,
+          'whatsapp', p.whatsapp, 'plano_nome', p.plano_nome) as pedidos
+        from public.briefings b join public.pedidos p on p.id = b.pedido_id order by b.atualizado_em desc limit 500`);
+      return enviar(res, 200, r.rows);
+    }
+    if (url.pathname === '/rest/v1/briefings' && req.method === 'PATCH') {
+      const id = (url.searchParams.get('id') || '').replace(/^eq\./, '');
+      const corpo = await lerCorpo(req);
+      registro.push({ patch: 'briefings', id, corpo });
+      const r = await comoUsuario(req, 'update public.briefings set status = $2 where id = $1 returning id, status', [id, corpo.status]);
+      return enviar(res, 200, r.rows);
+    }
     if (url.pathname === '/rest/v1/pedidos' && req.method === 'GET') {
       const r = await comoUsuario(req, `select id, codigo, plano_id, plano_nome, valor_centavos, nome, email, whatsapp, status,
         mp_preference_id, mp_payment_id, mp_status, mp_status_detalhe, aceite_termos_em, pago_em, criado_em, atualizado_em
@@ -211,6 +236,53 @@ const servidor = http.createServer(async (req, res) => {
     erroPg(res, e);
   }
 });
+
+// ---------- Storage falso ----------
+const tokensUpload = new Map();   // token -> caminho
+const tokensDownload = new Map(); // token -> caminho
+const conteudos = new Map();      // caminho -> { tipo, bytes }
+async function storage(acao, bucket, caminho, url, req, res) {
+  const c = claimsDe(req);
+  if (acao === 'upload/sign' && req.method === 'POST') {
+    if (c.role !== 'service_role') return enviar(res, 403, { message: 'service role obrigatória' });
+    const token = require('crypto').randomUUID();
+    tokensUpload.set(token, bucket + '/' + caminho);
+    return enviar(res, 200, { url: `/object/upload/sign/${bucket}/${caminho}?token=${token}` });
+  }
+  if (acao === 'upload/sign' && req.method === 'PUT') {
+    const token = url.searchParams.get('token');
+    if (tokensUpload.get(token) !== bucket + '/' + caminho) return enviar(res, 400, { message: 'token inválido' });
+    tokensUpload.delete(token);
+    const bytes = await new Promise((ok) => { const b = []; req.on('data', (x) => b.push(x)); req.on('end', () => ok(Buffer.concat(b))); });
+    const tipo = (req.headers['content-type'] || '').split(';')[0];
+    const cfg = (await pool.query('select file_size_limit, allowed_mime_types from storage.buckets where id = $1', [bucket])).rows[0];
+    if (!cfg.allowed_mime_types.includes(tipo)) return enviar(res, 415, { message: 'mime type not supported' });
+    if (bytes.length > Number(cfg.file_size_limit)) return enviar(res, 413, { message: 'Payload too large' });
+    try {
+      await pool.query('insert into storage.objects (bucket_id, name, metadata) values ($1, $2, $3)', [bucket, caminho, { mimetype: tipo, size: bytes.length }]);
+    } catch (e) { return enviar(res, 409, { message: 'The resource already exists' }); }
+    conteudos.set(bucket + '/' + caminho, { tipo, bytes });
+    registro.push({ upload: caminho, tipo, tamanho: bytes.length });
+    return enviar(res, 200, { Key: bucket + '/' + caminho });
+  }
+  if (acao === 'sign' && req.method === 'POST') {
+    // createSignedUrl: só se o usuário puder LER o objeto (RLS de storage.objects)
+    const r = await comoUsuario(req, 'select 1 from storage.objects where bucket_id = $1 and name = $2', [bucket, caminho]);
+    if (!r.rowCount) return enviar(res, 400, { statusCode: '404', error: 'not_found', message: 'Object not found' });
+    const token = require('crypto').randomUUID();
+    tokensDownload.set(token, bucket + '/' + caminho);
+    return enviar(res, 200, { signedURL: `/object/sign/${bucket}/${caminho}?token=${token}` });
+  }
+  if (acao === 'sign' && req.method === 'GET') {
+    const token = url.searchParams.get('token');
+    if (tokensDownload.get(token) !== bucket + '/' + caminho) return enviar(res, 400, { message: 'token inválido' });
+    const arq = conteudos.get(bucket + '/' + caminho);
+    if (!arq) return enviar(res, 404, { message: 'sem conteúdo' });
+    res.writeHead(200, { 'Content-Type': arq.tipo, 'Access-Control-Allow-Origin': '*' });
+    return res.end(arq.bytes);
+  }
+  enviar(res, 405, { message: 'não implementado' });
+}
 
 // ---------- Realtime (Phoenix vsn 2.0.0: [join_ref, ref, topic, event, payload]) ----------
 const wss = new WebSocketServer({ server: servidor, path: '/realtime/v1/websocket' });
@@ -261,6 +333,16 @@ async function publicarFilaAgora() {
   }
   await emitirMensagensNovas();
   await emitirPedidosAlterados();
+  await emitirBriefingsAlterados();
+}
+
+let ultimoBriefing = '';
+async function emitirBriefingsAlterados() {
+  const r = await pool.query("select coalesce(max(greatest(atualizado_em, status_atualizado_em))::text, '') || count(*) as marca from public.briefings");
+  if (r.rows[0].marca !== ultimoBriefing) {
+    if (ultimoBriefing) emitirAdmin('briefings', 'UPDATE', { marca: r.rows[0].marca });
+    ultimoBriefing = r.rows[0].marca;
+  }
 }
 
 let ultimoPedido = new Date(0).toISOString();

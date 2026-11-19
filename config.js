@@ -134,7 +134,7 @@
       },
       {
         titulo: 'Direito de arrependimento',
-        texto: 'Desistiu em até 7 dias da compra e o trabalho ainda não começou? Devolvemos o valor pago, como prevê o Código de Defesa do Consumidor.'
+        texto: 'Desistiu em até 7 dias da compra? Devolvemos o valor pago integralmente, como prevê o Código de Defesa do Consumidor.'
       }
     ],
 
@@ -169,6 +169,19 @@
         resposta: 'Sim. O atendimento é 100% online, para pequenos negócios de todo o Brasil.'
       }
     ],
+
+    // Usado em termos.html e privacidade.html. Revisar com um(a) advogado(a) antes de publicar.
+    legal: {
+      atualizadoEm: '19/11/2026', // [PROVISÓRIO] data da última revisão dos termos e da política
+      retencaoChatMeses: 12, // [PROVISÓRIO] conversas do chat são apagadas X meses após a última mensagem
+      retencaoBriefingMeses: 12, // [PROVISÓRIO] briefing e arquivos apagados X meses após a entrega do site
+      retencaoPedidosAnos: 5, // [PROVISÓRIO] registros de venda (obrigações fiscais/contábeis; confirmar com o contador)
+      suportePosEntregaDias: 30, // [PROVISÓRIO] correção de erros sem custo após a publicação
+      respostaClienteDias: 15, // [PROVISÓRIO] prazo para o cliente responder/aprovar antes de o projeto ser pausado
+      pausaInatividadeDias: 90, // [PROVISÓRIO] projeto parado por falta de retorno do cliente pode ser encerrado
+      // [PROVISÓRIO] política de cancelamento depois dos 7 dias do direito de arrependimento
+      cancelamentoApos7Dias: 'Depois desse prazo, o cancelamento pode ser pedido a qualquer momento antes da entrega. Nesse caso, devolvemos o valor pago descontada a parte proporcional ao trabalho já realizado, que informaremos por escrito antes do reembolso.'
+    },
 
     // Só projetos REAIS e autorizados pelo cliente. Lista vazia = seção oculta.
     // Formato: { nome, segmento, url, imagem, alt }

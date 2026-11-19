@@ -6,6 +6,7 @@
 |---|---|---|
 | 1 | `migrations/20261118120000_chat_ao_vivo.sql` | Tabelas `admins`, `conversas`, `mensagens`; `eh_admin()`; RLS; RPCs do visitante; gatilhos; Realtime |
 | 2 | `migrations/20261119120000_pedidos.sql` | Tabelas `planos` (preço oficial), `pedidos`, `pedidos_eventos`; RLS; funções da service role (`pedido_criar`, `pedido_definir_preferencia`, `pedido_registrar_pagamento`); RPC pública `pedido_consultar`; Realtime em `pedidos` |
+| 3 | `migrations/20261120120000_briefings.sql` | Tabela `briefings` (um por pedido) com RLS; RPCs `briefing_enviar`/`briefing_obter` (código + token, só pedido aprovado, editável enquanto `novo`); `briefing_autorizar_upload` (service role); bucket **privado** `briefings` (5 MB, imagens e PDF) com leitura só para admin; Realtime em `briefings` |
 
 Todas são **idempotentes**: rodar de novo não dá erro nem duplica nada.
 
@@ -39,7 +40,11 @@ Código em `functions/criar-pagamento/` e `functions/webhook-mercadopago/`. Os a
 ```bash
 supabase functions deploy criar-pagamento --no-verify-jwt
 supabase functions deploy webhook-mercadopago --no-verify-jwt
+supabase functions deploy briefing-upload --no-verify-jwt
 ```
+
+`briefing-upload` (Fase 4) não precisa de secrets novos: usa `SUPABASE_URL` e a chave de serviço automáticas
+e as mesmas `SITE_URL`/`ORIGENS_PERMITIDAS` do CORS.
 
 `--no-verify-jwt` (também em `config.toml`) é necessário:
 - `criar-pagamento` é chamada pelo navegador com a chave publicável, que não é um JWT de usuário. A função
@@ -108,6 +113,20 @@ Remover um admin:
 ```sql
 delete from public.admins where user_id = (select id from auth.users where email = 'dono@exemplo.com.br');
 ```
+
+## Briefing e arquivos (Fase 4)
+
+- O cliente abre `briefing.html` pelo botão da página de confirmação (aprovado) ou pelo link pessoal
+  `briefing.html#c=<código>&t=<token>` (o token vai no fragmento `#`, que não é enviado a servidores).
+- `briefing_enviar(codigo, token, dados)` só aceita pedido **aprovado**; o cliente edita enquanto o status do briefing
+  for `novo`. Quando o admin muda para `em_producao`, `em_revisao` ou `entregue`, o briefing (e o envio de arquivos) trava.
+- **Arquivos:** a Edge Function `briefing-upload` valida código + token, pedido aprovado, briefing editável, tipo
+  (JPG, PNG, WebP, GIF, HEIC/HEIF, PDF), tamanho (≤ 5 MB) e limite de 20 arquivos por pedido, e devolve uma **URL assinada**
+  de envio para `briefings/<id do pedido>/<aleatório>-<nome>`. O bucket repete os limites (`file_size_limit`,
+  `allowed_mime_types`), então um envio diferente do declarado é recusado pelo Storage. O bucket é **privado**: só o admin
+  lê (política em `storage.objects`) e baixa por link temporário de 60 s no painel. SVG não é aceito (pode conter scripts).
+- `briefing_enviar` só aceita na lista `arquivos` caminhos da pasta do próprio pedido **que existem** no bucket.
+- Arquivos removidos da lista pelo cliente continuam no bucket (contam no limite de 20); a limpeza entra na rotina de retenção.
 
 ## Modelo de segurança dos pedidos
 

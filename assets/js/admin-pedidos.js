@@ -43,7 +43,7 @@
 
   function iniciar(sb, avisos) {
     if (estado) return;
-    estado = { sb: sb, avisos: avisos || {}, pedidos: [], filtro: 'todos', busca: '', selecionado: null, canal: null, conhecidos: null, timer: null };
+    estado = { sb: sb, avisos: avisos || {}, pedidos: [], briefings: {}, filtro: 'todos', busca: '', selecionado: null, canal: null, conhecidos: null, timer: null };
 
     var secao = $('.admin-pedidos');
     var lista = $('[data-lista-pedidos]');
@@ -66,6 +66,7 @@
     // Tempo real (RLS do admin); sem conexão, atualiza a cada 30 s.
     estado.canal = sb.channel('painel-pedidos')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, function () { agendar(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'briefings' }, function () { agendar(); })
       .subscribe(function (status) {
         clearInterval(estado && estado.timer);
         if (status !== 'SUBSCRIBED' && estado) estado.timer = setInterval(carregar, 30000);
@@ -78,10 +79,17 @@
 
   function carregar() {
     if (!estado) return Promise.resolve();
-    return estado.sb.from('pedidos').select(COLUNAS).order('criado_em', { ascending: false }).limit(500)
-      .then(function (r) {
+    var briefings = estado.sb.from('briefings').select('pedido_id, status').then(function (r) {
+      var mapa = {};
+      ((r && r.data) || []).forEach(function (b) { mapa[b.pedido_id] = b.status; });
+      return mapa;
+    }, function () { return {}; });
+    return Promise.all([estado.sb.from('pedidos').select(COLUNAS).order('criado_em', { ascending: false }).limit(500), briefings])
+      .then(function (res) {
+        var r = res[0];
         if (r.error) throw r.error;
         if (!estado) return;
+        estado.briefings = res[1];
         var novos = r.data || [];
         avisarAprovados(novos);
         estado.pedidos = novos;
@@ -148,6 +156,10 @@
       var l2 = el('span', 'admin-item__linha');
       l2.appendChild(el('span', 'admin-item__previa', p.plano_nome + ' · ' + fReal.format(p.valor_centavos / 100)));
       l2.appendChild(el('span', 'admin-status admin-status--' + p.status, ROTULOS[p.status] || p.status));
+      if (p.status === 'aprovado') {
+        var temBriefing = !!estado.briefings[p.id];
+        l2.appendChild(el('span', 'admin-item__tag' + (temBriefing ? ' admin-item__tag--ok' : ''), temBriefing ? 'briefing ✓' : 'sem briefing'));
+      }
       b.appendChild(l1);
       b.appendChild(l2);
       b.onclick = function () { abrir(p.id); };
@@ -197,6 +209,7 @@
     linha('Status', (ROTULOS[p.status] || p.status) + (p.mp_status_detalhe ? ' — ' + p.mp_status_detalhe : ''));
     linha('Pago em', data(p.pago_em));
     linha('Aceite dos termos', data(p.aceite_termos_em));
+    linha('Briefing', estado.briefings[p.id] ? 'Recebido (' + ({ novo: 'novo', em_producao: 'em produção', em_revisao: 'em revisão', entregue: 'entregue' }[estado.briefings[p.id]] || estado.briefings[p.id]) + ')' : (p.status === 'aprovado' ? 'Ainda não enviado' : '—'));
     linha('Pagamento MP', p.mp_payment_id);
     linha('Preferência MP', p.mp_preference_id);
     linha('Atualizado em', data(p.atualizado_em));
@@ -234,5 +247,17 @@
     if (det) det.hidden = true;
   }
 
-  window.PBRAdminPedidos = { iniciar: iniciar, encerrar: encerrar };
+  // Abre um pedido pelo id (usado pela aba Briefings).
+  function abrirPorId(id) {
+    if (!estado) return;
+    estado.filtro = 'todos';
+    estado.busca = '';
+    var busca = $('[data-busca-pedidos]');
+    if (busca) busca.value = '';
+    $$('[data-filtro-pedido]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-filtro-pedido') === 'todos')); });
+    // Recarrega antes de abrir: o status do briefing pode ter acabado de mudar.
+    carregar().then(function () { if (estado) abrir(id); });
+  }
+
+  window.PBRAdminPedidos = { iniciar: iniciar, encerrar: encerrar, abrirPorId: abrirPorId };
 })();

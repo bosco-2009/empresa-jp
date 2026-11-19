@@ -8,3 +8,7 @@ verify_jwt = false
 
 [functions.webhook-mercadopago]
 verify_jwt = false
+
+# briefing-upload: chamada pelo navegador; valida código + token do pedido e gera URL assinada do Storage.
+[functions.briefing-upload]
+verify_jwt = false
