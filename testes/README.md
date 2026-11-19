@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -119,6 +119,9 @@ chegada, chat (`pagina_origem`), pedido (Edge Function real → `pedidos.origem`
 
 `tema.test.js` cobre o modo escuro: segue o sistema, botão (teclado, localStorage, sem CLS), exemplos e painel sempre
 claros, cabeçalho em uma linha e axe no escuro em todas as páginas × 4 larguras.
+
+`faq.test.js` cobre o FAQ: ids `#faq-...` estáveis, link direto abrindo a pergunta, busca sem acentos (com as
+`palavras` extras do `config.js`), "Copiar link", JSON-LD FAQPage e axe claro/escuro em 4 larguras.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
 
