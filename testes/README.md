@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -106,6 +106,9 @@ cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movime
 - cada linha de `config.comparativo` tem valor para todos os planos; tabela com `caption` e `th scope`;
 - abas no celular (setas, Home/End, tabindex móvel); "Escolher" marca o plano no formulário;
 - link da home, oculto sem JS; 4 larguras com axe.
+
+`para-quem.test.js` cobre a seção "Para quem é" da home: um ícone próprio por segmento, frase sem números,
+links para os sites de exemplo (nome acessível único), revelação na rolagem e axe em 4 larguras.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
 
