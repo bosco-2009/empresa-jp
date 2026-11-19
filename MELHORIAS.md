@@ -26,7 +26,7 @@ Regras de toda execução (além do CLAUDE.md):
 - [x] (concluído 2026-11-19 UTC, merge e2958bd) 9. **Blog com 3 artigos originais de SEO**: "Site ou só Instagram?", "O que um site profissional precisa ter", "Como funciona a criação do seu site com a Portfólio BR". Sem estatísticas inventadas. Página `blog/`, JSON-LD Article, sitemap.
 - [x] (concluído 2026-11-19 UTC, merge 0566a28) 10. **Origem do visitante**: guardar `utm_*` e o referrer na chegada (localStorage) e enviar junto com `pagina_origem` no chat e nos dados do pedido, para o dono saber de onde vêm os clientes (Instagram, Google…).
 - [x] (concluído 2026-11-19 UTC, merge a488ab1) 11. **Modo escuro** automático (`prefers-color-scheme`), com botão para alternar, usando só os tokens.
-- [~] (início 2026-11-19 20:19 UTC) 12. **Linha do tempo "Como funciona"** animada: do pedido à entrega, com prazos vindos do `config.js`.
+- [x] (feito 2026-11-19, commit 45c99f6) 12. **Linha do tempo "Como funciona"** animada: do pedido à entrega, com prazos vindos do `config.js`.
 - [~] (início 2026-11-19 20:29 UTC) 13. **FAQ com busca** e links diretos para cada pergunta (`#faq-...`), com JSON-LD FAQPage.
 - [x] (concluído 2026-11-19 UTC, merge 8590e54) 14. **Imagens Open Graph por página** (1200×630, geradas em SVG→PNG no repositório) para planos, exemplos e blog.
 - [ ] 15. **PWA**: service worker de cache só para os arquivos estáticos (nunca para o Supabase), com página offline. Ajustar a CSP (`worker-src 'self'`).
