@@ -168,6 +168,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
   nem ser pego pelo axe/Lighthouse no meio da transição. CLS sempre 0 (`testes/e2e/movimento.test.js`).
 - A abertura é `aria-hidden`, uma vez por sessão (`sessionStorage`), pulável por toque, clique ou tecla.
 - Movimento automático com mais de 5 s precisa de botão de pausa (WCAG 2.2.2), como no mockup do hero.
+- Hover de cards usa a propriedade `translate` (não `transform`), para somar com a revelação da rolagem.
+  Botões com envio demorado ganham `data-carregando` (indicador no lugar do ícone; parado com movimento reduzido).
 - Exemplos fictícios (ex.: telas do mockup) sempre com o rótulo "exemplo" visível e nomes genéricos ("Sua Loja").
 
 **SEO e desempenho**

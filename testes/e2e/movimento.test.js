@@ -1,6 +1,6 @@
 // Uso: veja testes/README.md (precisa só do servidor estático em :8080)
 // Abertura de marca e animações de rolagem (item 1 do MELHORIAS.md).
-// Também grava testes/video-abertura.webm (1280x720) para revisão.
+// Também grava o vídeo da abertura (1280x720) em testes/e2e/saida/; com GRAVAR_VIDEO=1, atualiza testes/video-abertura.webm.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -211,9 +211,12 @@ const estado = (p) => p.evaluate(() => ({
     await p.waitForTimeout(800);
     const caminho = await p.video().path();
     await ctx.close();
-    fs.copyFileSync(caminho, VIDEO);
-    const tamanho = fs.statSync(VIDEO).size;
-    ok(tamanho > 50 * 1024, `vídeo salvo em testes/video-abertura.webm (${Math.round(tamanho / 1024)} KB)`);
+    // O vídeo versionado só é regravado quando pedido (GRAVAR_VIDEO=1), p.ex. depois de mudar a abertura:
+    // regravar a cada execução fazia cada commit carregar ~1 MB a mais no repositório.
+    const destino = process.env.GRAVAR_VIDEO === '1' ? VIDEO : SAIDA + '/video-abertura.webm';
+    fs.copyFileSync(caminho, destino);
+    const tamanho = fs.statSync(destino).size;
+    ok(tamanho > 50 * 1024, `vídeo salvo em ${path.relative(path.resolve(__dirname, '../..'), destino)} (${Math.round(tamanho / 1024)} KB)`);
   }
 
   await browser.close();
