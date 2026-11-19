@@ -59,6 +59,8 @@
   color: inherit;
 }
 .admin-botao-icone[aria-pressed='false'] { opacity: 0.7; }
+.admin-botao-icone[hidden] { display: none; }
+.admin-botao-icone[data-estado='bloqueado'] { border-style: dashed; }
 
 /* ---------------- Caixas (login, avisos) ---------------- */
 .admin-principal { flex: 1; display: flex; flex-direction: column; min-height: 0; }
