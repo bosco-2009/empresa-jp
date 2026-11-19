@@ -11,7 +11,8 @@
     "chat": "node e2e/chat.test.js",
     "checkout": "node e2e/checkout.test.js",
     "fase4": "node e2e/fase4.test.js",
-    "auditoria": "node e2e/auditoria.test.js"
+    "auditoria": "node e2e/auditoria.test.js",
+    "movimento": "node e2e/movimento.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",

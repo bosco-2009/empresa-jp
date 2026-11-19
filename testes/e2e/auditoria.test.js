@@ -71,7 +71,13 @@ function ok(cond, msg) { if (!cond) { falhas++; console.log('  ✘ ' + msg); } r
         const paradas = [];
         for (let i = 0; i < 80; i++) {
           await p.keyboard.press('Tab');
-          await p.waitForTimeout(20); // deixa terminar a transição do foco (0,01 ms no modo de movimento reduzido)
+          // espera (até 300 ms) o elemento focado terminar a transição e ficar visível; sem tempo fixo
+          await p.waitForFunction(() => {
+            const e = document.activeElement;
+            if (!e || e === document.body) return true;
+            const r = e.getBoundingClientRect();
+            return r.bottom > 0 && r.top < innerHeight;
+          }, null, { timeout: 300 }).catch(() => {});
           const info = await p.evaluate(() => {
             const e = document.activeElement;
             if (!e || e === document.body) return null;
