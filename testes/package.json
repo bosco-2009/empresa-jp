@@ -21,7 +21,8 @@
     "respostas-rapidas": "node e2e/respostas-rapidas.test.js",
     "origem": "node e2e/origem.test.js",
     "tema": "node e2e/tema.test.js",
-    "faq": "node e2e/faq.test.js"
+    "faq": "node e2e/faq.test.js",
+    "linha-tempo": "node e2e/linha-tempo.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
