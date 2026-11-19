@@ -1,5 +1,9 @@
-# Rascunho: o noindex nas páginas impede a indexação até a Fase 5.
+# Portfólio BR — https://bosco-2009.github.io/empresa-jp/
+# Observação: no GitHub Pages de projeto, os buscadores leem o robots.txt da raiz do domínio
+# (bosco-2009.github.io/robots.txt), não este. Ele passa a valer com domínio próprio.
+# Enquanto o site estiver em rascunho, cada página tem <meta name="robots" content="noindex">.
 User-agent: *
-Allow: /
+Disallow: /admin/
+Disallow: /empresa-jp/admin/
 
 Sitemap: https://bosco-2009.github.io/empresa-jp/sitemap.xml

@@ -35,6 +35,8 @@ const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 async function novaPagina(browser, opcoes, configJs) {
   const ctx = await browser.newContext(opcoes);
   const p = await ctx.newPage();
+  // axe servido como arquivo da mesma origem (a CSP das páginas bloqueia scripts inline)
+  await p.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
   p.erros = [];
   p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') p.erros.push(m.text()); });
   p.on('pageerror', (e) => p.erros.push('pageerror: ' + e.message));
@@ -57,7 +59,7 @@ async function novaPagina(browser, opcoes, configJs) {
 }
 
 async function axe(p, rotulo) {
-  await p.addScriptTag({ path: AXE });
+  await p.addScriptTag({ url: new URL('/__axe.min.js', p.url()).href });
   const v = await p.evaluate(async () => (await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] }))
     .violations.map((x) => `${x.impact} ${x.id}: ${x.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | ')}`));
   ok(v.length === 0, `axe sem violações (${rotulo})` + (v.length ? ' -> ' + v.join('; ') : ''));

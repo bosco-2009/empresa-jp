@@ -1,0 +1,134 @@
+// Consistência entre as páginas estáticas (sem build, o <head>, o cabeçalho e o rodapé se repetem).
+// Uso: node --test testes/funcoes/*.test.mjs
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync, existsSync } from 'node:fs';
+import vm from 'node:vm';
+
+const raiz = new URL('../../', import.meta.url);
+const ler = (f) => readFileSync(new URL(f, raiz), 'utf8');
+const janela = {};
+vm.runInNewContext(ler('config.js'), { window: janela });
+const config = janela.PBR_CONFIG;
+const SITE = config.site.url;
+
+const PUBLICAS = ['index.html', 'planos.html', 'termos.html', 'privacidade.html', 'portfolio.html'];
+const PRIVADAS = ['obrigado.html', 'briefing.html', '404.html'];
+const TODAS = [...PUBLICAS, ...PRIVADAS];
+
+const bloco = (html, re) => (re.exec(html) || [])[0] || '';
+const meta = (html, nome) => (new RegExp(`<meta (?:name|property)="${nome}" content="([^"]*)"`).exec(html) || [])[1];
+// Normaliza links para comparar o cabeçalho/rodapé da home com o das outras páginas
+const normalizar = (t) => t
+  .replace(/\/empresa-jp\//g, '')
+  .replace(/href="#inicio"/g, 'href="index.html"')
+  .replace(/href="#(servicos|como-funciona|duvidas)"/g, 'href="index.html#$1"')
+  .replace(/href="(?:#planos|index\.html#planos)"/g, 'href="planos.html"');
+
+const csp = (html) => (/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html) || [])[1];
+
+test('todas as páginas: lang, charset, viewport, um h1, title e description únicos', () => {
+  const titulos = new Set();
+  for (const f of TODAS) {
+    const h = ler(f);
+    assert.match(h, /<html lang="pt-BR"/, f);
+    assert.match(h, /<meta charset="utf-8">/, f);
+    assert.match(h, /<meta name="viewport" content="width=device-width, initial-scale=1/, f);
+    assert.equal((h.match(/<h1[\s>]/g) || []).length, 1, `${f}: um único h1`);
+    const t = (/<title>([^<]+)<\/title>/.exec(h) || [])[1];
+    assert.ok(t && !titulos.has(t), `${f}: title único (${t})`);
+    titulos.add(t);
+    assert.ok((meta(h, 'description') || '').length >= 20, `${f}: meta description`);
+    assert.match(h, /<a class="pular-link" href="#conteudo">/, `${f}: link "Pular para o conteúdo"`);
+    assert.match(h, /<main id="conteudo"/, f);
+  }
+});
+
+test('CSP idêntica em todas as páginas (e no painel), sem unsafe-inline/eval e com o Supabase do config.js', () => {
+  const ref = csp(ler('index.html'));
+  assert.ok(ref, 'index.html tem CSP');
+  for (const f of [...TODAS, 'admin/index.html']) assert.equal(csp(ler(f)), ref, `${f}: CSP igual à da home`);
+  assert.doesNotMatch(ref, /unsafe-inline|unsafe-eval|\*/);
+  const host = new URL(config.supabase.url).host;
+  assert.match(ref, new RegExp(`connect-src [^;]*https://${host.replace(/\./g, '\\.')}`), 'connect-src com o Supabase do config.js');
+  assert.match(ref, new RegExp(`connect-src [^;]*wss://${host.replace(/\./g, '\\.')}`), 'Realtime (wss) liberado');
+  const lib = (/BIBLIOTECA = \{\s*url: '([^']+)'/.exec(ler('assets/js/supabase-client.js')) || [])[1];
+  assert.ok(lib && ref.includes(lib.replace(/dist\/umd\/supabase\.js$/, '')), 'script-src cobre a versão do supabase-js usada');
+});
+
+test('cabeçalho e rodapé iguais aos da home', () => {
+  const home = ler('index.html');
+  const topo = normalizar(bloco(home, /<header class="topo"[\s\S]*?<\/header>/));
+  const rodape = normalizar(bloco(home, /<footer class="rodape">[\s\S]*?<\/footer>/));
+  assert.ok(topo && rodape);
+  for (const f of TODAS.slice(1)) {
+    const h = ler(f);
+    assert.equal(normalizar(bloco(h, /<header class="topo"[\s\S]*?<\/header>/)), topo, `${f}: cabeçalho`);
+    assert.equal(normalizar(bloco(h, /<footer class="rodape">[\s\S]*?<\/footer>/)), rodape, `${f}: rodapé`);
+  }
+});
+
+test('SEO: canonical e Open Graph no subcaminho final; imagem OG 1200x630', () => {
+  for (const f of [...PUBLICAS, 'obrigado.html', 'briefing.html']) {
+    const h = ler(f);
+    const esperado = SITE + (f === 'index.html' ? '' : f);
+    assert.equal((/<link rel="canonical" href="([^"]+)">/.exec(h) || [])[1], esperado, `${f}: canonical`);
+    assert.equal(meta(h, 'og:url'), esperado, `${f}: og:url`);
+    assert.equal(meta(h, 'og:image'), SITE + 'assets/img/og-image.png', `${f}: og:image`);
+    assert.equal(meta(h, 'og:image:width'), '1200');
+    assert.equal(meta(h, 'og:image:height'), '630');
+    assert.equal(meta(h, 'og:locale'), 'pt_BR');
+    assert.equal(meta(h, 'twitter:card'), 'summary_large_image');
+  }
+  const png = readFileSync(new URL('assets/img/og-image.png', raiz));
+  assert.equal(png.readUInt32BE(16), 1200, 'largura da imagem OG');
+  assert.equal(png.readUInt32BE(20), 630, 'altura da imagem OG');
+  assert.ok(png.length < 100 * 1024, 'imagem OG com menos de 100 KB');
+});
+
+test('noindex: privadas sempre; públicas só enquanto config.rascunho = true', () => {
+  for (const f of PRIVADAS) assert.match(ler(f), /<meta name="robots" content="noindex, nofollow">/, `${f}: sempre noindex`);
+  for (const f of PUBLICAS) {
+    const tem = /<meta name="robots" content="noindex/.test(ler(f));
+    assert.equal(tem, config.rascunho === true, `${f}: noindex ${config.rascunho ? 'obrigatório no rascunho' : 'deve sair ao publicar'} (ver PUBLICAR.md)`);
+  }
+  assert.match(ler('admin/index.html'), /noindex/);
+});
+
+test('sitemap e robots com as URLs finais; JSON-LD sem avaliações', () => {
+  const sm = ler('sitemap.xml');
+  const urls = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  for (const u of urls) {
+    assert.ok(u.startsWith(SITE), `${u} no domínio final`);
+    const arquivo = u.slice(SITE.length) || 'index.html';
+    assert.ok(existsSync(new URL(arquivo, raiz)), `${arquivo} existe`);
+    assert.ok(!PRIVADAS.includes(arquivo), `${arquivo} é privada e não deve estar no sitemap`);
+  }
+  assert.ok(urls.includes(SITE) && urls.includes(SITE + 'planos.html'));
+  assert.equal(urls.includes(SITE + 'portfolio.html'), config.portfolio.projetos.length > 0, 'portfolio.html no sitemap só com projetos reais');
+  assert.match(ler('robots.txt'), new RegExp(`Sitemap: ${SITE}sitemap.xml`));
+  const ld = (/<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(ler('index.html')) || [])[1];
+  const dados = JSON.parse(ld);
+  assert.ok(dados['@graph'].some((n) => n['@type'] === 'Organization'));
+  assert.doesNotMatch(ld + ler('assets/js/main.js'), /aggregateRating|"review"|ratingValue/i, 'sem avaliações');
+});
+
+test('404.html usa caminhos absolutos do subcaminho (o GitHub Pages serve em qualquer URL)', () => {
+  const h = ler('404.html');
+  const prefixo = new URL(SITE).pathname;
+  const relativos = [...h.matchAll(/\s(?:href|src)="(?![#/]|https?:|mailto:|data:)([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(relativos, [], 'sem caminhos relativos no 404');
+  assert.match(h, new RegExp(`src="${prefixo}config\\.js"`));
+});
+
+test('scripts: config.js e inicio.js síncronos no <head>; os demais com defer', () => {
+  for (const f of TODAS) {
+    const head = bloco(ler(f), /<head>[\s\S]*?<\/head>/);
+    const scripts = [...head.matchAll(/<script src="([^"]+)"( defer)?><\/script>/g)];
+    for (const [, src, defer] of scripts) {
+      const sincrono = /(^|\/)(config\.js|assets\/js\/inicio\.js)$/.test(src);
+      assert.equal(!defer, sincrono, `${f}: ${src} ${sincrono ? 'deve ser síncrono' : 'deve ter defer'}`);
+    }
+    assert.match(head, /rel="preload" href="[^"]*plus-jakarta-sans-latin-wght\.woff2" as="font" type="font\/woff2" crossorigin/, `${f}: preload da fonte`);
+  }
+});

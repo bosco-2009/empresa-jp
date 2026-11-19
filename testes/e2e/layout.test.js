@@ -10,6 +10,7 @@ let falhas = 0;
   for (const w of [320, 375, 768, 1280]) {
     const ctx = await b.newContext({ viewport: { width: w, height: 800 } });
     const p = await ctx.newPage();
+    await p.route('**/__axe.min.js', (r) => r.fulfill({ path: require.resolve('axe-core/axe.min.js'), contentType: 'application/javascript' }));
     const erros = [];
     p.on('console', m => { if (['error','warning'].includes(m.type())) erros.push(m.type()+': '+m.text()); });
     p.on('pageerror', e => erros.push('pageerror: ' + e.message));
@@ -19,7 +20,7 @@ let falhas = 0;
     const larg = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
     // elementos que extrapolam
     const fora = await p.evaluate(() => [...document.querySelectorAll('body *')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.right > document.documentElement.clientWidth + 0.5 || r.left < -0.5) && !e.closest('.sprite,.visualmente-oculto,.pular-link'); }).slice(0,8).map(e => e.className || e.tagName));
-    await p.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+    await p.addScriptTag({ url: new URL('/__axe.min.js', p.url()).href });
     const axe = await p.evaluate(async () => (await axe.run(document, { runOnly: ['wcag2a','wcag2aa','wcag21a','wcag21aa','best-practice'] })).violations.map(v => `${v.impact} ${v.id} (${v.nodes.length}): ${v.nodes.slice(0,3).map(n=>n.target.join(' ')).join(' | ')}`));
     console.log(`\n== ${w}px  scrollWidth=${larg.sw} clientWidth=${larg.cw}`, fora.length ? 'FORA: ' + fora.join(', ') : '');
     console.log('console:', erros.length ? erros : 'ok');

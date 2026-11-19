@@ -33,6 +33,8 @@ function ok(cond, msg) { if (cond) console.log('  ✔ ' + msg); else { falhas++;
 async function novaPagina(browser, opcoes, cfg) {
   const ctx = await browser.newContext(opcoes);
   const p = await ctx.newPage();
+  // axe servido como arquivo da mesma origem (a CSP das páginas bloqueia scripts inline)
+  await p.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
   p.erros = [];
   p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') p.erros.push(m.text()); });
   p.on('pageerror', (e) => p.erros.push('pageerror: ' + e.message));
@@ -44,7 +46,7 @@ async function novaPagina(browser, opcoes, cfg) {
   return p;
 }
 async function axe(p, rotulo) {
-  await p.addScriptTag({ path: AXE });
+  await p.addScriptTag({ url: new URL('/__axe.min.js', p.url()).href });
   const v = await p.evaluate(async () => (await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] }))
     .violations.map((x) => `${x.impact} ${x.id}: ${x.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | ')}`));
   ok(v.length === 0, `axe sem violações (${rotulo})` + (v.length ? ' -> ' + v.join('; ') : ''));
@@ -92,7 +94,7 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
     await p.goto(SITE + 'termos.html', { waitUntil: 'networkidle' });
     const t = await p.textContent('main');
     ok(t.includes('Empresa Teste Ltda') && !t.includes('[PROVISÓRIO: razão social]'), 'termos: razão social vem do config.js');
-    ok((await p.getAttribute('[data-cfg-email]', 'href')) === 'mailto:contato@teste.local', 'termos: e-mail do controlador vem do config.js');
+    ok((await p.getAttribute('[data-cfg-email] a', 'href')) === 'mailto:contato@teste.local', 'termos: e-mail do controlador vem do config.js');
     ok(t.includes('7 (sete) dias') && t.includes('art. 49'), 'termos: direito de arrependimento (CDC art. 49)');
     ok(await p.locator('[data-cfg-planos] li').count() === 3 && t.includes('Profissional') && t.includes('997'), 'termos: planos, preços e prazos do config.js');
     ok(t.includes('por conta do cliente') && t.includes('é seu'), 'termos: domínio/hospedagem por conta do cliente e propriedade do site');
