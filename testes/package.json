@@ -14,7 +14,8 @@
     "auditoria": "node e2e/auditoria.test.js",
     "movimento": "node e2e/movimento.test.js",
     "mockup": "node e2e/mockup.test.js",
-    "exemplos": "node e2e/exemplos.test.js"
+    "exemplos": "node e2e/exemplos.test.js",
+    "simulador": "node e2e/simulador.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
