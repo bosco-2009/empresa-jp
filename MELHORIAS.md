@@ -19,8 +19,8 @@ Regras de toda execução (além do CLAUDE.md):
 - [x] (concluído 2026-11-19 16:14 UTC, merge 6e9d4a0) 2. **Mockup vivo no hero**: o celular do hero alterna entre 3 telas de sites de exemplo (loja de roupas, restaurante, salão de beleza) feitas em HTML/CSS, com transição suave e o rótulo "exemplo".
 - [x] (concluído 2026-11-19 16:25 UTC, merge 87efd71) 3. **Página "Exemplos"** (`exemplos.html`): 6 demonstrações de sites por segmento (moda, restaurante, beleza, saúde, serviços, pet), cada uma uma página leve em `exemplos/`, com o rótulo "site de exemplo" e um CTA para os planos. Link no menu e no sitemap.
 - [x] (concluído 2026-11-19 UTC, merge 7455794) 4. **Simulador "Qual plano é para mim?"**: 4 perguntas (tipo de negócio, precisa vender online?, quantas páginas, já tem domínio?) que recomendam um plano de `config.js` e levam para `planos.html?plano=`.
-- [~] (início 2026-11-19 16:33 UTC) 5. **Comparativo de planos**: tabela acessível com tudo o que cada plano inclui; no celular, cards com abas.
-- [ ] 6. **Seção "Para quem é"**: segmentos atendidos com ícones SVG próprios e uma frase de benefício por segmento.
+- [x] (concluído 2026-11-19 UTC, merge 37f4acd) 5. **Comparativo de planos**: tabela acessível com tudo o que cada plano inclui; no celular, cards com abas.
+- [~] (início 2026-11-19 19:36 UTC) 6. **Seção "Para quem é"**: segmentos atendidos com ícones SVG próprios e uma frase de benefício por segmento.
 - [ ] 7. **Respostas rápidas no chat do admin**: modelos de resposta (saudação, preços, prazos, pedir WhatsApp) que se inserem com um clique, editáveis e salvos no localStorage do admin.
 - [ ] 8. **Avisos no painel**: contador de não lidas no título e no favicon, som opcional e notificação do navegador (com permissão) para conversa nova, pedido pago e briefing novo.
 - [ ] 9. **Blog com 3 artigos originais de SEO**: "Site ou só Instagram?", "O que um site profissional precisa ter", "Como funciona a criação do seu site com a Portfólio BR". Sem estatísticas inventadas. Página `blog/`, JSON-LD Article, sitemap.
