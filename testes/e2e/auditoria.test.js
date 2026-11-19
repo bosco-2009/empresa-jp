@@ -19,6 +19,8 @@ const configTeste = fs.readFileSync(RAIZ + '/config.js', 'utf8')
 const PAGINAS = [
   ['home', ''], ['planos', 'planos.html'], ['obrigado', 'obrigado.html'], ['briefing', 'briefing.html'],
   ['termos', 'termos.html'], ['privacidade', 'privacidade.html'], ['portfolio', 'portfolio.html'],
+  ['exemplos', 'exemplos.html'],
+  ...['moda', 'restaurante', 'beleza', 'saude', 'servicos', 'pet'].map((x) => ['exemplo-' + x, `exemplos/${x}.html`]),
   ['404', 'empresa-jp/uma/pagina/que/nao/existe'], ['admin', 'admin/'],
 ];
 const LARGURAS = [320, 375, 768, 1280];

@@ -12,7 +12,9 @@ vm.runInNewContext(ler('config.js'), { window: janela });
 const config = janela.PBR_CONFIG;
 const SITE = config.site.url;
 
-const PUBLICAS = ['index.html', 'planos.html', 'termos.html', 'privacidade.html', 'portfolio.html'];
+const PUBLICAS = ['index.html', 'planos.html', 'exemplos.html', 'termos.html', 'privacidade.html', 'portfolio.html'];
+// Sites de EXEMPLO (fictícios): sempre noindex, com o próprio cabeçalho
+const DEMOS = ['moda', 'restaurante', 'beleza', 'saude', 'servicos', 'pet'].map((s) => `exemplos/${s}.html`);
 const PRIVADAS = ['obrigado.html', 'briefing.html', '404.html'];
 const TODAS = [...PUBLICAS, ...PRIVADAS];
 
@@ -47,13 +49,29 @@ test('todas as páginas: lang, charset, viewport, um h1, title e description ún
 test('CSP idêntica em todas as páginas (e no painel), sem unsafe-inline/eval e com o Supabase do config.js', () => {
   const ref = csp(ler('index.html'));
   assert.ok(ref, 'index.html tem CSP');
-  for (const f of [...TODAS, 'admin/index.html']) assert.equal(csp(ler(f)), ref, `${f}: CSP igual à da home`);
+  for (const f of [...TODAS, ...DEMOS, 'admin/index.html']) assert.equal(csp(ler(f)), ref, `${f}: CSP igual à da home`);
   assert.doesNotMatch(ref, /unsafe-inline|unsafe-eval|\*/);
   const host = new URL(config.supabase.url).host;
   assert.match(ref, new RegExp(`connect-src [^;]*https://${host.replace(/\./g, '\\.')}`), 'connect-src com o Supabase do config.js');
   assert.match(ref, new RegExp(`connect-src [^;]*wss://${host.replace(/\./g, '\\.')}`), 'Realtime (wss) liberado');
   const lib = (/BIBLIOTECA = \{\s*url: '([^']+)'/.exec(ler('assets/js/supabase-client.js')) || [])[1];
   assert.ok(lib && ref.includes(lib.replace(/dist\/umd\/supabase\.js$/, '')), 'script-src cobre a versão do supabase-js usada');
+});
+
+test('sites de exemplo: aviso de exemplo, sempre noindex, um h1, CTA para os planos e chat', () => {
+  for (const f of DEMOS) {
+    const h = ler(f);
+    assert.match(h, /<html lang="pt-BR"/, f);
+    assert.equal((h.match(/<h1[\s>]/g) || []).length, 1, `${f}: um único h1`);
+    assert.match(h, /<meta name="robots" content="noindex/, `${f}: sempre noindex (negócio fictício)`);
+    assert.match(h, /<strong>Site de exemplo<\/strong>/, `${f}: aviso visível de site de exemplo`);
+    assert.match(h, /fictício/, `${f}: diz que o negócio é fictício`);
+    assert.match(h, /href="\.\.\/planos\.html"/, `${f}: CTA para os planos`);
+    assert.match(h, /src="\.\.\/assets\/js\/chat\.js" defer/, `${f}: chat ao vivo (todas as páginas públicas)`);
+    assert.doesNotMatch(h, /wa\.me\/|tel:|mailto:/, `${f}: sem contatos falsos`);
+  }
+  const lista = ler('exemplos.html');
+  for (const f of DEMOS) assert.match(lista, new RegExp(`href="${f}"`), `exemplos.html liga para ${f}`);
 });
 
 test('cabeçalho e rodapé iguais aos da home', () => {
@@ -102,9 +120,9 @@ test('sitemap e robots com as URLs finais; JSON-LD sem avaliações', () => {
     assert.ok(u.startsWith(SITE), `${u} no domínio final`);
     const arquivo = u.slice(SITE.length) || 'index.html';
     assert.ok(existsSync(new URL(arquivo, raiz)), `${arquivo} existe`);
-    assert.ok(!PRIVADAS.includes(arquivo), `${arquivo} é privada e não deve estar no sitemap`);
+    assert.ok(!PRIVADAS.includes(arquivo) && !DEMOS.includes(arquivo), `${arquivo} é privada/exemplo e não deve estar no sitemap`);
   }
-  assert.ok(urls.includes(SITE) && urls.includes(SITE + 'planos.html'));
+  assert.ok(urls.includes(SITE) && urls.includes(SITE + 'planos.html') && urls.includes(SITE + 'exemplos.html'));
   assert.equal(urls.includes(SITE + 'portfolio.html'), config.portfolio.projetos.length > 0, 'portfolio.html no sitemap só com projetos reais');
   assert.match(ler('robots.txt'), new RegExp(`Sitemap: ${SITE}sitemap.xml`));
   const ld = (/<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(ler('index.html')) || [])[1];
