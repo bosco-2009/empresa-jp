@@ -22,6 +22,9 @@ node --test testes/funcoes/*.test.mjs
   preço vindo do servidor, corpo da preferência, sandbox, assinatura `x-signature` calculada de forma
   independente com `node:crypto`, idempotência, erros 4xx/5xx).
 - `briefing-upload.test.mjs`: Edge Function de upload (nome seguro, tipo, tamanho, limite, erros do banco e do Storage).
+- `paginas.test.mjs`: consistência entre as páginas estáticas (CSP igual e coerente com o `config.js`, cabeçalho e rodapé
+  iguais aos da home, canonical/OG no subcaminho, imagem OG 1200×630, `noindex` conforme `config.rascunho`, sitemap,
+  JSON-LD sem avaliações, 404 com caminhos absolutos, scripts síncronos só `config.js`/`inicio.js`).
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
 
 O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então o código testado é o mesmo do deploy.
@@ -68,7 +71,24 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run layout
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run layout && npm run auditoria
 ```
 
+`auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
+768 e 1280 px:
+- rolagem horizontal;
+- console (inclui violações de CSP);
+- axe (falha em serious/critical e lista os menores);
+- teclado, com o "Pular para o conteúdo" primeiro e foco visível em cada parada;
+- menu, FAQ e link de pular, testados pelo teclado.
+
 Capturas de tela ficam em `testes/e2e/saida/`.
+
+## 4. Lighthouse (opcional)
+
+```bash
+npx lighthouse@12.6.1 http://localhost:8080/ --only-categories=performance,accessibility,best-practices,seo --chrome-flags="--headless=new"
+```
+
+Com o rascunho, o SEO acusa só o `noindex` (esperado). Para medir como ficará publicado, rode numa cópia do site sem
+as linhas de `noindex` das páginas públicas (passo 6 do `PUBLICAR.md`).

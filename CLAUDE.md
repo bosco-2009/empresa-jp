@@ -8,7 +8,8 @@ A **Portfólio BR** (Instagram [@portifolio_br](https://instagram.com/portifolio
 sites profissionais para pequenos negócios do Brasil. Este repositório é o site da própria empresa:
 ele vende os planos, recebe o pagamento, coleta o briefing e permite atendimento por chat ao vivo.
 
-Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge do próprio PR.**
+Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge do próprio PR** (o merge é feito
+por quem revisa ou por pedido explícito do coordenador).
 
 ## Decisões fixas (não mudar sem aprovação do coordenador)
 
@@ -38,7 +39,12 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 6. **Fluxo Git:** o commit inicial na `main` tem só `README.md` e `CLAUDE.md`. Cada fase vai numa
    branch própria com PR para a `main`. Não fazer merge: o coordenador revisa.
 
-## Estrutura de pastas (planejada)
+## Estado atual
+
+As 5 fases estão concluídas. O site está pronto e em **rascunho** (`rascunho: true` + `noindex`) até o dono
+preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBLICAR.md`**.
+
+## Estrutura de pastas
 
 ```
 /
@@ -49,7 +55,8 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 ├── briefing.html              # Briefing pós-compra (Fase 4)
 ├── termos.html                # Termos de uso (Fase 4)
 ├── privacidade.html           # Política de privacidade / LGPD (Fase 4)
-├── 404.html                   # Página de erro do GitHub Pages (Fase 5)
+├── 404.html                   # Página de erro do GitHub Pages: caminhos ABSOLUTOS /empresa-jp/ (Fase 5)
+├── PUBLICAR.md                # Checklist para tirar o rascunho e publicar
 ├── admin/
 │   └── index.html             # Painel do dono: chat, pedidos, leads (Fase 2+)
 ├── config.js                  # ÚNICO lugar de textos/preços/contatos provisórios
@@ -67,7 +74,8 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 │   │   ├── legal.css          # termos.html e privacidade.html (Fase 4)
 │   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
-│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, utilidades
+│   │   ├── inicio.js          # Síncrono no <head>: classes sem-js/modo-rascunho antes da 1ª pintura
+│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
@@ -103,6 +111,18 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 
 ## Regras de qualidade
 
+**Páginas estáticas (sem build)**
+- `<head>`, cabeçalho e rodapé se repetem em todas as páginas. Ao mudar um deles, mude em **todas**; o teste
+  `testes/funcoes/paginas.test.mjs` compara cada página com a home (CSP, cabeçalho, rodapé, canonical, OG, noindex).
+- `config.js` e `assets/js/inicio.js` são os **únicos** scripts síncronos; todo o resto com `defer`.
+
+**Segurança**
+- **CSP** por `<meta http-equiv>` em todas as páginas (o GitHub Pages não permite cabeçalhos): sem `unsafe-inline`,
+  sem `unsafe-eval`. Nada de `<script>` ou `style=""` inline (o JSON-LD é permitido por não ser executado).
+  `connect-src` lista o Supabase do `config.js`; `script-src` lista a versão exata do supabase-js.
+- Links externos com `target="_blank"` sempre com `rel="noopener"`.
+- Imagens só da própria origem (`img-src 'self' data:`): portfólio em `assets/img/portfolio/`.
+
 **Geral**
 - Sem dependências de build. Bibliotecas externas só via CDN com **versão exata** e, quando possível, SRI.
 - Sem segredos no repositório. Chaves de serviço (`service_role`, `MP_ACCESS_TOKEN`) só em secrets do Supabase.
@@ -125,9 +145,11 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 - Cada página com `title`, `meta description`, Open Graph, `canonical`, favicon e manifest.
 - Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
 - Enquanto `config.js` tiver `rascunho: true`, a página mostra o aviso de rascunho e mantém `noindex`.
+- Meta: Lighthouse mobile ≥ 90 nas quatro categorias (medido na Fase 5: 99/100/100/100 nas páginas públicas).
 
 **Antes de abrir um PR**
-- Zero erros no console em todas as páginas alteradas.
+- Rodar a auditoria (`testes/e2e/auditoria.test.js`): todas as páginas × 4 larguras, axe, teclado, console, rolagem.
+- Zero erros no console em todas as páginas alteradas (inclusive violações de CSP).
 - Teste em largura de celular (320 e 375 px) e desktop (1280 px), sem rolagem horizontal.
 - Verificação automática de acessibilidade (axe) sem violações sérias/críticas.
 - Descrever no PR o que foi feito, como testar e o que ficou `[PROVISÓRIO]`.
@@ -159,9 +181,11 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
    `webhook-mercadopago`, tabela de pedidos, página de retorno, pedidos no admin.
 4. **Briefing, páginas legais e portfólio** — formulário de briefing pós-compra ligado ao pedido,
    termos de uso, política de privacidade (LGPD), página de portfólio (oculta sem projetos reais).
-5. **Revisão final e publicação** — revisão completa (acessibilidade, SEO, segurança, RLS),
-   preenchimento dos itens `[PROVISÓRIO]` pelo dono, `rascunho: false`, remoção do `noindex`,
-   `404.html`, sitemap final e publicação no GitHub Pages.
+5. **Revisão final e publicação** — auditoria completa (acessibilidade, teclado, console), CSP, SEO
+   (404, sitemap, robots, canonical/OG, JSON-LD), desempenho (Lighthouse mobile ≥ 90) e `PUBLICAR.md`.
+   O rascunho continua até o dono preencher os `[PROVISÓRIO]`; a publicação segue o `PUBLICAR.md`.
+
+Todas as fases (1–5) estão concluídas.
 
 ## Como rodar localmente
 

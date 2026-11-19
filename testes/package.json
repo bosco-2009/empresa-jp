@@ -10,14 +10,16 @@
     "layout": "node e2e/layout.test.js",
     "chat": "node e2e/chat.test.js",
     "checkout": "node e2e/checkout.test.js",
-    "fase4": "node e2e/fase4.test.js"
+    "fase4": "node e2e/fase4.test.js",
+    "auditoria": "node e2e/auditoria.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
     "axe-core": "4.10.2",
     "pg": "8.13.1",
     "playwright": "1.63.0",
-    "ws": "8.18.0"
+    "ws": "8.18.0",
+    "lighthouse": "12.6.1"
   },
   "engines": {
     "node": ">=22.6"
