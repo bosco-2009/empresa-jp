@@ -784,7 +784,7 @@ a:hover { color: var(--cor-acao-hover); }
   padding: var(--esp-2) var(--esp-3);
   border-radius: var(--raio-sm);
   background: var(--cor-acao-fundo-suave);
-  color: var(--cor-acao-ativa);
+  color: var(--cor-acao-texto-suave);
   font-size: var(--texto-sm);
   font-weight: var(--peso-semi);
   line-height: 1.35;
