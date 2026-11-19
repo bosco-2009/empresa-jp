@@ -963,3 +963,6 @@ a:hover { color: var(--cor-acao-hover); }
   border-top: 1px solid rgb(255 255 255 / 0.1);
   font-size: var(--texto-xs);
 }
+
+/* Link da home para o comparativo de planos (item 5) */
+.planos__comparar { margin-top: var(--esp-6); font-weight: var(--peso-semi); text-align: center; }

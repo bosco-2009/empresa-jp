@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -101,6 +101,11 @@ cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movime
 - todas as combinações de páginas × venda online seguem as regras de `config.simulador`;
 - link `planos.html?plano=` pré-seleciona o plano; exemplo do segmento; orientação de domínio;
 - teclado, região `aria-live`, oculto sem JS; 4 larguras com axe.
+
+`comparativo.test.js` cobre o comparativo de planos (`planos.html#comparativo`):
+- cada linha de `config.comparativo` tem valor para todos os planos; tabela com `caption` e `th scope`;
+- abas no celular (setas, Home/End, tabindex móvel); "Escolher" marca o plano no formulário;
+- link da home, oculto sem JS; 4 larguras com axe.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
 
