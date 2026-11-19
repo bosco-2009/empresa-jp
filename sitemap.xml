@@ -18,6 +18,30 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/blog/</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/blog/site-ou-instagram.html</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/blog/o-que-um-site-profissional-precisa-ter.html</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/blog/como-funciona-a-criacao-do-seu-site.html</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://bosco-2009.github.io/empresa-jp/termos.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
