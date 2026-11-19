@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" class="sem-js">
+<html lang="pt-BR" class="sem-js" data-abertura>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -36,11 +36,14 @@
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/chat.css">
+  <link rel="stylesheet" href="assets/css/movimento.css">
 
   <!-- Síncronos e pequenos: marcam o <html> antes da primeira pintura (ver inicio.js) -->
   <script src="config.js"></script>
   <script src="assets/js/inicio.js"></script>
   <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/abertura.js" defer></script>
+  <script src="assets/js/revelar.js" defer></script>
   <script src="assets/js/supabase-client.js" defer></script>
   <script src="assets/js/chat.js" defer></script>
 
@@ -73,6 +76,21 @@
   </script>
 </head>
 <body>
+  <!-- abertura:inicio — abertura de marca (só na home; inicio.js decide, movimento.css anima, abertura.js pula).
+       aria-hidden: é só decoração; o conteúdo real continua no DOM para leitores de tela. -->
+  <div class="abertura" aria-hidden="true" data-abertura-tela>
+    <div class="abertura__conteudo">
+      <svg class="abertura__simbolo" viewBox="0 0 48 48" width="104" height="104" focusable="false">
+        <rect class="abertura__quadro" x="1" y="1" width="46" height="46" rx="12" pathLength="1"/>
+        <path class="abertura__p" d="M17 36V12h9a7.5 7.5 0 0 1 0 15h-9" pathLength="1"/>
+        <circle class="abertura__ponto" cx="33.5" cy="34.5" r="4"/>
+      </svg>
+      <p class="abertura__nome"><span>P</span><span>o</span><span>r</span><span>t</span><span>f</span><span>ó</span><span>l</span><span>i</span><span>o</span><span class="abertura__br">BR</span></p>
+      <p class="abertura__frase">Seu negócio com um <strong>site profissional</strong></p>
+    </div>
+    <p class="abertura__pular">Toque ou pressione qualquer tecla para pular</p>
+  </div>
+  <!-- abertura:fim -->
   <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
 
   <!-- Faixa de rascunho: exibida pelo main.js enquanto config.rascunho === true -->

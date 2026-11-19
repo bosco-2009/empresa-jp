@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -81,6 +81,15 @@ cd testes && npm run chat && npm run checkout && npm run fase4 && npm run layout
 - axe (falha em serious/critical e lista os menores);
 - teclado, com o "Pular para o conteúdo" primeiro e foco visível em cada parada;
 - menu, FAQ e link de pular, testados pelo teclado.
+
+`movimento.test.js` (só precisa do servidor estático) testa a abertura de marca e as animações de rolagem:
+- aparece uma vez por sessão e termina sozinha; pula por tecla, clique e toque;
+- não aparece com movimento reduzido nem sem JS;
+- leitores de tela veem o conteúdo real;
+- revelar, cascata, sublinhado e o celular em 3D;
+- CLS 0 e quadros por segundo;
+- 4 larguras com axe;
+- grava `testes/video-abertura.webm` (1280×720) para revisão.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
 

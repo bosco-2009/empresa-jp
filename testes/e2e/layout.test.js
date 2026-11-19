@@ -10,6 +10,7 @@ let falhas = 0;
   for (const w of [320, 375, 768, 1280]) {
     const ctx = await b.newContext({ viewport: { width: w, height: 800 } });
     const p = await ctx.newPage();
+    await p.addInitScript(() => { try { sessionStorage.setItem('pbr_abertura_vista', '1'); } catch (e) { /* */ } });
     await p.route('**/__axe.min.js', (r) => r.fulfill({ path: require.resolve('axe-core/axe.min.js'), contentType: 'application/javascript' }));
     const erros = [];
     p.on('console', m => { if (['error','warning'].includes(m.type())) erros.push(m.type()+': '+m.text()); });

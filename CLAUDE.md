@@ -69,6 +69,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── tokens.css         # Variáveis: cores, tipografia, espaçamento, raios, sombras
 │   │   ├── main.css           # Reset, layout e componentes
 │   │   ├── chat.css           # Widget do chat (Fase 2)
+│   │   ├── movimento.css      # Abertura de marca (home) e animações de rolagem
 │   │   ├── checkout.css       # planos.html, obrigado.html e portfolio.html (Fase 3)
 │   │   ├── briefing.css       # briefing.html em etapas (Fase 4)
 │   │   ├── legal.css          # termos.html e privacidade.html (Fase 4)
@@ -76,6 +77,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   ├── js/
 │   │   ├── inicio.js          # Síncrono no <head>: classes sem-js/modo-rascunho antes da 1ª pintura
 │   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades
+│   │   ├── abertura.js        # Pular/encerrar a abertura de marca (a animação é CSS)
+│   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
@@ -140,6 +143,15 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Contraste mínimo 4,5:1 em texto normal e 3:1 em texto grande/ícones.
 - Imagens com `alt` (vazio quando decorativas), botões com rótulo acessível.
 - Respeitar `prefers-reduced-motion`.
+
+**Animações**
+- Só CSS/JS próprios (sem bibliotecas; a CSP bloqueia CDNs novos). Animações contínuas só com `transform`/`opacity`.
+- Nada fica escondido sem JavaScript: os estados iniciais ocultos dependem de classes postas pelo JS
+  (`com-abertura` pelo `inicio.js`, `revelar-ativo` pelo `revelar.js`).
+- Com `prefers-reduced-motion`: sem abertura e sem animações de rolagem.
+- Transições de "aparecer" ficam só no estado final (esconder é instantâneo), para nada esmaecer na carga
+  nem ser pego pelo axe/Lighthouse no meio da transição. CLS sempre 0 (`testes/e2e/movimento.test.js`).
+- A abertura é `aria-hidden`, uma vez por sessão (`sessionStorage`), pulável por toque, clique ou tecla.
 
 **SEO e desempenho**
 - Cada página com `title`, `meta description`, Open Graph, `canonical`, favicon e manifest.

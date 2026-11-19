@@ -35,6 +35,8 @@ const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 async function novaPagina(browser, opcoes, configJs) {
   const ctx = await browser.newContext(opcoes);
   const p = await ctx.newPage();
+  // a abertura de marca tem teste próprio (movimento.test.js); aqui ela é marcada como já vista
+  await p.addInitScript(() => { try { sessionStorage.setItem('pbr_abertura_vista', '1'); } catch (e) { /* */ } });
   // axe servido como arquivo da mesma origem (a CSP das páginas bloqueia scripts inline)
   await p.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
   p.erros = [];
