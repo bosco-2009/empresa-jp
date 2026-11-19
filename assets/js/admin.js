@@ -98,18 +98,23 @@
         if (r.data !== true) { encerrarChat(); encerrarPedidos(); mostrarTela('negado'); return; }
         mostrarTela('painel');
         iniciarChat();
-        if (window.PBRAdminPedidos) window.PBRAdminPedidos.iniciar(sb, { tocarSom: tocarSom, piscarTitulo: piscarTitulo, atento: atento });
+        var avisos = { tocarSom: tocarSom, piscarTitulo: piscarTitulo, atento: atento };
+        if (window.PBRAdminPedidos) window.PBRAdminPedidos.iniciar(sb, avisos);
+        if (window.PBRAdminBriefings) window.PBRAdminBriefings.iniciar(sb, avisos);
       }).catch(function () {
         mostrarTela('login');
         mostrarErro($('[data-erro-login]'), 'Não foi possível confirmar seu acesso. Tente de novo.');
       });
     }
 
-    function encerrarPedidos() { if (window.PBRAdminPedidos) window.PBRAdminPedidos.encerrar(); }
+    function encerrarPedidos() {
+      if (window.PBRAdminPedidos) window.PBRAdminPedidos.encerrar();
+      if (window.PBRAdminBriefings) window.PBRAdminBriefings.encerrar();
+    }
 
     // -------------------------------------------------------------- abas (#conversas / #pedidos)
     function mostrarAba() {
-      var aba = location.hash === '#pedidos' ? 'pedidos' : 'conversas';
+      var aba = ({ '#pedidos': 'pedidos', '#briefings': 'briefings' })[location.hash] || 'conversas';
       $$('[data-aba]').forEach(function (s) { s.hidden = s.getAttribute('data-aba') !== aba; });
       $$('[data-aba-link]').forEach(function (l) {
         if (l.getAttribute('data-aba-link') === aba) l.setAttribute('aria-current', 'page');

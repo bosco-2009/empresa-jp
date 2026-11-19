@@ -19,6 +19,7 @@
   <script src="../assets/js/supabase-client.js" defer></script>
   <script src="../assets/js/admin.js" defer></script>
   <script src="../assets/js/admin-pedidos.js" defer></script>
+  <script src="../assets/js/admin-briefings.js" defer></script>
 </head>
 <body class="admin">
   <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
@@ -86,6 +87,7 @@
     <nav class="admin-abas" aria-label="Seções do painel">
       <a class="admin-aba" href="#conversas" data-aba-link="conversas" aria-current="page">Conversas <span class="admin-aba__selo" data-selo-aba="conversas" hidden></span></a>
       <a class="admin-aba" href="#pedidos" data-aba-link="pedidos">Pedidos <span class="admin-aba__selo" data-selo-aba="pedidos" hidden></span></a>
+      <a class="admin-aba" href="#briefings" data-aba-link="briefings">Briefings <span class="admin-aba__selo" data-selo-aba="briefings" hidden></span></a>
     </nav>
 
     <!-- Conversas -->
@@ -177,6 +179,57 @@
             <h4 class="admin-pedido__subtitulo">Notificações do Mercado Pago</h4>
             <ol class="admin-eventos" data-pedido-eventos></ol>
             <p class="admin-vazio" data-pedido-sem-eventos hidden>Nenhuma notificação de pagamento recebida ainda.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Briefings -->
+    <section class="admin-briefings" data-aba="briefings" hidden aria-labelledby="briefings-titulo">
+      <h2 id="briefings-titulo" class="visualmente-oculto">Briefings</h2>
+
+      <div class="admin-lista" data-briefings-lista-painel>
+        <div class="admin-lista__filtros admin-lista__filtros--quebra" role="group" aria-label="Filtrar briefings por status">
+          <button type="button" class="admin-filtro" aria-pressed="true" data-filtro-briefing="todos">Todos</button>
+          <button type="button" class="admin-filtro" aria-pressed="false" data-filtro-briefing="novo">Novos</button>
+          <button type="button" class="admin-filtro" aria-pressed="false" data-filtro-briefing="em_producao">Em produção</button>
+          <button type="button" class="admin-filtro" aria-pressed="false" data-filtro-briefing="em_revisao">Em revisão</button>
+          <button type="button" class="admin-filtro" aria-pressed="false" data-filtro-briefing="entregue">Entregues</button>
+        </div>
+        <ul class="admin-lista__itens" role="list" data-lista-briefings></ul>
+        <p class="admin-vazio" data-briefings-vazio hidden>Nenhum briefing com este filtro.</p>
+      </div>
+
+      <div class="admin-conversa" data-briefing-painel>
+        <p class="admin-vazio admin-conversa__vazia" data-briefing-vazio>Escolha um briefing para ver a ficha completa.</p>
+        <div class="admin-pedido" data-briefing-detalhe hidden>
+          <header class="admin-conversa__cabecalho">
+            <button class="admin-botao-icone admin-conversa__voltar" type="button" data-briefing-voltar>
+              <svg class="icone" aria-hidden="true"><use href="#i-voltar"/></svg>
+              <span class="visualmente-oculto">Voltar para a lista de briefings</span>
+            </button>
+            <div class="admin-conversa__quem">
+              <h3 class="admin-conversa__nome" data-briefing-titulo tabindex="-1"></h3>
+              <p class="admin-conversa__detalhes" data-briefing-subtitulo></p>
+            </div>
+            <div class="admin-status-controle">
+              <label for="briefing-status">Status</label>
+              <select id="briefing-status" data-briefing-status>
+                <option value="novo">Novo (cliente pode editar)</option>
+                <option value="em_producao">Em produção</option>
+                <option value="em_revisao">Em revisão</option>
+                <option value="entregue">Entregue</option>
+              </select>
+            </div>
+          </header>
+          <div class="admin-pedido__corpo">
+            <p class="admin-erro" data-erro-briefing-admin role="alert" hidden></p>
+            <p class="admin-dica">Enquanto o status for “Novo”, o cliente ainda pode editar. Mudar o status trava a edição.</p>
+            <dl class="admin-dados" data-briefing-dados></dl>
+            <h4 class="admin-pedido__subtitulo">Arquivos enviados</h4>
+            <ul class="admin-arquivos" role="list" data-briefing-arquivos></ul>
+            <p class="admin-vazio" data-briefing-sem-arquivos hidden>Nenhum arquivo enviado pelo site.</p>
+            <p><button class="botao botao--contorno botao--pequeno" type="button" data-briefing-ver-pedido>Ver o pedido</button></p>
           </div>
         </div>
       </div>

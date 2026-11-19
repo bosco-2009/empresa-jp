@@ -143,6 +143,11 @@
 
   // ---------------- Portfólio (só projetos reais) ----------------
   var projetos = (config.portfolio && config.portfolio.projetos) || [];
+  // Links "Portfólio" do menu e do rodapé só aparecem com projetos reais.
+  document.querySelectorAll('[data-link-portfolio]').forEach(function (l) { l.hidden = projetos.length === 0; });
+  // portfolio.html: mensagem quando ainda não há projetos.
+  var portfolioVazio = $('[data-portfolio-vazio]');
+  if (portfolioVazio) portfolioVazio.hidden = projetos.length > 0;
   var secaoPortfolio = $('[data-secao-portfolio]');
   var listaPortfolio = $('[data-lista-portfolio]');
   if (secaoPortfolio && listaPortfolio && projetos.length > 0) {

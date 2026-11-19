@@ -233,3 +233,28 @@
 @media (min-width: 30rem) {
   .resultado__acoes { flex-direction: row; flex-wrap: wrap; justify-content: center; max-width: none; }
 }
+
+/* ---------------- portfolio.html sem projetos ---------------- */
+.portfolio-vazio {
+  display: grid;
+  justify-items: start;
+  gap: var(--esp-4);
+  padding: var(--esp-6) var(--esp-5);
+  border: 1px dashed var(--cor-borda);
+  border-radius: var(--raio-lg);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-md);
+}
+.portfolio-vazio[hidden] { display: none; }
+
+/* ---------------- obrigado.html: link do briefing ---------------- */
+.resultado__link-briefing { display: grid; gap: var(--esp-2); margin-top: var(--esp-3); }
+.resultado__link-briefing input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--esp-2) var(--esp-3);
+  border: 1px solid var(--cor-cinza-500);
+  border-radius: var(--raio-sm);
+  background: var(--cor-superficie);
+  font-size: var(--texto-xs);
+}

@@ -10,7 +10,7 @@ PGUSER=postgres ./supabase/tests/rodar_local.sh
 
 Cria o banco `pbr_teste`, aplica os stubs do Supabase (`supabase/tests/00_stubs_supabase.sql`),
 aplica cada migration **duas vezes** (idempotência) e roda todos os `supabase/tests/NN_*_test.sql`
-(chat e pedidos).
+(chat, pedidos e briefings).
 
 ## 2. Edge Functions e preços — só Node
 
@@ -21,6 +21,7 @@ node --test testes/funcoes/*.test.mjs
 - `edge-functions.test.mjs`: `criar-pagamento` e `webhook-mercadopago` com `fetch` simulado (CORS, validação,
   preço vindo do servidor, corpo da preferência, sandbox, assinatura `x-signature` calculada de forma
   independente com `node:crypto`, idempotência, erros 4xx/5xx).
+- `briefing-upload.test.mjs`: Edge Function de upload (nome seguro, tipo, tamanho, limite, erros do banco e do Storage).
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
 
 O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então o código testado é o mesmo do deploy.
@@ -31,7 +32,8 @@ O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então 
   - RPC e as tabelas usadas pelo painel;
   - login por senha;
   - Realtime pelo protocolo Phoenix;
-  - `/functions/v1/*`, que executa as **Edge Functions reais** do repositório.
+  - `/functions/v1/*`, que executa as **Edge Functions reais** do repositório;
+  - Storage: URL assinada de envio (`PUT`, com limites do bucket) e de download (só quem lê pelo RLS).
 
   Tudo roda no Postgres local, com os papéis `anon`/`authenticated`/`service_role` e o RLS reais.
 - `e2e/mercadopago-falso.js` imita o Mercado Pago:
@@ -66,7 +68,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run layout
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run layout
 ```
 
 Capturas de tela ficam em `testes/e2e/saida/`.

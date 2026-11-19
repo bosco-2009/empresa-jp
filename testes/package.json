@@ -9,7 +9,8 @@
     "mp": "node e2e/mercadopago-falso.js",
     "layout": "node e2e/layout.test.js",
     "chat": "node e2e/chat.test.js",
-    "checkout": "node e2e/checkout.test.js"
+    "checkout": "node e2e/checkout.test.js",
+    "fase4": "node e2e/fase4.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",

@@ -62,7 +62,9 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 │   │   ├── tokens.css         # Variáveis: cores, tipografia, espaçamento, raios, sombras
 │   │   ├── main.css           # Reset, layout e componentes
 │   │   ├── chat.css           # Widget do chat (Fase 2)
-│   │   ├── checkout.css       # planos.html e obrigado.html (Fase 3)
+│   │   ├── checkout.css       # planos.html, obrigado.html e portfolio.html (Fase 3)
+│   │   ├── briefing.css       # briefing.html em etapas (Fase 4)
+│   │   ├── legal.css          # termos.html e privacidade.html (Fase 4)
 │   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
 │   │   ├── main.js            # Renderiza conteúdo do config.js, menu, utilidades
@@ -71,6 +73,9 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
 │   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+)
 │   │   ├── admin-pedidos.js   # Aba Pedidos do painel (Fase 3)
+│   │   ├── admin-briefings.js # Aba Briefings do painel (Fase 4)
+│   │   ├── briefing.js        # Briefing em etapas + upload por URL assinada (Fase 4)
+│   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4)
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph
@@ -79,11 +84,12 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
     ├── README.md              # Ordem das migrations, configurações e primeiro admin
     ├── migrations/            # SQL versionado e idempotente (tabelas, RLS, políticas) (Fase 2+)
     ├── tests/                 # Stubs do Supabase + testes SQL para Postgres local
-    ├── config.toml            # verify_jwt = false nas duas Edge Functions
+    ├── config.toml            # verify_jwt = false nas Edge Functions (validam por conta própria)
     └── functions/
         ├── _shared/                # Lógica testável (só APIs Web; roda no Deno e no Node 22+)
         ├── criar-pagamento/        # Edge Function (Fase 3)
-        └── webhook-mercadopago/    # Edge Function (Fase 3)
+        ├── webhook-mercadopago/    # Edge Function (Fase 3)
+        └── briefing-upload/        # Edge Function: URL assinada do Storage (Fase 4)
 ```
 
 ## Identidade visual (definida na Fase 1)
@@ -136,6 +142,9 @@ Um coordenador manda as tarefas por fases e revisa os PRs. **Ninguém faz merge 
 - Visitante anônimo só lê/escreve o que é dele (filtrado pelo id anônimo); admin identificado por Auth.
 - Pedidos só mudam de status pelo webhook (service role dentro da Edge Function), nunca pelo front.
 - Webhook do MP valida a assinatura (`x-signature`) e confere o pagamento consultando a API do MP.
+- Arquivos de clientes só em bucket **privado**, enviados por URL assinada criada por Edge Function após validar
+  código + token, tipo e tamanho; leitura só para admin.
+- Páginas legais leem os dados do controlador do `config.js` e mostram `[PROVISÓRIO: ...]` quando faltam.
 - O preço cobrado vem da tabela `planos`, nunca do front; `config.js` só exibe (teste `precos.test.mjs` compara).
 - Edge Functions: lógica em `functions/_shared/*.ts` sem imports externos (só `fetch`/`crypto.subtle`), para
   rodar no Deno e ser testada no Node (`node --test testes/funcoes/`).
