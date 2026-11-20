@@ -195,3 +195,18 @@ test('scripts: config.js e inicio.js síncronos no <head>; os demais com defer',
     assert.match(head, /rel="preload" href="[^"]*plus-jakarta-sans-latin-wght\.woff2" as="font" type="font\/woff2" crossorigin/, `${f}: preload da fonte`);
   }
 });
+
+test('portfólio (melhoria 21): cada projeto com foto tem as 6 imagens responsivas; LARGURAS iguais no JS e no gerador', () => {
+  const larguras = (texto, re) => (re.exec(texto) || [])[1].split(',').map((n) => Number(n.trim()));
+  const js = larguras(ler('assets/js/main.js'), /LARGURAS_PORTFOLIO = \[([^\]]+)\]/);
+  const py = larguras(ler('testes/portfolio/gerar.py'), /LARGURAS = \(([^)]+)\)/);
+  assert.deepEqual(js, py, 'larguras do main.js e do gerar.py');
+  for (const p of config.portfolio.projetos) {
+    if (!p.foto) continue;
+    assert.match(p.foto, /^[a-z0-9]+(?:-[a-z0-9]+)*$/, `foto "${p.foto}" só com minúsculas, números e hífen`);
+    for (const l of js) for (const ext of ['webp', 'png']) {
+      const arq = `assets/img/portfolio/${p.foto}-${l}.${ext}`;
+      assert.ok(existsSync(new URL(arq, raiz)), `${arq} existe (rode python3 testes/portfolio/gerar.py)`);
+    }
+  }
+});

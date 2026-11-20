@@ -73,12 +73,16 @@ cada pedido e no "veio de" de cada conversa.
 
 ## 5. Portfólio (quando houver projetos)
 
-1. Salve a imagem em `assets/img/portfolio/` (WebP ou JPG, cerca de 1200×900, até 200 KB).
+1. Salve a captura de tela do site (PNG ou JPG, de preferência com 1200 px de largura ou mais) em
+   `testes/portfolio/originais/<nome>.png`, com o nome só em minúsculas, números e hífen (ex.: `loja-da-ana.png`).
+   Essa pasta fica fora do Git. Depois rode `python3 testes/portfolio/gerar.py`: ele corta em 4:3, remove os
+   metadados e grava `assets/img/portfolio/<nome>-480|800|1200.webp|png` (o navegador escolhe o tamanho certo).
    **Imagens externas são bloqueadas pela CSP.**
-2. Adicione o projeto em `config.js`:
+2. Adicione o projeto em `config.js` (`foto` é o nome sem extensão):
    ```js
-   { nome: 'Nome do cliente', segmento: 'Segmento', url: 'https://...', imagem: 'assets/img/portfolio/arquivo.webp', alt: 'Página inicial do site da …' }
+   { nome: 'Nome do cliente', segmento: 'Segmento', url: 'https://...', foto: 'loja-da-ana', alt: 'Página inicial do site da …' }
    ```
+   Rode `node --test testes/funcoes/*.test.mjs`: ele confere se as 6 imagens de cada `foto` existem.
 3. Inclua `portfolio.html` no `sitemap.xml`:
    ```xml
    <url><loc>https://bosco-2009.github.io/empresa-jp/portfolio.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
