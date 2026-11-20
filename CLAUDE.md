@@ -97,6 +97,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── admin-pedidos.js   # Aba Pedidos do painel (Fase 3)
 │   │   ├── admin-briefings.js # Aba Briefings do painel (Fase 4)
 │   │   ├── admin-avisos.js    # Painel: não lidas no título/favicon e notificações do navegador (melhoria 8)
+│   │   ├── admin-exportar.js  # Painel: filtros de período/origem e CSV gerado no navegador (melhoria 20)
 │   │   ├── briefing.js        # Briefing em etapas + upload por URL assinada (Fase 4)
 │   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4)
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda

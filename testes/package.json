@@ -23,7 +23,8 @@
     "tema": "node e2e/tema.test.js",
     "faq": "node e2e/faq.test.js",
     "linha-tempo": "node e2e/linha-tempo.test.js",
-    "microinteracoes": "node e2e/microinteracoes.test.js"
+    "microinteracoes": "node e2e/microinteracoes.test.js",
+    "exportar": "node e2e/exportar.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
