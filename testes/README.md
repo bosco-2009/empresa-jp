@@ -131,6 +131,11 @@ claros, cabeçalho em uma linha e axe no escuro em todas as páginas × 4 largur
 `microinteracoes.test.js` cobre hover/pressionar de botões e cards (inclusive cards já revelados), o "carregando"
 do checkout (Edge Function simulada), o tremor do campo inválido, o FAQ e o desligamento com movimento reduzido.
 
+`portfolio.test.js` (python3 + Pillow) cobre as imagens responsivas do portfólio: o gerador (`testes/portfolio/gerar.py`)
+recusa nomes fora do padrão, corta em 4:3, grava 480/800/1200 em WebP e PNG sem EXIF/ICC; com um projeto falso só no
+teste, `<picture>` com `srcset`/`sizes` escolhe o WebP do tamanho certo (1x e 2x) em 4 larguras com axe; sem projetos,
+nada é baixado e a seção da home continua oculta.
+
 Capturas de tela ficam em `testes/e2e/saida/`.
 
 ## 4. Lighthouse (opcional)

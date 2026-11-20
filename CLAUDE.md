@@ -104,6 +104,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs)
 ├── testes/                    # Testes locais (Node/Playwright, MP e Supabase falsos) — não publicados
+│                              #   portfolio/gerar.py: imagens responsivas do portfólio (WebP+PNG 480/800/1200, sem EXIF)
 └── supabase/
     ├── README.md              # Ordem das migrations, configurações e primeiro admin
     ├── migrations/            # SQL versionado e idempotente (tabelas, RLS, políticas) (Fase 2+)
@@ -137,7 +138,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
   sem `unsafe-eval`. Nada de `<script>` ou `style=""` inline (o JSON-LD é permitido por não ser executado).
   `connect-src` lista o Supabase do `config.js`; `script-src` lista a versão exata do supabase-js.
 - Links externos com `target="_blank"` sempre com `rel="noopener"`.
-- Imagens só da própria origem (`img-src 'self' data:`): portfólio em `assets/img/portfolio/`.
+- Imagens só da própria origem (`img-src 'self' data:`): portfólio em `assets/img/portfolio/`, geradas por
+  `testes/portfolio/gerar.py` e usadas pelo campo `foto` (`<picture>` com `srcset`/`sizes`, WebP + PNG).
 
 **Geral**
 - Sem dependências de build. Bibliotecas externas só via CDN com **versão exata** e, quando possível, SRI.
