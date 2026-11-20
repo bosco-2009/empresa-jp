@@ -35,7 +35,7 @@ function ok(c, m) { if (c) console.log('  ✔ ' + m); else { falhas++; console.l
   await Promise.all([p.waitForURL('**/exemplos/restaurante.html'), p.mouse.click(caixa.x + caixa.width / 2, caixa.y + caixa.height / 2)]);
   ok(true, 'cartão inteiro clicável (abre o restaurante de exemplo)');
   ok(await p.isVisible('.ex-aviso') && (await p.textContent('.ex-aviso')).includes('Site de exemplo'), 'faixa "Site de exemplo" visível');
-  ok((await p.getAttribute('.ex-aviso a', 'href')) === '../planos.html', 'CTA "Quero um site assim" para os planos');
+  ok((await p.getAttribute('.ex-aviso__links a', 'href')) === '../planos.html', 'CTA "Quero um site assim" para os planos');
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'sem rolagem horizontal');
 
   // chat ao vivo também nos exemplos (caminhos relativos a exemplos/)

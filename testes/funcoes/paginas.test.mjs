@@ -160,8 +160,9 @@ test('blog: JSON-LD Article/Blog válido, links relativos resolvem, no sitemap e
       assert.ok(existsSync(arquivo), `${f}: link quebrado ${alvo}`);
     }
     if (f === 'blog/index.html') {
-      assert.equal(lds[0]['@type'], 'Blog');
-      assert.equal(lds[0].blogPost.length, ARTIGOS.length);
+      const blog = lds[0]['@graph'].find((n) => n['@type'] === 'Blog');
+      assert.ok(blog, 'blog/index.html: Blog no @graph');
+      assert.equal(blog.blogPost.length, ARTIGOS.length);
       continue;
     }
     const art = lds[0]['@graph'].find((n) => n['@type'] === 'Article');
@@ -174,6 +175,39 @@ test('blog: JSON-LD Article/Blog válido, links relativos resolvem, no sitemap e
     assert.doesNotMatch(texto, /\d+\s?%|\d+\s+(clientes|sites entregues|empresas)/i, `${f}: sem estatísticas inventadas`);
   }
   assert.match(ler('index.html'), /<a href="blog\/">Blog<\/a>/, 'link do blog no rodapé');
+});
+
+test('trilha (melhoria 22): <nav aria-label="Trilha"> visível igual ao JSON-LD BreadcrumbList', () => {
+  const COM_TRILHA = [...BLOG, 'planos.html', 'exemplos.html', ...DEMOS];
+  for (const f of COM_TRILHA) {
+    const h = ler(f);
+    const navs = [...h.matchAll(/<nav class="migalhas[^"]*" aria-label="Trilha"><ol role="list">([\s\S]*?)<\/ol><\/nav>/g)];
+    assert.equal(navs.length, 1, `${f}: uma trilha visível`);
+    const itens = [...navs[0][1].matchAll(/<li( aria-current="page")?>(?:<a href="([^"]+)">)?([^<]+)/g)];
+    assert.ok(itens.length >= 2, `${f}: ao menos 2 níveis`);
+    itens.forEach(([, atual, href], i) => {
+      const ultimo = i === itens.length - 1;
+      assert.equal(Boolean(atual), ultimo, `${f}: só o último item tem aria-current="page"`);
+      assert.equal(Boolean(href), !ultimo, `${f}: itens anteriores são links`);
+    });
+    const lista = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+      .map((m) => JSON.parse(m[1]))
+      .flatMap((d) => d['@graph'] || [d])
+      .find((n) => n['@type'] === 'BreadcrumbList');
+    assert.ok(lista, `${f}: BreadcrumbList`);
+    const el = lista.itemListElement;
+    assert.equal(el.length, itens.length, `${f}: mesmo número de níveis na trilha e no JSON-LD`);
+    el.forEach((item, i) => {
+      assert.equal(item.position, i + 1, `${f}: posição ${i + 1}`);
+      assert.ok(item.item.startsWith(SITE), `${f}: URL absoluta do site`);
+      if (i < el.length - 1) {
+        assert.equal(item.name, itens[i][3].trim(), `${f}: nome do nível ${i + 1}`);
+        const destino = new URL(itens[i][2], new URL(f, SITE)).href.replace(/index\.html$/, '');
+        assert.equal(destino, item.item, `${f}: link do nível ${i + 1} igual ao JSON-LD`);
+      }
+    });
+    assert.equal(el.at(-1).item, SITE + f.replace(/index\.html$/, ''), `${f}: último nível é a própria página`);
+  }
 });
 
 test('404.html usa caminhos absolutos do subcaminho (o GitHub Pages serve em qualquer URL)', () => {
