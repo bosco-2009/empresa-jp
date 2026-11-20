@@ -94,7 +94,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
 │   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+)
 │   │   ├── admin-respostas.js # Respostas rápidas do chat do painel (localStorage do admin)
-│   │   ├── admin-pedidos.js   # Aba Pedidos do painel (Fase 3)
+│   │   ├── admin-pedidos.js   # Aba Pedidos do painel (Fase 3) + checkout abandonado/WhatsApp (melhoria 23)
 │   │   ├── admin-briefings.js # Aba Briefings do painel (Fase 4)
 │   │   ├── admin-avisos.js    # Painel: não lidas no título/favicon e notificações do navegador (melhoria 8)
 │   │   ├── admin-exportar.js  # Painel: filtros de período/origem e CSV gerado no navegador (melhoria 20)

@@ -25,7 +25,8 @@
     "linha-tempo": "node e2e/linha-tempo.test.js",
     "microinteracoes": "node e2e/microinteracoes.test.js",
     "exportar": "node e2e/exportar.test.js",
-    "portfolio": "node e2e/portfolio.test.js"
+    "portfolio": "node e2e/portfolio.test.js",
+    "recuperacao": "node e2e/recuperacao.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
