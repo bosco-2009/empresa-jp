@@ -22,6 +22,7 @@ const PAGINAS = [
   ['exemplos', 'exemplos.html'],
   ['blog', 'blog/'], ...['site-ou-instagram', 'o-que-um-site-profissional-precisa-ter', 'como-funciona-a-criacao-do-seu-site'].map((x) => ['blog-' + x.split('-')[0], `blog/${x}.html`]),
   ...['moda', 'restaurante', 'beleza', 'saude', 'servicos', 'pet'].map((x) => ['exemplo-' + x, `exemplos/${x}.html`]),
+  ...['restaurante', 'moda', 'beleza', 'saude', 'servicos', 'pet'].map((x) => ['segmento-' + x, `segmentos/${x}.html`]),
   ['404', 'empresa-jp/uma/pagina/que/nao/existe'], ['admin', 'admin/'],
 ];
 const LARGURAS = [320, 375, 768, 1280];

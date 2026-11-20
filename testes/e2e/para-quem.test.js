@@ -31,13 +31,16 @@ async function abrir(browser, opcoes = {}) {
       texto: li.querySelector('.segmento__texto').textContent.trim(),
       icone: li.querySelector('.segmento__icone use').getAttribute('href'),
       existe: !!document.querySelector(li.querySelector('.segmento__icone use').getAttribute('href')),
-      link: li.querySelector('a') && li.querySelector('a').getAttribute('href'),
-      nome: li.querySelector('a') && li.querySelector('a').textContent.replace(/\s+/g, ' ').trim(),
+      link: li.querySelector('.segmento__link') && li.querySelector('.segmento__link').getAttribute('href'),
+      nome: li.querySelector('.segmento__link') && li.querySelector('.segmento__link').textContent.replace(/\s+/g, ' ').trim(),
+      pagina: li.querySelector('.segmento__titulo-link') && li.querySelector('.segmento__titulo-link').getAttribute('href'),
     })));
     ok(s.length >= 6, `${s.length} segmentos: ` + s.map((x) => x.titulo).join(', '));
     ok(s.every((x) => x.existe) && new Set(s.map((x) => x.icone)).size === s.length, 'cada um com ícone próprio do sprite');
     ok(s.every((x) => x.texto.length > 20 && !/\d/.test(x.texto.replace('4 perguntas', ''))), 'uma frase de benefício por segmento, sem números');
     const links = s.filter((x) => x.link);
+    // melhoria 25: o título dos segmentos com exemplo leva à página do segmento
+    ok(links.filter((x) => x.link[0] !== '#').every((x) => /^segmentos\/\w+\.html$/.test(x.pagina || '')), 'títulos levam às páginas por segmento');
     ok(links.length >= 6 && links.filter((x) => x.link[0] !== '#').every((x) => /^exemplos\/\w+\.html$/.test(x.link) && /^Ver exemplo de site de /.test(x.nome)), 'links "Ver exemplo" com nome acessível único');
     for (const l of links.filter((x) => x.link[0] !== '#')) {
       const r = await p.request.get(new URL(l.link, SITE).href);
