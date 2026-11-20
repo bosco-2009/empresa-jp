@@ -34,7 +34,7 @@ Regras de toda execução (além do CLAUDE.md):
 - [~] (início 2026-11-19 21:00 UTC) 17. **Captura "Diagnóstico grátis"**: formulário curto (Instagram do negócio + objetivo) que abre uma conversa no chat ao vivo já preenchida, usando as RPCs do chat.
 - [~] (início 2026-11-19 21:04 UTC) 18. **Auditoria contínua**: script único `testes/auditoria-rapida.mjs` que roda todas as páginas × 4 larguras e grava um relatório; documentar no README.
 - [~] (início 2026-11-20 00:47 UTC) 19. **Botão "Compartilhar" nos artigos do blog**: Web Share API no celular e, sem ela, links de WhatsApp e copiar link (com aviso "Link copiado" em `aria-live`), sem scripts de terceiros.
-- [ ] 20. **Painel: filtros e exportação de pedidos/leads**: filtrar por status, período e origem (`utm_*`) e exportar CSV gerado no navegador (com `textContent`/escape seguro, sem enviar dados a terceiros).
+- [~] (início 2026-11-20 01:03 UTC) 20. **Painel: filtros e exportação de pedidos/leads**: filtrar por status, período e origem (`utm_*`) e exportar CSV gerado no navegador (com `textContent`/escape seguro, sem enviar dados a terceiros).
 - [ ] 21. **Imagens responsivas do portfólio**: `srcset`/`sizes` com versões WebP e PNG em `assets/img/portfolio/` e script de geração local, para quando os projetos reais entrarem (seção continua oculta sem itens reais).
 - [ ] 22. **Breadcrumbs com JSON-LD BreadcrumbList** em blog, artigos, exemplos e planos, visíveis e acessíveis (`nav aria-label="Trilha"`).
 - [ ] 23. **Recuperação de checkout abandonado no painel**: listar pedidos `pendente` há mais de 1 hora com botão "Chamar no WhatsApp" (mensagem pronta, só se o cliente deixou o número), sem envio automático.
