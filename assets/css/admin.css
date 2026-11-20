@@ -533,3 +533,76 @@
 }
 .admin-recuperar__acoes { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin: 0; }
 .admin-recuperar__acoes .icone { width: 1.25rem; height: 1.25rem; }
+
+/* ---------------- Notas internas (melhoria 27) ---------------- */
+.admin-notas {
+  border-bottom: 1px solid var(--cor-borda);
+  background: var(--cor-destaque-suave);
+  font-size: var(--texto-sm);
+}
+.admin-pedido__corpo .admin-notas {
+  margin: 0 0 var(--esp-4);
+  border: 1px solid var(--cor-borda);
+  border-left: 4px solid var(--cor-destaque);
+  border-radius: var(--raio-md);
+}
+.admin-notas__resumo {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: 2.75rem;
+  padding: var(--esp-2) var(--esp-4);
+  font-weight: var(--peso-semi);
+  cursor: pointer;
+  list-style: none;
+}
+.admin-notas__resumo::-webkit-details-marker { display: none; }
+/* seta própria: gira ao abrir (sem animação com movimento reduzido) */
+.admin-notas__resumo::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+.admin-notas[open] > .admin-notas__resumo::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) {
+  .admin-notas__resumo::before { transition: none; }
+}
+.admin-notas__resumo:focus-visible { outline-offset: -3px; }
+.admin-notas__selo {
+  padding: 0 var(--esp-2);
+  border-radius: var(--raio-pilula);
+  background: var(--cor-noite-900);
+  color: var(--cor-texto-invertido);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi);
+}
+.admin-notas__selo[hidden] { display: none; }
+.admin-notas__corpo { display: grid; gap: var(--esp-2); padding: 0 var(--esp-4) var(--esp-3); }
+.admin-notas__rotulo { font-size: var(--texto-xs); font-weight: var(--peso-semi); }
+.admin-notas textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  max-height: 14rem;
+  padding: var(--esp-2) var(--esp-3);
+  border: 1px solid var(--cor-cinza-500);
+  border-radius: var(--raio-sm);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-size: var(--texto-sm);
+  resize: vertical;
+}
+.admin-notas textarea:read-only { opacity: 0.7; }
+@media (min-width: 48rem) {
+  .admin-notas textarea { min-height: 5.5rem; }
+}
+.admin-notas__estado { margin: 0; color: var(--cor-texto-suave); font-size: var(--texto-xs); }
+.admin-notas__estado:empty { display: none; }
+.admin-notas__problema { display: grid; gap: var(--esp-2); }
+.admin-notas__problema[hidden] { display: none; }
+.admin-notas__acoes { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin: 0; }
+.admin-notas__acoes:not(:has(button:not([hidden]))) { display: none; }

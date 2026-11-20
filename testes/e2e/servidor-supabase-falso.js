@@ -59,7 +59,7 @@ function enviar(res, status, corpo, extra) {
 }
 function erroPg(res, e) {
   const status = e.code === '42501' ? 403 : 400;
-  enviar(res, status, { code: e.code, message: e.message, details: null, hint: null });
+  enviar(res, status, { code: e.code, message: e.message, details: e.detail || null, hint: null });
 }
 const lerCorpo = (req) => new Promise((ok) => { let d = ''; req.on('data', (x) => (d += x)); req.on('end', () => ok(d ? JSON.parse(d) : {})); });
 
@@ -74,10 +74,13 @@ const ARGS_RPC = {
   pedido_consultar: ['p_codigo', 'p_token'],
   briefing_enviar: ['p_codigo', 'p_token', 'p_dados'],
   briefing_obter: ['p_codigo', 'p_token'],
-  briefing_autorizar_upload: ['p_codigo', 'p_token']
+  briefing_autorizar_upload: ['p_codigo', 'p_token'],
+  nota_salvar: ['p_conversa_id', 'p_pedido_id', 'p_texto', 'p_esperado', 'p_forcar']
 };
 // Funções que devolvem um valor único (PostgREST responde o valor, não uma lista).
-const ESCALARES = ['pedido_definir_preferencia', 'pedido_definir_origem', 'pedido_registrar_pagamento'];
+const ESCALARES = ['pedido_definir_preferencia', 'pedido_definir_origem', 'pedido_registrar_pagamento', 'nota_salvar'];
+// timestamptz como o PostgREST devolve (texto com microssegundos), não como Date do node-pg (milissegundos).
+const COMO_TEXTO = ['nota_salvar'];
 
 // Edge Functions de verdade (os .ts do repositório), com o MP falso.
 const AMBIENTE_FUNCOES = {
@@ -167,7 +170,8 @@ const servidor = http.createServer(async (req, res) => {
       const chaves = Object.keys(corpo).filter((k) => permitidos.includes(k));
       const args = chaves.map((k, i) => `${k} => $${i + 1}`).join(', ');
       const escalar = ESCALARES.includes(nome);
-      const sql = escalar ? `select public.${nome}(${args}) as r` : `select * from public.${nome}(${args})`;
+      const sql = !escalar ? `select * from public.${nome}(${args})`
+        : COMO_TEXTO.includes(nome) ? `select to_json(public.${nome}(${args})) #>> '{}' as r` : `select public.${nome}(${args}) as r`;
       const r = await comoUsuario(req, sql, chaves.map((k) => corpo[k]));
       setImmediate(publicarFila);
       return enviar(res, 200, escalar ? r.rows[0].r : r.rows);
@@ -221,6 +225,14 @@ const servidor = http.createServer(async (req, res) => {
       const id = (url.searchParams.get('pedido_id') || '').replace(/^eq\./, '');
       const r = await comoUsuario(req, `select mp_payment_id, mp_status, mp_status_detalhe, valor_centavos, moeda, resultado, recebido_em
         from public.pedidos_eventos where pedido_id = $1 order by recebido_em`, [id]);
+      return enviar(res, 200, r.rows);
+    }
+    if (url.pathname === '/rest/v1/notas' && req.method === 'GET') {
+      const col = url.searchParams.has('pedido_id') ? 'pedido_id' : 'conversa_id';
+      const id = (url.searchParams.get(col) || '').replace(/^eq\./, '');
+      registro.push({ get: 'notas', col, id });
+      const r = await comoUsuario(req, `select texto, to_json(atualizado_em) #>> '{}' as atualizado_em
+                                         from public.notas where ${col} = $1`, [id]);
       return enviar(res, 200, r.rows);
     }
     if (url.pathname === '/rest/v1/mensagens' && req.method === 'GET') {

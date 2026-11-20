@@ -109,6 +109,7 @@
         var avisos = { tocarSom: tocarSom, piscarTitulo: piscarTitulo, atento: atento, notificar: AVISOS.notificar };
         if (window.PBRAdminPedidos) window.PBRAdminPedidos.iniciar(sb, avisos);
         if (window.PBRAdminBriefings) window.PBRAdminBriefings.iniciar(sb, avisos);
+        if (window.PBRNotas) window.PBRNotas.iniciar(sb);
       }).catch(function () {
         mostrarTela('login');
         mostrarErro($('[data-erro-login]'), 'Não foi possível confirmar seu acesso. Tente de novo.');
@@ -118,6 +119,7 @@
     function encerrarPedidos() {
       if (window.PBRAdminPedidos) window.PBRAdminPedidos.encerrar();
       if (window.PBRAdminBriefings) window.PBRAdminBriefings.encerrar();
+      if (window.PBRNotas) window.PBRNotas.encerrar();
     }
 
     // -------------------------------------------------------------- abas (#conversas / #pedidos)
@@ -454,6 +456,7 @@
       secaoChat.classList.add('mostrando-conversa');
       mostrarErro(erroResposta, '');
       atualizarCabecalho();
+      if (window.PBRNotas) window.PBRNotas.abrir('conversa', id);
       renderizarLista();
       $('[data-conversa-nome]').focus();
       carregarMensagens(id).then(function () { marcarLida(id); });

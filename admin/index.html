@@ -26,6 +26,7 @@
   <script src="../assets/js/admin-respostas.js" defer></script>
   <script src="../assets/js/admin-pedidos.js" defer></script>
   <script src="../assets/js/admin-briefings.js" defer></script>
+  <script src="../assets/js/admin-notas.js" defer></script>
 </head>
 <body class="admin">
   <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
@@ -161,6 +162,24 @@
             <button class="botao botao--contorno botao--pequeno" type="button" data-alternar-status></button>
           </header>
 
+          <!-- Notas internas (admin-notas.js): só o dono vê; salvas no Supabase (tabela notas) -->
+          <details class="admin-notas" data-notas="conversa">
+            <summary class="admin-notas__resumo">Notas internas <span class="admin-notas__selo" data-notas-selo hidden>com nota</span></summary>
+            <div class="admin-notas__corpo">
+              <label class="admin-notas__rotulo" for="notas-conversa-texto">Anotações sobre esta conversa (o cliente nunca vê)</label>
+              <textarea id="notas-conversa-texto" rows="3" maxlength="5000" aria-describedby="notas-conversa-estado" data-notas-texto></textarea>
+              <p class="admin-notas__estado" id="notas-conversa-estado" role="status" data-notas-estado></p>
+              <div class="admin-notas__problema" data-notas-problema hidden>
+                <p class="admin-erro" role="alert" data-notas-erro></p>
+                <p class="admin-notas__acoes">
+                  <button class="botao botao--contorno botao--pequeno" type="button" data-notas-acao="tentar" hidden>Tentar de novo</button>
+                  <button class="botao botao--contorno botao--pequeno" type="button" data-notas-acao="manter" hidden>Manter a minha versão</button>
+                  <button class="botao botao--contorno botao--pequeno" type="button" data-notas-acao="recarregar" hidden>Carregar a versão salva</button>
+                </p>
+              </div>
+            </div>
+          </details>
+
           <div class="admin-mensagens" role="log" aria-live="polite" aria-label="Mensagens" tabindex="0" data-mensagens></div>
 
           <!-- Respostas rápidas (admin-respostas.js): modelos salvos só neste navegador (localStorage) -->
@@ -272,6 +291,23 @@
               <p class="admin-recuperar__sem" data-recuperar-sem hidden>O cliente não deixou WhatsApp neste pedido.</p>
               <p class="admin-recuperar__chamado" role="status" data-recuperar-chamado></p>
             </section>
+            <!-- Notas internas (admin-notas.js): só o dono vê; salvas no Supabase (tabela notas) -->
+            <details class="admin-notas" data-notas="pedido">
+              <summary class="admin-notas__resumo">Notas internas <span class="admin-notas__selo" data-notas-selo hidden>com nota</span></summary>
+              <div class="admin-notas__corpo">
+                <label class="admin-notas__rotulo" for="notas-pedido-texto">Anotações sobre este pedido (o cliente nunca vê)</label>
+                <textarea id="notas-pedido-texto" rows="3" maxlength="5000" aria-describedby="notas-pedido-estado" data-notas-texto></textarea>
+                <p class="admin-notas__estado" id="notas-pedido-estado" role="status" data-notas-estado></p>
+                <div class="admin-notas__problema" data-notas-problema hidden>
+                  <p class="admin-erro" role="alert" data-notas-erro></p>
+                  <p class="admin-notas__acoes">
+                    <button class="botao botao--contorno botao--pequeno" type="button" data-notas-acao="tentar" hidden>Tentar de novo</button>
+                    <button class="botao botao--contorno botao--pequeno" type="button" data-notas-acao="manter" hidden>Manter a minha versão</button>
+                    <button class="botao botao--contorno botao--pequeno" type="button" data-notas-acao="recarregar" hidden>Carregar a versão salva</button>
+                  </p>
+                </div>
+              </div>
+            </details>
             <dl class="admin-dados" data-pedido-dados></dl>
             <h4 class="admin-pedido__subtitulo">Notificações do Mercado Pago</h4>
             <ol class="admin-eventos" data-pedido-eventos></ol>

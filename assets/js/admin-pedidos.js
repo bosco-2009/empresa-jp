@@ -368,6 +368,7 @@
     $('.admin-pedidos').classList.add('mostrando-conversa');
     renderizarLista();
     renderizarDetalhe(true);
+    if (window.PBRNotas) window.PBRNotas.abrir('pedido', id);
   }
 
   function renderizarDetalhe(focar) {
