@@ -28,7 +28,8 @@
     "portfolio": "node e2e/portfolio.test.js",
     "recuperacao": "node e2e/recuperacao.test.js",
     "whatsapp-contextual": "node e2e/whatsapp-contextual.test.js",
-    "segmentos": "node e2e/segmentos.test.js"
+    "segmentos": "node e2e/segmentos.test.js",
+    "prefetch": "node e2e/prefetch.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
