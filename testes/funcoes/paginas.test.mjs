@@ -15,7 +15,10 @@ const SITE = config.site.url;
 // Blog (melhoria 9): páginas em blog/, com caminhos ../ e JSON-LD Article
 const ARTIGOS = ['site-ou-instagram', 'o-que-um-site-profissional-precisa-ter', 'como-funciona-a-criacao-do-seu-site'].map((s) => `blog/${s}.html`);
 const BLOG = ['blog/index.html', ...ARTIGOS];
-const PUBLICAS = ['index.html', 'planos.html', 'exemplos.html', 'termos.html', 'privacidade.html', 'portfolio.html', ...BLOG];
+// Páginas por segmento (melhoria 25): uma por site de exemplo, geradas por testes/segmentos/gerar.py
+const IDS_SEGMENTOS = ['restaurante', 'moda', 'beleza', 'saude', 'servicos', 'pet'];
+const SEGMENTOS = IDS_SEGMENTOS.map((s) => `segmentos/${s}.html`);
+const PUBLICAS = ['index.html', 'planos.html', 'exemplos.html', 'termos.html', 'privacidade.html', 'portfolio.html', ...BLOG, ...SEGMENTOS];
 // Sites de EXEMPLO (fictícios): sempre noindex, com o próprio cabeçalho
 const DEMOS = ['moda', 'restaurante', 'beleza', 'saude', 'servicos', 'pet'].map((s) => `exemplos/${s}.html`);
 const PRIVADAS = ['obrigado.html', 'briefing.html', '404.html'];
@@ -23,6 +26,7 @@ const PRIVADAS = ['obrigado.html', 'briefing.html', '404.html'];
 const OG_POR_PAGINA = {
   'planos.html': 'planos', 'exemplos.html': 'exemplos', 'blog/index.html': 'blog',
   ...Object.fromEntries(ARTIGOS.map((f) => [f, 'blog-' + f.slice(5, -5)])),
+  ...Object.fromEntries(IDS_SEGMENTOS.map((s) => [`segmentos/${s}.html`, 'segmento-' + s])),
 };
 const TODAS = [...PUBLICAS, ...PRIVADAS];
 
@@ -178,7 +182,7 @@ test('blog: JSON-LD Article/Blog válido, links relativos resolvem, no sitemap e
 });
 
 test('trilha (melhoria 22): <nav aria-label="Trilha"> visível igual ao JSON-LD BreadcrumbList', () => {
-  const COM_TRILHA = [...BLOG, 'planos.html', 'exemplos.html', ...DEMOS];
+  const COM_TRILHA = [...BLOG, ...SEGMENTOS, 'planos.html', 'exemplos.html', ...DEMOS];
   for (const f of COM_TRILHA) {
     const h = ler(f);
     const navs = [...h.matchAll(/<nav class="migalhas[^"]*" aria-label="Trilha"><ol role="list">([\s\S]*?)<\/ol><\/nav>/g)];
@@ -207,6 +211,42 @@ test('trilha (melhoria 22): <nav aria-label="Trilha"> visível igual ao JSON-LD 
       }
     });
     assert.equal(el.at(-1).item, SITE + f.replace(/index\.html$/, ''), `${f}: último nível é a própria página`);
+  }
+});
+
+test('segmentos (melhoria 25): JSON-LD Service, exemplo e simulador do segmento, sitemap, links e honestidade', () => {
+  const urls = [...ler('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const home = ler('index.html');
+  const simulador = ler('index.html').match(/name="tipo" value="([a-z]+)"/g).map((t) => t.slice(19, -1));
+  for (const id of IDS_SEGMENTOS) {
+    const f = `segmentos/${id}.html`;
+    const h = ler(f);
+    const url = SITE + f;
+    assert.ok(urls.includes(url), `${f} no sitemap`);
+    assert.ok(home.includes(`href="${f}"`), `${f}: link na seção "Para quem é" da home`);
+    const lds = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+    assert.equal(lds.length, 1, `${f}: um JSON-LD`);
+    const servico = lds[0]['@graph'].find((n) => n['@type'] === 'Service');
+    assert.ok(servico && servico.name && servico.description && servico.serviceType, `${f}: Service completo`);
+    assert.equal(servico.url, url, `${f}: Service.url`);
+    assert.equal(servico.provider.name, 'Portfólio BR');
+    assert.equal(servico.image, meta(h, 'og:image'), `${f}: imagem do Service igual à OG`);
+    assert.ok(!('offers' in servico) && !('aggregateRating' in servico), `${f}: sem preço fixo nem avaliações no JSON-LD`);
+    assert.equal(meta(h, 'og:type'), 'website');
+    assert.match(h, new RegExp(`href="\\.\\./exemplos/${id}\\.html"`), `${f}: link para o exemplo do segmento`);
+    assert.ok(existsSync(new URL(`exemplos/${id}.html`, raiz)), `exemplos/${id}.html existe`);
+    assert.ok(simulador.includes(id), `${id} é uma opção do simulador`);
+    assert.match(h, new RegExp(`href="\\.\\./index\\.html\\?segmento=${id}#simulador"`), `${f}: link para o simulador já com o segmento`);
+    assert.match(h, /data-whats="segmento" hidden/, `${f}: WhatsApp só aparece com número válido`);
+    for (const outro of IDS_SEGMENTOS.filter((o) => o !== id)) assert.match(h, new RegExp(`href="${outro}\\.html"`), `${f}: liga para ${outro}`);
+    for (const [, alvo] of h.matchAll(/\s(?:href|src)="(?![#]|https?:|mailto:|data:)([^"#?]+)/g)) {
+      const resolvido = new URL(alvo, new URL(f, raiz));
+      const arquivo = resolvido.pathname.endsWith('/') ? new URL('index.html', resolvido) : resolvido;
+      assert.ok(existsSync(arquivo), `${f}: link quebrado ${alvo}`);
+    }
+    // honestidade: sem estatísticas, números de clientes, depoimentos ou preços escritos na página
+    const texto = (/<article[\s\S]*?<\/article>/.exec(h) || [''])[0].replace(/<[^>]+>/g, ' ');
+    assert.doesNotMatch(texto, /\d+\s?%|\d+\s+(clientes|sites|empresas|negócios)|R\$|depoimento|garantimos|primeiro lugar/i, `${f}: sem números ou promessas inventadas`);
   }
 });
 

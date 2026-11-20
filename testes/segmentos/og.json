@@ -1,0 +1,152 @@
+[
+  {
+    "nome": "segmento-restaurante",
+    "titulo": [
+      [
+        [
+          "Site para",
+          false
+        ]
+      ],
+      [
+        [
+          "restaurante",
+          true
+        ]
+      ],
+      [
+        [
+          "e delivery",
+          false
+        ]
+      ]
+    ],
+    "linha": "Cardápio no celular e pedido pelo WhatsApp",
+    "alt": "Site para restaurante, lanchonete e delivery: Portfólio BR"
+  },
+  {
+    "nome": "segmento-moda",
+    "titulo": [
+      [
+        [
+          "Site para",
+          false
+        ]
+      ],
+      [
+        [
+          "loja de roupas",
+          true
+        ]
+      ],
+      [
+        [
+          "e moda",
+          false
+        ]
+      ]
+    ],
+    "linha": "Vitrine no celular e venda pelo WhatsApp",
+    "alt": "Site para loja de roupas, moda e acessórios: Portfólio BR"
+  },
+  {
+    "nome": "segmento-beleza",
+    "titulo": [
+      [
+        [
+          "Site para salão,",
+          false
+        ]
+      ],
+      [
+        [
+          "barbearia",
+          true
+        ]
+      ],
+      [
+        [
+          "e estética",
+          false
+        ]
+      ]
+    ],
+    "linha": "Serviços, galeria e agendamento pelo WhatsApp",
+    "alt": "Site para salão de beleza, barbearia e estética: Portfólio BR"
+  },
+  {
+    "nome": "segmento-saude",
+    "titulo": [
+      [
+        [
+          "Site para",
+          false
+        ]
+      ],
+      [
+        [
+          "consultório",
+          true
+        ]
+      ],
+      [
+        [
+          "e clínica",
+          false
+        ]
+      ]
+    ],
+    "linha": "Especialidades, equipe e agendamento",
+    "alt": "Site para consultório, clínica e profissionais de saúde: Portfólio BR"
+  },
+  {
+    "nome": "segmento-servicos",
+    "titulo": [
+      [
+        [
+          "Site para",
+          false
+        ]
+      ],
+      [
+        [
+          "prestadores",
+          true
+        ]
+      ],
+      [
+        [
+          "de serviço",
+          false
+        ]
+      ]
+    ],
+    "linha": "Serviços, área atendida e orçamento",
+    "alt": "Site para oficina, reformas e prestadores de serviço: Portfólio BR"
+  },
+  {
+    "nome": "segmento-pet",
+    "titulo": [
+      [
+        [
+          "Site para",
+          false
+        ]
+      ],
+      [
+        [
+          "pet shop",
+          true
+        ]
+      ],
+      [
+        [
+          "e banho e tosa",
+          false
+        ]
+      ]
+    ],
+    "linha": "Serviços, produtos e agendamento",
+    "alt": "Site para pet shop e banho e tosa: Portfólio BR"
+  }
+]

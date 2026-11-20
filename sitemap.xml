@@ -18,6 +18,42 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/segmentos/restaurante.html</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/segmentos/moda.html</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/segmentos/beleza.html</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/segmentos/saude.html</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/segmentos/servicos.html</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bosco-2009.github.io/empresa-jp/segmentos/pet.html</loc>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://bosco-2009.github.io/empresa-jp/blog/</loc>
     <lastmod>2026-11-19</lastmod>
     <changefreq>weekly</changefreq>

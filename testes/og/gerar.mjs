@@ -4,7 +4,7 @@
 //   node testes/og/gerar.mjs          (precisa do Playwright de testes/ e de python3 + Pillow para compactar)
 //
 // Só textos que já estão no site (títulos das páginas). Sem preços, números ou clientes: nada de [PROVISÓRIO] aqui.
-import { mkdirSync, writeFileSync, statSync } from 'node:fs';
+import { mkdirSync, writeFileSync, statSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -61,6 +61,11 @@ const IMAGENS = [
     alt: 'Artigo: Como funciona a criação do seu site com a Portfólio BR',
   },
 ];
+
+// Páginas por segmento (melhoria 25): textos em testes/segmentos/og.json, gerado por testes/segmentos/gerar.py
+for (const s of JSON.parse(readFileSync(new URL('testes/segmentos/og.json', raiz), 'utf8'))) {
+  IMAGENS.push({ nome: s.nome, selo: 'Para quem é', enfeite: 'celular', titulo: s.titulo, linha: s.linha, alt: s.alt });
+}
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 

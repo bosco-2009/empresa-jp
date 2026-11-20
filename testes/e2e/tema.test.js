@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
 
 const SITE = process.env.SITE || 'http://localhost:8080/';
 const AXE = require.resolve('axe-core/axe.min.js');
-const PAGINAS = ['', 'planos.html', 'exemplos.html', 'portfolio.html', 'termos.html', 'privacidade.html', 'briefing.html', 'obrigado.html', 'blog/', 'blog/site-ou-instagram.html'];
+const PAGINAS = ['', 'planos.html', 'exemplos.html', 'portfolio.html', 'termos.html', 'privacidade.html', 'briefing.html', 'obrigado.html', 'blog/', 'blog/site-ou-instagram.html', 'segmentos/restaurante.html', 'segmentos/saude.html'];
 let falhas = 0;
 function ok(cond, msg) { if (cond) console.log('  ✔ ' + msg); else { falhas++; console.log('  ✘ ' + msg); } }
 
