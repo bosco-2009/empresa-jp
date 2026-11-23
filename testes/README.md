@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -180,3 +180,8 @@ o dono mudando a etapa no detalhe do pedido do painel (em produção, ajustes fi
 - link `wa.me` com o texto escapado e `rel="noopener"`; nada é enviado pelo sistema;
 - registro local de "chamado" (só id e data no `localStorage` do admin);
 - 320, 375, 768 e 1280 px com axe e console limpo.
+
+`depois-pagar.test.js` (só precisa do servidor estático) cobre a melhoria 35 em `planos.html`: o bloco "O que acontece
+depois de pagar" logo abaixo do botão (etapas e textos de `config.depoisDoPagamento`, prazo do plano escolhido atualizado
+ao trocar de plano) e a seção "Dúvidas sobre o pagamento" (só as perguntas de `config.faq` com `checkout: true`, com link
+direto `#faq-...` e "Copiar link"), sem mudar o FAQ da home; 320/375/768/1280 px, claro e escuro, console e axe.
