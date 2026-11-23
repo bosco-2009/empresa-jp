@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -185,3 +185,11 @@ o dono mudando a etapa no detalhe do pedido do painel (em produção, ajustes fi
 depois de pagar" logo abaixo do botão (etapas e textos de `config.depoisDoPagamento`, prazo do plano escolhido atualizado
 ao trocar de plano) e a seção "Dúvidas sobre o pagamento" (só as perguntas de `config.faq` com `checkout: true`, com link
 direto `#faq-...` e "Copiar link"), sem mudar o FAQ da home; 320/375/768/1280 px, claro e escuro, console e axe.
+
+`chat-acessivel.test.js` (Supabase falso + servidor estático) cobre a melhoria 36 no widget do chat, pela árvore de
+acessibilidade do Playwright (`ariaSnapshot`, salva em `e2e/saida/chat-arvore-celular.txt`):
+- abrir pelo teclado leva o foco ao primeiro campo; `Esc` fecha e devolve o foco ao botão (só quando o foco está no chat);
+- no celular (painel em tela cheia) o diálogo é `aria-modal` e o `Tab` circula dentro dele; no computador não prende;
+- rótulos "(opcional)" e descrições (dica do WhatsApp, aviso de privacidade, erro) dos campos;
+- `aria-live` só numa região de anúncio: respostas novas do atendente (com o chat aberto ou fechado), nunca o
+  histórico restaurado nem as mensagens do próprio visitante; axe e console limpos.

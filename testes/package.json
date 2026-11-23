@@ -34,7 +34,8 @@
     "chat-desempenho": "node e2e/chat-desempenho.test.js",
     "resumo": "node e2e/resumo.test.js",
     "briefing-pendente": "node e2e/briefing-pendente.test.js",
-    "depois-pagar": "node e2e/depois-pagar.test.js"
+    "depois-pagar": "node e2e/depois-pagar.test.js",
+    "chat-acessivel": "node e2e/chat-acessivel.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
