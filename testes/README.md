@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -160,6 +160,11 @@ node testes/og/gerar.mjs
 Gera um SVG por página em `testes/og/svg/` e o PNG 1200×630 (< 100 KB) em `assets/img/og/` para planos, exemplos,
 blog e cada artigo. Ao criar um artigo novo, acrescente-o à lista `IMAGENS` do script e aponte `og:image` (e o
 `image` do JSON-LD) para o PNG gerado; o `paginas.test.mjs` confere tamanho, peso e os caminhos.
+
+`pedido.test.js` (Supabase falso) cobre o acompanhamento do pedido (`pedido.html`): sem acesso e token errado, pagamento
+pendente e recusado, link pessoal (token sai da barra), nenhum dado pessoal na página, briefing recebido pelo botão "Atualizar",
+o dono mudando a etapa no detalhe do pedido do painel (em produção, ajustes finais, entregue), prazo do plano vindo do `config.js`,
+4 larguras em claro e escuro com axe.
 
 `recuperacao.test.js` cobre a recuperação de checkout abandonado no painel (pedidos `pendente` há mais de 1 hora):
 - filtro "Abandonados" com contador e etiqueta no item (o pendente recente e o aprovado ficam de fora);

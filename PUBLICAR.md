@@ -97,7 +97,7 @@ O link "Portfólio" aparece sozinho no menu e no rodapé quando a lista deixa de
    <!-- Rascunho: remover esta linha ao publicar, junto com rascunho: false no config.js (ver PUBLICAR.md) -->
    <meta name="robots" content="noindex, nofollow">
    ```
-   **Não** remova o `noindex` de `obrigado.html`, `briefing.html`, `404.html` e `admin/index.html`: elas nunca
+   **Não** remova o `noindex` de `obrigado.html`, `briefing.html`, `pedido.html`, `404.html` e `admin/index.html`: elas nunca
    devem ser indexadas (o comentário delas é diferente).
 3. Rode `node --test testes/funcoes/*.test.mjs`. O teste "noindex" confere se as páginas certas ficaram com ou sem `noindex`.
 
@@ -131,7 +131,8 @@ Depois crie o arquivo `CNAME` com o domínio e configure o DNS conforme a docume
   - [ ] fora do horário, o widget oferece o WhatsApp.
 - [ ] Compra real de teste (passo 4):
   - [ ] o pagamento aprovado aparece na aba Pedidos;
-  - [ ] `obrigado.html` mostra o botão do briefing;
+  - [ ] `obrigado.html` mostra o botão do briefing e o link "Acompanhar meu pedido";
+  - [ ] `pedido.html` mostra as etapas, e mudar a etapa no detalhe do pedido do painel aparece para o cliente ao atualizar;
   - [ ] o briefing com upload de uma imagem aparece na aba Briefings, e o arquivo baixa.
 - [ ] `https://bosco-2009.github.io/empresa-jp/qualquer-coisa` mostra a página 404 do site, com estilo e links funcionando.
 - [ ] [Rich Results Test](https://search.google.com/test/rich-results) na home: Organization e Service sem erros.

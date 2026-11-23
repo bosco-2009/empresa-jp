@@ -13,6 +13,7 @@ profissionais para pequenos negócios do Brasil.
 | `index.html` | Home de vendas: serviços, como funciona, planos, garantias, dúvidas |
 | `planos.html` | Escolha do plano e checkout pelo **Mercado Pago** (Pix, boleto, cartão) |
 | `obrigado.html` | Retorno do pagamento: status real do pedido e acesso ao briefing |
+| `pedido.html` | O cliente acompanha as etapas do pedido (pago → briefing recebido → em produção → entregue) |
 | `briefing.html` | Briefing pós-compra em 5 etapas, com envio de logo, fotos e PDFs |
 | `portfolio.html` | Projetos reais (página e link do menu ocultos enquanto não houver projetos) |
 | `termos.html` / `privacidade.html` | Termos de uso (CDC) e política de privacidade (LGPD) |

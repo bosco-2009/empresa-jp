@@ -17,7 +17,7 @@ const configTeste = fs.readFileSync(RAIZ + '/config.js', 'utf8')
   .replace(/(anonKey:\s*)'[^']*'/, `$1'${ANON}'`);
 
 const PAGINAS = [
-  ['home', ''], ['planos', 'planos.html'], ['obrigado', 'obrigado.html'], ['briefing', 'briefing.html'],
+  ['home', ''], ['planos', 'planos.html'], ['obrigado', 'obrigado.html'], ['briefing', 'briefing.html'], ['pedido', 'pedido.html'],
   ['termos', 'termos.html'], ['privacidade', 'privacidade.html'], ['portfolio', 'portfolio.html'],
   ['exemplos', 'exemplos.html'],
   ['blog', 'blog/'], ...['site-ou-instagram', 'o-que-um-site-profissional-precisa-ter', 'como-funciona-a-criacao-do-seu-site'].map((x) => ['blog-' + x.split('-')[0], `blog/${x}.html`]),
