@@ -14,7 +14,7 @@ const SITE = config.site.url;
 
 // Blog (melhoria 9): páginas em blog/, com caminhos ../ e JSON-LD Article
 const ARTIGOS = ['site-ou-instagram', 'o-que-um-site-profissional-precisa-ter', 'como-funciona-a-criacao-do-seu-site'].map((s) => `blog/${s}.html`);
-const BLOG = ['blog/index.html', ...ARTIGOS];
+const BLOG = ['blog/index.html', 'blog/autor.html', ...ARTIGOS];
 // Páginas por segmento (melhoria 25): uma por site de exemplo, geradas por testes/segmentos/gerar.py
 const IDS_SEGMENTOS = ['restaurante', 'moda', 'beleza', 'saude', 'servicos', 'pet'];
 const SEGMENTOS = IDS_SEGMENTOS.map((s) => `segmentos/${s}.html`);
@@ -167,6 +167,10 @@ test('blog: JSON-LD Article/Blog válido, links relativos resolvem, no sitemap e
       const blog = lds[0]['@graph'].find((n) => n['@type'] === 'Blog');
       assert.ok(blog, 'blog/index.html: Blog no @graph');
       assert.equal(blog.blogPost.length, ARTIGOS.length);
+      continue;
+    }
+    if (f === 'blog/autor.html') {
+      assert.ok(lds[0]['@graph'].some((n) => n['@type'] === 'ProfilePage'), 'blog/autor.html: ProfilePage');
       continue;
     }
     const art = lds[0]['@graph'].find((n) => n['@type'] === 'Article');

@@ -52,7 +52,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 ├── portfolio.html             # Portfólio (Fase 4)
 ├── exemplos.html              # 6 sites de EXEMPLO por segmento (melhoria 3)
 ├── exemplos/                  # moda, restaurante, beleza, saude, servicos, pet: fictícios, sempre noindex
-├── blog/                      # index.html + 3 artigos (JSON-LD Article; caminhos ../; link no rodapé e sitemap)
+├── blog/                      # index.html + 3 artigos + autor.html (ProfilePage) + feed.xml (RSS); JSON-LD validado em testes/funcoes/blog-seo.test.mjs
 ├── segmentos/                 # 6 páginas de SEO por segmento (JSON-LD Service), geradas por testes/segmentos/gerar.py
 ├── planos.html                # Planos + checkout Mercado Pago (Fase 3)
 ├── obrigado.html              # Retorno do checkout: status pela RPC pedido_consultar (Fase 3)
