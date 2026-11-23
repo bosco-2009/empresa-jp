@@ -92,7 +92,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── comparativo.js     # planos.html#comparativo: tabela (≥48rem) e abas no celular (config.comparativo)
 │   │   ├── tema.js            # Botão do modo escuro (a escolha é aplicada antes da pintura pelo inicio.js)
 │   │   ├── origem.js          # utm_* + domínio de referência na chegada → chat (pagina_origem) e pedido (origem)
-│   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
+│   │   ├── chat.js            # Widget do chat ao vivo (Fase 2); supabase-js só ao abrir/intenção ou com conversa salva
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
 │   │   ├── pedido.js          # Etapas do pedido para o cliente (pago → briefing → produção → entregue)

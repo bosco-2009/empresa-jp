@@ -30,7 +30,8 @@
     "whatsapp-contextual": "node e2e/whatsapp-contextual.test.js",
     "segmentos": "node e2e/segmentos.test.js",
     "prefetch": "node e2e/prefetch.test.js",
-    "pedido": "node e2e/pedido.test.js"
+    "pedido": "node e2e/pedido.test.js",
+    "chat-desempenho": "node e2e/chat-desempenho.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
