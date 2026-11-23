@@ -137,18 +137,29 @@ def json_ld(s, url):
         '@graph': [
             {
                 '@type': 'Service',
+                '@id': url + '#servico',
                 'name': s['h1'],
                 'serviceType': 'Criação de site profissional',
                 'description': s['description'],
                 'url': url,
                 'inLanguage': 'pt-BR',
+                # SEO local sem inventar (melhoria 40): atendimento online para todo o Brasil,
+                # sem cidade, endereço ou números. Detalhes da empresa ficam no nó da home (#organizacao).
                 'areaServed': {'@type': 'Country', 'name': 'Brasil'},
+                'availableChannel': {
+                    '@type': 'ServiceChannel',
+                    'name': 'Atendimento online',
+                    'serviceUrl': SITE + 'planos.html',
+                    'availableLanguage': 'pt-BR',
+                },
                 'audience': {'@type': 'BusinessAudience', 'name': s['trilha'].replace('Sites para ', '').capitalize()},
                 'provider': {
                     '@type': 'Organization',
+                    '@id': SITE + '#organizacao',
                     'name': 'Portfólio BR',
                     'url': SITE,
                     'logo': SITE + 'assets/img/icon-512.png',
+                    'knowsAbout': ['Criação de sites profissionais', s['trilha']],
                 },
                 'image': f"{SITE}assets/img/og/segmento-{s['id']}.png",
             },

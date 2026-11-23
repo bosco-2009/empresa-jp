@@ -149,3 +149,71 @@ test('feed RSS: bem formado, um item por artigo, datas iguais e linkado no <head
   assert.ok(existsSync(new URL('blog/feed.xml', raiz)));
   assert.ok(ler('sitemap.xml').includes(`<loc>${AUTOR}</loc>`), 'autor no sitemap');
 });
+
+// SEO local sem inventar (melhoria 40): atendimento online para o Brasil, trilhas coerentes com a tela.
+const SEGMENTOS = readdirSync(new URL('segmentos/', raiz)).filter((f) => f.endsWith('.html')).map((f) => 'segmentos/' + f);
+const COM_TRILHA = ['exemplos.html', ...paginas.filter((f) => /^(blog|segmentos|exemplos)\//.test(f))];
+const temaDe = (h) => nos(JSON.parse(blocosLd(h)[0])).find((n) => n.knowsAbout);
+const decodifica = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+
+test('trilhas: BreadcrumbList em blog/segmentos/exemplos igual à <nav aria-label="Trilha"> visível', () => {
+  for (const f of COM_TRILHA) {
+    const h = ler(f);
+    // Exemplos fictícios são noindex e sem canonical: a página atual é o próprio endereço
+    const atual = canonical(h) || (SITE + f).replace(/index\.html$/, '');
+    const nav = /<nav class="migalhas[^"]*" aria-label="Trilha"><ol role="list">([\s\S]*?)<\/ol><\/nav>/.exec(h);
+    assert.ok(nav, `${f}: trilha visível`);
+    const visivel = [...nav[1].matchAll(/<li(?: aria-current="page")?>(?:<a href="([^"]+)">)?([^<]+)(?:<\/a>)?<\/li>/g)]
+      .map((m) => ({ nome: decodifica(m[2]), url: m[1] ? new URL(m[1], SITE + f).href.replace(/index\.html$/, '') : atual }));
+    assert.ok(visivel.length >= 2, `${f}: trilha com pelo menos 2 níveis`);
+    assert.match(nav[1], /<li aria-current="page">[^<]+<\/li><\/ol>$|<li aria-current="page">[^<]+<\/li>$/, `${f}: último nível é a página atual`);
+    const listas = blocosLd(h).flatMap((b) => nos(JSON.parse(b))).filter((n) => n['@type'] === 'BreadcrumbList');
+    assert.equal(listas.length, 1, `${f}: uma BreadcrumbList`);
+    const ld = listas[0].itemListElement.map((it) => ({ nome: it.name, url: it.item }));
+    assert.deepEqual(ld, visivel, `${f}: JSON-LD = trilha visível`);
+    assert.equal(ld.at(-1).url, atual, `${f}: último item = página atual (canonical)`);
+  }
+});
+
+test('segmentos: Service com área Brasil, canal online e provedor ligado à organização', () => {
+  assert.equal(SEGMENTOS.length, 6);
+  for (const f of SEGMENTOS) {
+    const h = ler(f);
+    const srv = nos(JSON.parse(blocosLd(h)[0])).find((n) => n['@type'] === 'Service');
+    assert.ok(srv, `${f}: Service`);
+    assert.equal(srv['@id'], canonical(h) + '#servico', `${f}: @id do serviço`);
+    assert.equal(srv.url, canonical(h));
+    assert.deepEqual(srv.areaServed, { '@type': 'Country', name: 'Brasil' }, `${f}: areaServed só Brasil`);
+    assert.equal(srv.availableChannel['@type'], 'ServiceChannel', `${f}: canal`);
+    assert.equal(srv.availableChannel.serviceUrl, SITE + 'planos.html', `${f}: canal leva aos planos`);
+    assert.equal(srv.availableChannel.availableLanguage, 'pt-BR');
+    assert.equal(srv.provider['@id'], ORG_ID, `${f}: provider = organização`);
+    const trilha = nos(JSON.parse(blocosLd(h)[0])).find((n) => n['@type'] === 'BreadcrumbList').itemListElement.at(-1).name;
+    assert.ok(srv.provider.knowsAbout.includes(trilha), `${f}: knowsAbout inclui o segmento da página`);
+    assert.ok(ler('index.html').includes(`"${trilha}"`), `${f}: segmento listado no knowsAbout da home`);
+  }
+});
+
+test('organização: knowsAbout igual na home e no autor, só com serviços que têm página', () => {
+  const home = temaDe(ler('index.html'));
+  const autor = temaDe(ler('blog/autor.html'));
+  assert.equal(home['@id'], ORG_ID);
+  assert.deepEqual(autor.knowsAbout, home.knowsAbout, 'mesma lista nos dois nós da organização');
+  assert.deepEqual(home.areaServed, { '@type': 'Country', name: 'Brasil' });
+  const segmentos = home.knowsAbout.filter((t) => /^Sites para (?!pequenos)/.test(t));
+  assert.equal(segmentos.length, SEGMENTOS.length, 'um tema por página de segmento');
+});
+
+test('sem dados locais inventados: nenhuma cidade, endereço, geo, nota ou contato fixo no JSON-LD estático', () => {
+  const proibidos = ['City', 'PostalAddress', 'GeoCoordinates', 'AggregateRating', 'Review', 'LocalBusiness'];
+  const chaves = ['address', 'addressLocality', 'geo', 'aggregateRating', 'review', 'telephone', 'email', 'taxID', 'openingHours'];
+  for (const f of paginas) {
+    for (const bruto of blocosLd(ler(f))) {
+      for (const n of nos(JSON.parse(bruto))) {
+        assert.ok(!proibidos.includes(n['@type']), `${f}: @type ${n['@type']} não pode ser inventado`);
+        for (const c of chaves) assert.ok(!(c in n), `${f}: ${c} só vem do config.js pelo main.js`);
+        if (n.areaServed) assert.equal(n.areaServed.name, 'Brasil', `${f}: areaServed só Brasil`);
+      }
+    }
+  }
+});
