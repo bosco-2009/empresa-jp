@@ -20,7 +20,7 @@ const PAGINAS = [
   ['home', ''], ['planos', 'planos.html'], ['obrigado', 'obrigado.html'], ['briefing', 'briefing.html'], ['pedido', 'pedido.html'],
   ['termos', 'termos.html'], ['privacidade', 'privacidade.html'], ['portfolio', 'portfolio.html'],
   ['exemplos', 'exemplos.html'],
-  ['blog', 'blog/'], ...['site-ou-instagram', 'o-que-um-site-profissional-precisa-ter', 'como-funciona-a-criacao-do-seu-site'].map((x) => ['blog-' + x.split('-')[0], `blog/${x}.html`]),
+  ['blog', 'blog/'], ['blog-autor', 'blog/autor.html'], ...['site-ou-instagram', 'o-que-um-site-profissional-precisa-ter', 'como-funciona-a-criacao-do-seu-site'].map((x) => ['blog-' + x.split('-')[0], `blog/${x}.html`]),
   ...['moda', 'restaurante', 'beleza', 'saude', 'servicos', 'pet'].map((x) => ['exemplo-' + x, `exemplos/${x}.html`]),
   ...['restaurante', 'moda', 'beleza', 'saude', 'servicos', 'pet'].map((x) => ['segmento-' + x, `segmentos/${x}.html`]),
   ['404', 'empresa-jp/uma/pagina/que/nao/existe'], ['admin', 'admin/'],
