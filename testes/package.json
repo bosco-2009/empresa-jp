@@ -32,7 +32,8 @@
     "prefetch": "node e2e/prefetch.test.js",
     "pedido": "node e2e/pedido.test.js",
     "chat-desempenho": "node e2e/chat-desempenho.test.js",
-    "resumo": "node e2e/resumo.test.js"
+    "resumo": "node e2e/resumo.test.js",
+    "briefing-pendente": "node e2e/briefing-pendente.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",

@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -114,6 +114,10 @@ links para os sites de exemplo (nome acessível único), revelação na rolagem 
 `respostas-rapidas.test.js` (precisa do Supabase falso, como o `chat.test.js`) cobre as respostas rápidas do painel:
 inserção no cursor sem enviar, `{nome}`, padrões com preços/prazos do `config.js`, editor em `<dialog>` (teclado, axe),
 localStorage e 4 larguras.
+
+`briefing-pendente.test.js` (Supabase falso) cobre o lembrete de briefing pendente na aba Pedidos: filtro "Sem briefing"
+(aprovados há mais de 24 h), selo da aba (pendentes + sem briefing), mensagem pronta com `pedido.html?pedido=` **sem o
+token**, wa.me sem envio automático, registro local de "lembrado" e o bloco sumindo quando o briefing chega (tempo real).
 
 `chat-desempenho.test.js` (Supabase falso) cobre o carregamento sob demanda do chat: visitante novo não baixa o
 `supabase-js` nem abre WebSocket na carga; mouse/foco/toque no botão só baixam a biblioteca (sem cliente nem conexão);
