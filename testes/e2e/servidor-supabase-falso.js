@@ -73,6 +73,7 @@ const ARGS_RPC = {
   pedido_registrar_pagamento: ['p_pedido_id', 'p_payment_id', 'p_mp_status', 'p_mp_status_detalhe', 'p_valor_centavos', 'p_moeda'],
   pedido_consultar: ['p_codigo', 'p_token'],
   pedido_acompanhar: ['p_codigo', 'p_token'],
+  pedido_preferencia_para_reabrir: ['p_codigo', 'p_token'],
   briefing_enviar: ['p_codigo', 'p_token', 'p_dados'],
   briefing_obter: ['p_codigo', 'p_token'],
   briefing_autorizar_upload: ['p_codigo', 'p_token']

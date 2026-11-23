@@ -71,8 +71,13 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run css-critico && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run css-critico && npm run pedido-aberto && npm run layout && npm run auditoria
 ```
+
+`pedido-aberto.test.js` (Supabase e MP falsos) cobre o aviso "Você tem um pedido em aberto" de `planos.html` (melhoria 39):
+volta do Mercado Pago sem pagar, "Concluir pagamento" reabrindo a **mesma** preferência (sem pedido duplicado nem nada novo
+no `localStorage`), Pix em processamento recusado com mensagem, aviso sumindo depois do pagamento aprovado, token adulterado,
+pedido com mais de 30 dias, sem dados pessoais na tela, 4 larguras, modo escuro e axe.
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
 768 e 1280 px:

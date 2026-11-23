@@ -5,6 +5,14 @@
 //   no pedido por pedido_definir_origem. Falha ao gravar a origem nunca impede o pagamento.
 // Saída: { pedido_id, codigo, token, plano_nome, valor_centavos, init_point }
 //
+//
+// Modo "reabrir" (melhoria 39): { reabrir: true, codigo, token }
+//   Para quem voltou do Mercado Pago sem pagar. Não cria pedido novo: valida código + token pela função
+//   pedido_preferencia_para_reabrir (só pedido pendente, sem pagamento em processamento, até 30 dias),
+//   consulta a preferência já criada no MP e devolve { codigo, init_point }. Nenhum dado pessoal sai daqui.
+//   Erros: acesso_negado 403 · pedido_nao_pendente / pagamento_em_andamento / pedido_nao_reabrivel 409 ·
+//   mp_indisponivel 502.
+//
 // O PREÇO vem da tabela public.planos (função pedido_criar). Qualquer valor enviado pelo front é ignorado.
 // O token devolvido é o segredo que o navegador guarda para consultar o status (pedido_consultar);
 // no banco fica só o SHA-256 dele.
@@ -36,6 +44,53 @@ export function limparOrigem(v: unknown): string | null {
   return t || null;
 }
 
+const ERROS_REABRIR = ['pedido_nao_pendente', 'pagamento_em_andamento', 'pedido_nao_reabrivel'];
+
+// Entrada do modo reabrir: mesmos formatos que o banco aceita (código PBR-XXXXXX e token hex de 64).
+export function entradaReabrirValida(c: Record<string, unknown>): boolean {
+  return c.reabrir === true &&
+    typeof c.codigo === 'string' && /^PBR-[A-HJ-NP-Z2-9]{6}$/.test(c.codigo) &&
+    typeof c.token === 'string' && /^[0-9a-f]{64}$/.test(c.token);
+}
+
+async function reabrir(amb: Ambiente, corpo: Record<string, unknown>, cors: Record<string, string>, f: typeof fetch): Promise<Response> {
+  if (!entradaReabrirValida(corpo)) return json({ erro: 'acesso_negado' }, 403, cors);
+
+  let preferenciaId: string;
+  try {
+    const linhas = await rpc(amb, 'pedido_preferencia_para_reabrir', { p_codigo: corpo.codigo, p_token: corpo.token }, f) as
+      { codigo: string; mp_preference_id: string }[];
+    const id = Array.isArray(linhas) && linhas[0] ? linhas[0].mp_preference_id : '';
+    if (!id) throw new Error('pedido_nao_reabrivel');
+    preferenciaId = id;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '';
+    const conhecido = ERROS_REABRIR.find((x) => msg.includes(x));
+    if (conhecido) return json({ erro: conhecido }, 409, cors);
+    if (msg.includes('acesso_negado')) return json({ erro: 'acesso_negado' }, 403, cors);
+    console.error('criar-pagamento: reabrir falhou', e instanceof ErroBanco ? e.codigo : '', msg);
+    return json({ erro: 'falha_pedido' }, 500, cors);
+  }
+
+  let pref: { id?: string; init_point?: string; sandbox_init_point?: string };
+  try {
+    const r = await f(`${amb.mpApiUrl}/checkout/preferences/${encodeURIComponent(preferenciaId)}`, {
+      method: 'GET',
+      headers: { Authorization: 'Bearer ' + amb.mpAccessToken },
+    });
+    pref = await r.json();
+    if (!r.ok || pref.id !== preferenciaId) throw new Error(`MP respondeu ${r.status}`);
+  } catch (e) {
+    console.error('criar-pagamento: Mercado Pago falhou ao reabrir', e instanceof Error ? e.message : e);
+    return json({ erro: 'mp_indisponivel' }, 502, cors);
+  }
+
+  const sandbox = amb.mpSandbox ?? amb.mpAccessToken.startsWith('TEST-');
+  const initPoint = sandbox ? pref.sandbox_init_point : pref.init_point;
+  if (!initPoint) return json({ erro: 'mp_indisponivel' }, 502, cors);
+  return json({ codigo: corpo.codigo, init_point: initPoint }, 200, cors);
+}
+
 export function criarHandlerCriarPagamento(amb: Ambiente, f: typeof fetch = fetch) {
   return async (req: Request): Promise<Response> => {
     const cors = cabecalhosCors(req.headers.get('origin'), amb);
@@ -54,6 +109,7 @@ export function criarHandlerCriarPagamento(amb: Ambiente, f: typeof fetch = fetc
     } catch {
       return json({ erro: 'json_invalido' }, 400, cors);
     }
+    if (corpo.reabrir !== undefined) return reabrir(amb, corpo, cors, f);
     const erroEntrada = validarEntrada(corpo);
     if (erroEntrada) return json({ erro: erroEntrada }, 400, cors);
 

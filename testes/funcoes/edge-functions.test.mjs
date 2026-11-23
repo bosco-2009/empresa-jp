@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac, createHash } from 'node:crypto';
 import { lerAmbiente, origemPermitida } from '../../supabase/functions/_shared/comum.ts';
-import { criarHandlerCriarPagamento, validarEntrada, limparOrigem } from '../../supabase/functions/_shared/criar-pagamento.ts';
+import { criarHandlerCriarPagamento, validarEntrada, limparOrigem, entradaReabrirValida } from '../../supabase/functions/_shared/criar-pagamento.ts';
 import { criarHandlerWebhook, montarManifesto, lerAssinatura } from '../../supabase/functions/_shared/webhook-mercadopago.ts';
 
 const SEGREDO = 'segredo-do-webhook';
@@ -56,6 +56,79 @@ function requisicaoCriar(corpo, origem = 'https://bosco-2009.github.io') {
 const ENTRADA = { plano_id: 'profissional', nome: 'Ana Souza', email: 'ana@exemplo.com', whatsapp: '(21) 97777-6666', aceite_termos: true };
 
 // =========================================================================== criar-pagamento
+// ---------- modo reabrir (melhoria 39)
+const TOKEN = 'a'.repeat(64);
+const REABRIR = { reabrir: true, codigo: 'PBR-ABC234', token: TOKEN };
+const roteiroReabrir = (extra = []) => [
+  ...extra,
+  ['/rpc/pedido_preferencia_para_reabrir', { corpo: [{ codigo: 'PBR-ABC234', mp_preference_id: 'pref-1' }] }],
+  ['/checkout/preferences/pref-1', { corpo: { id: 'pref-1', init_point: 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=pref-1', sandbox_init_point: 'https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=pref-1' } }],
+];
+
+test('reabrir: devolve o link da MESMA preferência, sem criar pedido nem expor dados', async () => {
+  const { f, chamadas } = fetchFalso(roteiroReabrir());
+  const r = await criarHandlerCriarPagamento(ambiente({ MP_ACCESS_TOKEN: 'APP_USR-1' }), f)(requisicaoCriar(REABRIR));
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), { codigo: 'PBR-ABC234', init_point: 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=pref-1' });
+  assert.ok(!chamadas.some((c) => c.url.includes('pedido_criar')), 'não cria pedido novo');
+  assert.ok(!chamadas.some((c) => c.metodo === 'POST' && c.url.includes('mercadopago')), 'não cria preferência nova');
+  const rpcR = chamadas.find((c) => c.url.endsWith('/rpc/pedido_preferencia_para_reabrir'));
+  assert.deepEqual(rpcR.corpo, { p_codigo: 'PBR-ABC234', p_token: TOKEN });
+  const mp = chamadas.find((c) => c.url.includes('/checkout/preferences/pref-1'));
+  assert.equal(mp.metodo, 'GET');
+  assert.equal(mp.cabecalhos.Authorization, 'Bearer APP_USR-1');
+  // sandbox com token TEST-
+  const sb = fetchFalso(roteiroReabrir());
+  const d2 = await (await criarHandlerCriarPagamento(ambiente(), sb.f)(requisicaoCriar(REABRIR))).json();
+  assert.match(d2.init_point, /^https:\/\/sandbox\./);
+});
+
+test('reabrir: entrada inválida e token errado → 403; estados não reabríveis → 409; MP fora → 502', async () => {
+  assert.equal(entradaReabrirValida(REABRIR), true);
+  for (const ruim of [{ ...REABRIR, reabrir: 'sim' }, { ...REABRIR, codigo: 'pbr-abc234' }, { ...REABRIR, token: 'curto' },
+    { ...REABRIR, token: 'A'.repeat(64) }, { reabrir: true }, { ...REABRIR, codigo: 'PBR-ABC23I' }]) {
+    assert.equal(entradaReabrirValida(ruim), false, JSON.stringify(ruim));
+    const { f, chamadas } = fetchFalso([]);
+    const r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(ruim));
+    assert.equal(r.status, 403);
+    assert.equal(chamadas.length, 0, 'nem consulta o banco');
+  }
+  const rpcErro = (message, code = '42501') => [['/rpc/pedido_preferencia_para_reabrir', { status: 400, corpo: { code, message } }]];
+  let { f } = fetchFalso(rpcErro('acesso_negado'));
+  let r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(REABRIR));
+  assert.equal(r.status, 403);
+  assert.deepEqual(await r.json(), { erro: 'acesso_negado' });
+  for (const e of ['pedido_nao_pendente', 'pagamento_em_andamento', 'pedido_nao_reabrivel']) {
+    ({ f } = fetchFalso(rpcErro(e, '22023')));
+    r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(REABRIR));
+    assert.equal(r.status, 409);
+    assert.deepEqual(await r.json(), { erro: e });
+  }
+  ({ f } = fetchFalso([['/rpc/pedido_preferencia_para_reabrir', { corpo: [] }]]));
+  r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(REABRIR));
+  assert.equal(r.status, 409);
+
+  const erros = console.error; console.error = () => {};
+  try {
+    ({ f } = fetchFalso([['/rpc/pedido_preferencia_para_reabrir', { corpo: [{ codigo: 'PBR-ABC234', mp_preference_id: 'pref-1' }] }],
+      ['/checkout/preferences/pref-1', { status: 404, corpo: { message: 'not found' } }]]));
+    r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(REABRIR));
+    assert.equal(r.status, 502);
+    // MP devolve outra preferência: não confia
+    ({ f } = fetchFalso([['/rpc/pedido_preferencia_para_reabrir', { corpo: [{ codigo: 'PBR-ABC234', mp_preference_id: 'pref-1' }] }],
+      ['/checkout/preferences/pref-1', { corpo: { id: 'pref-9', init_point: 'https://www.mercadopago.com.br/x' } }]]));
+    r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(REABRIR));
+    assert.equal(r.status, 502);
+    ({ f } = fetchFalso([['/rpc/pedido_preferencia_para_reabrir', { status: 500, corpo: { code: 'XX000', message: 'boom' } }]]));
+    r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(REABRIR));
+    assert.equal(r.status, 500);
+  } finally { console.error = erros; }
+  // CORS continua valendo no modo reabrir
+  ({ f } = fetchFalso(roteiroReabrir()));
+  r = await criarHandlerCriarPagamento(ambiente(), f)(requisicaoCriar(REABRIR, 'https://golpe.example'));
+  assert.equal(r.status, 403);
+});
+
 test('CORS: permite o domínio do site e localhost; recusa outros', async () => {
   const amb = ambiente();
   assert.equal(origemPermitida('https://bosco-2009.github.io', amb), true);
