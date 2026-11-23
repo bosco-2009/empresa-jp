@@ -56,6 +56,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 ├── segmentos/                 # 6 páginas de SEO por segmento (JSON-LD Service), geradas por testes/segmentos/gerar.py
 ├── planos.html                # Planos + checkout Mercado Pago (Fase 3)
 ├── obrigado.html              # Retorno do checkout: status pela RPC pedido_consultar (Fase 3)
+├── pedido.html                # Cliente acompanha as etapas (RPC pedido_acompanhar, código + token; melhoria 30)
 ├── briefing.html              # Briefing pós-compra (Fase 4)
 ├── termos.html                # Termos de uso (Fase 4)
 ├── privacidade.html           # Política de privacidade / LGPD (Fase 4)
@@ -74,7 +75,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── main.css           # Reset, layout e componentes
 │   │   ├── chat.css           # Widget do chat (Fase 2)
 │   │   ├── movimento.css      # Abertura de marca (home) e animações de rolagem
-│   │   ├── checkout.css       # planos.html, obrigado.html e portfolio.html (Fase 3)
+│   │   ├── checkout.css       # planos.html, obrigado.html, pedido.html e portfolio.html (Fase 3)
 │   │   ├── briefing.css       # briefing.html em etapas (Fase 4)
 │   │   ├── legal.css          # termos.html e privacidade.html (Fase 4)
 │   │   ├── exemplos.css       # exemplos.html e exemplos/*.html (paletas --exemplo-* em tokens.css)
@@ -94,6 +95,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2)
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3)
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
+│   │   ├── pedido.js          # Etapas do pedido para o cliente (pago → briefing → produção → entregue)
 │   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+)
 │   │   ├── admin-respostas.js # Respostas rápidas do chat do painel (localStorage do admin)
 │   │   ├── admin-pedidos.js   # Aba Pedidos do painel (Fase 3) + checkout abandonado/WhatsApp (melhoria 23)

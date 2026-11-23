@@ -8,6 +8,7 @@
 | 2 | `migrations/20261119120000_pedidos.sql` | Tabelas `planos` (preço oficial), `pedidos`, `pedidos_eventos`; RLS; funções da service role (`pedido_criar`, `pedido_definir_preferencia`, `pedido_registrar_pagamento`); RPC pública `pedido_consultar`; Realtime em `pedidos` |
 | 3 | `migrations/20261120120000_briefings.sql` | Tabela `briefings` (um por pedido) com RLS; RPCs `briefing_enviar`/`briefing_obter` (código + token, só pedido aprovado, editável enquanto `novo`); `briefing_autorizar_upload` (service role); bucket **privado** `briefings` (5 MB, imagens e PDF) com leitura só para admin; Realtime em `briefings` |
 | 4 | `migrations/20261121120000_origem_visitante.sql` | **Aditiva** (melhoria 10): coluna `pedidos.origem` (até 300 caracteres) e `pedido_definir_origem` (service role). Depois de aplicar, publique de novo a função `criar-pagamento`. Sem ela o site e o painel continuam funcionando, só sem a origem nos pedidos |
+| 5 | `migrations/20261122120000_acompanhar_pedido.sql` | **Aditiva** (melhoria 30): só a RPC `pedido_acompanhar(codigo, token)` para `pedido.html`. A etapa é derivada do status do pagamento e do status do briefing (que o dono muda no painel); devolve só código, plano, etapa e datas, sem dados pessoais. Sem ela, `pedido.html` mostra "Não foi possível carregar" e o resto do site segue igual |
 
 Todas são **idempotentes**: rodar de novo não dá erro nem duplica nada.
 

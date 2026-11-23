@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Páginas públicas indexáveis. portfolio.html entra quando houver projetos reais (ver PUBLICAR.md).
-     Fora de propósito: obrigado.html, briefing.html, 404.html, exemplos/*.html (sites fictícios) e /admin/ (noindex). -->
+     Fora de propósito: obrigado.html, briefing.html, pedido.html, 404.html, exemplos/*.html (sites fictícios) e /admin/ (noindex). -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bosco-2009.github.io/empresa-jp/</loc>

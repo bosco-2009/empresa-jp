@@ -21,7 +21,7 @@ const SEGMENTOS = IDS_SEGMENTOS.map((s) => `segmentos/${s}.html`);
 const PUBLICAS = ['index.html', 'planos.html', 'exemplos.html', 'termos.html', 'privacidade.html', 'portfolio.html', ...BLOG, ...SEGMENTOS];
 // Sites de EXEMPLO (fictícios): sempre noindex, com o próprio cabeçalho
 const DEMOS = ['moda', 'restaurante', 'beleza', 'saude', 'servicos', 'pet'].map((s) => `exemplos/${s}.html`);
-const PRIVADAS = ['obrigado.html', 'briefing.html', '404.html'];
+const PRIVADAS = ['obrigado.html', 'briefing.html', 'pedido.html', '404.html'];
 // Imagens Open Graph por página (melhoria 14): geradas por testes/og/gerar.mjs em assets/img/og/. As demais usam og-image.png
 const OG_POR_PAGINA = {
   'planos.html': 'planos', 'exemplos.html': 'exemplos', 'blog/index.html': 'blog',
@@ -100,7 +100,7 @@ test('cabeçalho e rodapé iguais aos da home', () => {
 });
 
 test('SEO: canonical e Open Graph no subcaminho final; imagem OG 1200x630', () => {
-  for (const f of [...PUBLICAS, 'obrigado.html', 'briefing.html']) {
+  for (const f of [...PUBLICAS, 'obrigado.html', 'briefing.html', 'pedido.html']) {
     const h = ler(f);
     const esperado = SITE + (f === 'index.html' ? '' : f.replace(/index\.html$/, ''));
     assert.equal((/<link rel="canonical" href="([^"]+)">/.exec(h) || [])[1], esperado, `${f}: canonical`);
