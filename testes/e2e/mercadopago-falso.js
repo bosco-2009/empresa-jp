@@ -1,5 +1,6 @@
 // SOMENTE PARA TESTES LOCAIS. Imita as partes do Mercado Pago usadas pelo site:
 //   POST /checkout/preferences   (Checkout Pro)        GET /v1/payments/:id
+//   GET  /checkout/preferences/:id (consulta a preferência; usada pelo modo reabrir de criar-pagamento)
 //   GET  /checkout?pref_id=...   (tela de pagamento falsa com botões Aprovar / Pix pendente / Recusar)
 //   POST /__pagar                (cria o pagamento, envia o webhook ASSINADO e volta para back_urls)
 //   POST /__atualizar            (muda o status de um pagamento e envia novo webhook — ex.: Pix pago depois)
@@ -57,6 +58,14 @@ http.createServer(async (req, res) => {
       preferencias[id] = Object.assign({ id }, corpo);
       registro.preferencias.push({ id, corpo, idempotencia: req.headers['x-idempotency-key'] });
       return enviar(res, 201, { id, init_point: `${BASE}/checkout?pref_id=${id}`, sandbox_init_point: `${BASE}/checkout?pref_id=${id}&sandbox=1` });
+    }
+
+    if (url.pathname.startsWith('/checkout/preferences/') && req.method === 'GET') {
+      if (req.headers.authorization !== 'Bearer ' + TOKEN) return enviar(res, 401, { message: 'invalid access token' });
+      const id = decodeURIComponent(url.pathname.split('/').pop());
+      if (!preferencias[id]) return enviar(res, 404, { message: 'preference not found' });
+      registro.consultasPreferencia = (registro.consultasPreferencia || 0) + 1;
+      return enviar(res, 200, Object.assign({}, preferencias[id], { init_point: `${BASE}/checkout?pref_id=${id}`, sandbox_init_point: `${BASE}/checkout?pref_id=${id}&sandbox=1` }));
     }
 
     if (url.pathname.startsWith('/v1/payments/') && req.method === 'GET') {
