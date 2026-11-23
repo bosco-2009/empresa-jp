@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run css-critico && npm run layout && npm run auditoria
 ```
 
 `auditoria.test.js` passa por **todas as páginas** (inclusive o 404 servido num caminho profundo e o painel) em 320, 375,
@@ -149,6 +149,10 @@ teste, `<picture>` com `srcset`/`sizes` escolhe o WebP do tamanho certo (1x e 2x
 nada é baixado e a seção da home continua oculta.
 
 Capturas de tela ficam em `testes/e2e/saida/`.
+
+`css-critico.test.js` (só precisa do servidor estático) cobre a melhoria 38: `home.css` só na home, logo depois de
+`main.css` (mesma cascata de antes), nenhuma outra página baixa as regras da abertura/mockup/linha do tempo, e CLS 0 em
+home, planos, blog e artigo (320/375 px; em planos a 768/1280 px só o deslocamento mínimo já existente, ≤ 0,005), claro e escuro.
 
 ## 4. Lighthouse (opcional)
 

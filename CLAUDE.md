@@ -72,9 +72,10 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 ├── assets/
 │   ├── css/
 │   │   ├── tokens.css         # Variáveis: cores, tipografia, espaçamento, raios, sombras
-│   │   ├── main.css           # Reset, layout e componentes
+│   │   ├── main.css           # Reset, layout e componentes comuns a todas as páginas
+│   │   ├── home.css           # Só da home (hero/mockup, para quem, passos, simulador, CTA, abertura): logo após main.css
 │   │   ├── chat.css           # Widget do chat (Fase 2)
-│   │   ├── movimento.css      # Abertura de marca (home) e animações de rolagem
+│   │   ├── movimento.css      # Animações de rolagem comuns (a abertura de marca fica em home.css)
 │   │   ├── checkout.css       # planos.html, obrigado.html, pedido.html e portfolio.html (Fase 3)
 │   │   ├── briefing.css       # briefing.html em etapas (Fase 4)
 │   │   ├── legal.css          # termos.html e privacidade.html (Fase 4)
@@ -183,6 +184,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 
 **SEO e desempenho**
 - Cada página com `title`, `meta description`, Open Graph, `canonical`, favicon e manifest.
+- CSS por página: regra usada só numa página vai no CSS dela (`home.css`, `checkout.css`...), não em `main.css`
+  (teste `testes/e2e/css-critico.test.js`). Conteúdo preenchido pelo JS acima da dobra reserva o espaço (CLS 0).
 - Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
 - Enquanto `config.js` tiver `rascunho: true`, a página mostra o aviso de rascunho e mantém `noindex`.
 - Meta: Lighthouse mobile ≥ 90 nas quatro categorias (medido na Fase 5: 99/100/100/100 nas páginas públicas).
