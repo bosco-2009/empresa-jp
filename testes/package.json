@@ -35,7 +35,8 @@
     "resumo": "node e2e/resumo.test.js",
     "briefing-pendente": "node e2e/briefing-pendente.test.js",
     "depois-pagar": "node e2e/depois-pagar.test.js",
-    "chat-acessivel": "node e2e/chat-acessivel.test.js"
+    "chat-acessivel": "node e2e/chat-acessivel.test.js",
+    "busca-global": "node e2e/busca-global.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
