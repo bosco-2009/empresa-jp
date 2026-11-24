@@ -91,7 +91,7 @@ test('listas de planos montadas pelo JS declaram a origem no HTML', () => {
 
 // Cada lugar dos scripts que monta "plano=" está registrado com o motivo. Um novo precisa entrar aqui.
 const REGISTRO = {
-  'main.js': [4, 'cartões da home e planos da 404 (com data-origem-cta), troca do plano do bloco indicado (mantém a origem) e JSON-LD (não é link)'],
+  'main.js': [5, 'cartões da home e planos da 404 (com data-origem-cta), troca do plano do bloco indicado (mantém a origem), "Continuar com o plano" (reentrada com a origem da página, melhoria 116) e JSON-LD (não é link)'],
   'simulador.js': [1, 'resultado do simulador: o link tem data-origem-cta="home/simulador" no index.html'],
   'retomada.js': [1, 'reentrada: "Continue de onde parou" (a origem já foi gravada na primeira visita)'],
   'obrigado.js': [1, 'reentrada: "Tentar de novo" depois de um pagamento recusado'],
