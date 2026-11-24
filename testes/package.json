@@ -61,6 +61,7 @@
     "orcamento-bytes": "node e2e/orcamento-bytes.test.js",
     "lembrar-simulador": "node e2e/lembrar-simulador.test.js",
     "barra-plano": "node e2e/barra-plano.test.js",
+    "impressao": "node e2e/impressao.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },

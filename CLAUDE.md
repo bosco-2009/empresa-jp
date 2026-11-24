@@ -207,6 +207,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Orçamento de bytes por página (HTML + CSS + JS + fontes na carga) em `testes/e2e/orcamento-bytes.test.js` (melhoria 73):
   cresceu de propósito? `node testes/e2e/orcamento-bytes.test.js --medir` e cole o mapa novo.
 - Enquanto `config.js` tiver `rascunho: true`, a página mostra o aviso de rascunho e mantém `noindex`.
+- Impressão (melhoria 77): `@media print` em `main.css` (comum), `legal.css` e `checkout.css`; o modo escuro de `tokens.css`
+  vale só em `@media screen`. Links do conteúdo ganham o endereço impresso pelo `main.js` (`beforeprint`). Teste: `testes/e2e/impressao.test.js`.
 - Meta: Lighthouse mobile ≥ 90 nas quatro categorias (medido na Fase 5: 99/100/100/100 nas páginas públicas).
 
 **Antes de abrir um PR**
