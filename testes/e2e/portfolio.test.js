@@ -86,7 +86,7 @@ print(json.dumps(out))
     ok(larg >= minimo && larg <= maximo && larg >= d.caixa.width, `@${w}px: largura ${larg} cobre o card de ${Math.round(d.caixa.width)}px sem exagero`);
     ok(Math.abs(d.caixa.width / d.caixa.height - 4 / 3) < 0.02, `@${w}px: card em 4:3`);
     if (w === 375) {
-      ok(d.alt === 'Captura do projeto de teste' && d.w === '1200' && d.h === '900' && d.loading === 'lazy', 'alt, width/height e loading="lazy"');
+      ok(d.alt === 'Captura do projeto de teste' && d.w === '1200' && d.h === '900' && d.loading === 'eager', 'alt, width/height e loading="eager" (1ª foto de portfolio.html é o LCP; melhoria 64)');
       ok(d.tipo === 'image/webp', '<source type="image/webp">');
       ok(await p.isVisible('[data-secao-portfolio]') && await p.isHidden('[data-portfolio-vazio]'), 'seção aparece com projeto real; aviso de vazio some');
       // JSON-LD do portfólio (melhoria 61): CollectionPage + ItemList só com os projetos do config.js
