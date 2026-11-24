@@ -83,7 +83,8 @@
     "foco-ancoras": "node e2e/foco-ancoras.test.js",
     "links-planos": "node e2e/links-planos.test.js",
     "imagens": "node imagens/auditar.mjs",
-    "imagens:otimizar": "node imagens/otimizar.mjs"
+    "imagens:otimizar": "node imagens/otimizar.mjs",
+    "visibilidade-conteudo": "node e2e/visibilidade-conteudo.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
