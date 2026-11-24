@@ -192,7 +192,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Exemplos fictícios (ex.: telas do mockup) sempre com o rótulo "exemplo" visível e nomes genéricos ("Sua Loja").
 
 **SEO e desempenho**
-- Cada página com `title`, `meta description`, Open Graph, `canonical`, favicon e manifest.
+- Cada página com `title` (≤ 60 caracteres), `meta description` (70–160), únicos, Open Graph, `canonical`, favicon e manifest
+  (`testes/funcoes/metatags.test.mjs` descobre as páginas sozinho e barra `[PROVISÓRIO]` nas metatags).
 - CSS por página: regra usada só numa página vai no CSS dela (`home.css`, `checkout.css`...), não em `main.css`
   (teste `testes/e2e/css-critico.test.js`). Conteúdo preenchido pelo JS acima da dobra reserva o espaço (CLS 0).
 - Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
