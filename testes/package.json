@@ -53,6 +53,7 @@
     "css-critico": "node e2e/css-critico.test.js",
     "pedido-aberto": "node e2e/pedido-aberto.test.js",
     "concluir-pagamento": "node e2e/concluir-pagamento.test.js",
+    "pix-pendente-pedido": "node e2e/pix-pendente-pedido.test.js",
     "tentar-de-novo": "node e2e/tentar-de-novo.test.js",
     "briefing-rascunho": "node e2e/briefing-rascunho.test.js",
     "briefing-revisao": "node e2e/briefing-revisao.test.js",
