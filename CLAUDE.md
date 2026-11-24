@@ -52,6 +52,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 ├── portfolio.html             # Portfólio (Fase 4)
 ├── exemplos.html              # 6 sites de EXEMPLO por segmento (melhoria 3)
 ├── exemplos/                  # moda, restaurante, beleza, saude, servicos, pet: fictícios, sempre noindex
+│                              #   faixa final "Gostou deste exemplo?" (plano de config.planoIndicado do segmento) gravada por testes/conteudo/indicado.mjs --gravar (melhoria 95)
 ├── blog/                      # index.html + 3 artigos + autor.html (ProfilePage) + feed.xml (RSS); JSON-LD validado em testes/funcoes/blog-seo.test.mjs
 │                              #   leitura estimada e "Leia também": testes/blog/leitura.mjs --gravar (travado em funcoes/blog-leitura.test.mjs)
 │                              #   bloco "Plano indicado" (artigos e segmentos): regra em config.planoIndicado, gravado por testes/conteudo/indicado.mjs --gravar

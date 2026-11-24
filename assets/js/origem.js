@@ -7,6 +7,7 @@
  * Melhoria 65: um clique num link com data-origem-cta (ex.: "Ver o plano" no fim de um artigo ou página de
  * segmento) guarda qual conteúdo levou aos planos ("blog/site-ou-instagram"), também por 30 dias; o resumo
  * ganha "cta: blog/site-ou-instagram" (vale mesmo para quem chegou direto, sem utm nem referência).
+ * Melhoria 95: a faixa final das páginas de exemplo marca "exemplo/<segmento>".
  * Sem cookies, sem ferramentas de terceiros. Descrito na política de privacidade.
  */
 (function () {
@@ -62,7 +63,7 @@
     var alvo = evento.target && evento.target.closest ? evento.target.closest('a[data-origem-cta]') : null;
     if (!alvo) return;
     var de = limpo(alvo.getAttribute('data-origem-cta') || '');
-    if (!/^(blog|segmento)\/[a-z0-9-]+$/.test(de)) return;
+    if (!/^(blog|segmento|exemplo)\/[a-z0-9-]+$/.test(de)) return;
     try { localStorage.setItem(CHAVE_CTA, JSON.stringify({ de: de, em: Date.now() })); } catch (e) { /* armazenamento bloqueado */ }
   }
 

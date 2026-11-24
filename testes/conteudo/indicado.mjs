@@ -1,10 +1,11 @@
-// Bloco "Plano indicado" no fim dos artigos do blog e das páginas de segmento (melhoria 65).
+// Bloco "Plano indicado" no fim dos artigos do blog e das páginas de segmento (melhoria 65)
+// e faixa final "Gostou deste exemplo?" nas páginas de exemplo (melhoria 95).
 // A regra fica em config.js → planoIndicado ('blog:<arquivo>' | 'segmento:<id>' → id do plano).
 // O bloco é gravado no HTML entre <!-- indicado:inicio --> e <!-- indicado:fim -->, para funcionar sem JS
 // e sem deslocar nada na carga. Quando a regra ou um plano mudar no config.js, rode:
 //   node testes/conteudo/indicado.mjs --gravar
 // O teste testes/funcoes/indicado.test.mjs falha se o HTML estiver diferente do que este script geraria.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
@@ -78,8 +79,60 @@ export function paginas() {
   });
 }
 
+// ---------- Faixa final das páginas de exemplo (melhoria 95) ----------
+// exemplos/<segmento>.html ganha, antes do rodapé, a faixa "Gostou deste exemplo?" com o plano indicado pela MESMA
+// regra da página de segmento ('segmento:<id>'). Fixa no HTML (sem JS), entre os marcadores abaixo.
+export const EX_INICIO = '<!-- exemplo-chamada:inicio -->';
+export const EX_FIM = '<!-- exemplo-chamada:fim -->';
+
+/** "Sites para lojas de moda" (selo de segmentos/<slug>.html) → "lojas de moda" */
+function publicoDoSegmento(slug) {
+  const m = /<p class="seg__selo">.*?<span>Sites para ([^<]+)<\/span>/.exec(ler(`segmentos/${slug}.html`));
+  if (!m) throw new Error('selo do segmento não encontrado em segmentos/' + slug + '.html');
+  return m[1];
+}
+
+export function blocoExemplo(slug, config) {
+  const chave = 'segmento:' + slug;
+  const plano = config.planos.find((p) => p.id === config.planoIndicado[chave]);
+  if (!plano) throw new Error(`sem plano indicado para ${chave} (exemplos/${slug}.html)`);
+  const id = 'exemplo-chamada-titulo';
+  return [
+    `<aside class="ex-chamada-final" aria-labelledby="${id}" data-exemplo-chamada="${esc(slug)}">`,
+    `  <div class="container ex-chamada-final__grade">`,
+    `    <div class="ex-chamada-final__texto">`,
+    `      <p class="ex-chamada-final__rotulo">Fim do site de exemplo</p>`,
+    `      <h2 id="${id}" class="ex-chamada-final__titulo">Gostou deste exemplo? Um site assim para o seu negócio</h2>`,
+    `      <p class="ex-chamada-final__resumo">Indicação geral para ${esc(publicoDoSegmento(slug))}: plano <strong>${esc(plano.nome)}</strong>. ${esc(plano.resumo)}</p>`,
+    `    </div>`,
+    `    <p class="ex-chamada-final__acoes">`,
+    `      <a class="botao botao--primario" href="../planos.html?plano=${esc(plano.id)}" data-origem-cta="exemplo/${esc(slug)}">Ver o plano ${esc(plano.nome)}</a>`,
+    `      <a class="ex-chamada-final__link" href="../index.html?segmento=${esc(slug)}#simulador">Responder o simulador de planos</a>`,
+    `    </p>`,
+    `  </div>`,
+    `</aside>`
+  ].map((l) => '  ' + l).join('\n');
+}
+
+export function aplicarExemplo(slug, html, config) {
+  const i = html.indexOf(EX_INICIO);
+  const f = html.indexOf(EX_FIM);
+  if (i < 0 || f < i) throw new Error('marcadores da faixa final não encontrados em exemplos/' + slug + '.html');
+  return html.slice(0, i) + EX_INICIO + '\n' + blocoExemplo(slug, config) + '\n  ' + html.slice(f);
+}
+
+export function paginasExemplo() {
+  const config = lerConfig();
+  return readdirSync(new URL('exemplos/', raiz)).filter((f) => f.endsWith('.html')).sort().map((f) => {
+    const slug = f.replace('.html', '');
+    const arquivo = 'exemplos/' + f;
+    const atual = ler(arquivo);
+    return { chave: 'segmento:' + slug, slug, arquivo, atual, esperado: aplicarExemplo(slug, atual, config) };
+  });
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  for (const p of paginas()) {
+  for (const p of [...paginas(), ...paginasExemplo()]) {
     if (p.atual === p.esperado) { console.log('  igual   ' + p.arquivo); continue; }
     if (process.argv.includes('--gravar')) { writeFileSync(new URL(p.arquivo, raiz), p.esperado); console.log('  gravado ' + p.arquivo); }
     else console.log('  DIFERENTE ' + p.arquivo + ' (rode com --gravar)');
