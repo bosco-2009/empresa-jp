@@ -137,7 +137,7 @@ const linhas = (a, s) => a.$$eval(s, (trs) => trs.map((tr) => [...tr.children].m
 
   console.log('\n[4] Atualiza com o tempo real (pedido pendente pago)');
   await a.selectOption('[data-resumo-mes]', { index: 0 });
-  psql(`update public.pedidos set status = 'aprovado', pago_em = ${M} where codigo = 'PBR-BBBBB3';`);
+  psql(`update public.pedidos set status = 'aprovado', pago_em = ${M}, atualizado_em = now() where codigo = 'PBR-BBBBB3';`);
   await a.waitForFunction(() => /\| 2 \| 2$/.test([...document.querySelector('[data-resumo-conteudos-tabela] tbody tr').children].map((c) => c.textContent.trim()).join(' | ')), null, { timeout: 20000 }).catch(() => {});
   const c2 = await linhas(a, '[data-resumo-conteudos-tabela] tbody tr');
   ok(c2[0] === 'Moda Página de segmento | 1 | 2 | 2', 'moda com 2 pagos sem recarregar: ' + c2[0]);

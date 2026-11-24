@@ -36,6 +36,7 @@
     "pedido": "node e2e/pedido.test.js",
     "chat-desempenho": "node e2e/chat-desempenho.test.js",
     "resumo": "node e2e/resumo.test.js",
+    "tempo-resposta": "node e2e/tempo-resposta.test.js",
     "conteudos-resumo": "node e2e/conteudos-resumo.test.js",
     "exportar-resumo": "node e2e/exportar-resumo.test.js",
     "briefing-pendente": "node e2e/briefing-pendente.test.js",
