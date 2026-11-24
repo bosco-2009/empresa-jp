@@ -140,7 +140,8 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.repla
   ok(await a.isHidden('[data-busca-global-resultados]') && await a.evaluate(() => document.activeElement.id === 'busca-global'), 'Esc fecha e volta ao campo');
   await a.fill('#busca-global', 'pbr-pedra');
   await a.press('#busca-global', 'Enter');
-  await a.waitForFunction(() => location.hash === '#pedidos' && !document.querySelector('[data-pedido-detalhe]').hidden);
+  await a.waitForFunction(() => location.hash.split('/')[0] === '#pedidos' && !document.querySelector('[data-pedido-detalhe]').hidden);
+  ok(await a.evaluate(() => location.hash === '#pedidos/PBR-PEDRA3'), 'endereço com o código do pedido aberto (melhoria 118)');
   ok((await a.textContent('[data-pedido-titulo]')).includes('PBR-PEDRA3'), 'Enter abre o pedido na aba Pedidos');
   ok(await a.evaluate(() => document.activeElement.matches('[data-pedido-titulo]')), 'foco no título do pedido');
 
