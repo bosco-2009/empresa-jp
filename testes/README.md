@@ -80,7 +80,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run layout && npm run auditoria
 ```
 
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
@@ -99,6 +99,11 @@ com o mesmo WhatsApp (com ou sem 55, numa consulta só com `mensagens!inner` e `
 painel; boas-vindas editável (com ou sem pedido de briefing, sem token nem valor), wa.me sem envio automático, "Já falei com
 este cliente", aviso sumindo em tempo real quando o dono responde no chat, falha da consulta sem alarme falso, nenhuma
 escrita no banco, 4 larguras e axe. O Supabase falso entende `conversas?whatsapp=in.(...)`.
+
+`checklist-pedido.test.js` (Supabase falso) cobre a lista de verificação por pedido aprovado no painel (melhoria 66):
+cinco checkbox nativos com data de cada marcação, contagem "etapas N de 5" no cartão, teclado, aviso em `role=status`,
+salvo só no `localStorage` do admin (id + datas), sincronia entre abas, armazenamento bloqueado, nada gravado no banco;
+320/375/768/1280 px + axe.
 
 `atalhos-painel.test.js` (Supabase falso) cobre os atalhos do painel (melhoria 41): `g` + `c`/`p`/`b`/`r` trocam de aba
 (e `g` esquecido por mais de 1,5 s não faz nada), `/` foca a busca da aba (Pedidos) ou a geral, nada dispara digitando num
