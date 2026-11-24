@@ -461,6 +461,11 @@ pt-BR com o eixo de peso 400–800 (~14 KB, mesmos desenhos: screenshots idênti
 `testes/funcoes/fontes.test.mjs` trava o peso máximo, confere o `unicode-range` do `tokens.css` com a fonte e
 falha se alguma página usar uma letra latina ou pontuação que a fonte não tenha (aí, acrescente-a à lista do script).
 
+Fonte de reserva (melhoria 119): `python3 testes/fontes/reserva.py --gravar` mede a largura média (ponderada pelo texto do
+site) e as métricas verticais da Plus Jakarta Sans contra Arial (Liberation Sans) e Roboto e grava `testes/fontes/reserva.json`;
+copie os números para as faces `Plus Jakarta Sans Reserva*` de `tokens.css` (o `fontes.test.mjs` compara). E2E:
+`npm run fonte-reserva` (pesos da 1ª tela, preload único e troca da fonte atrasada 1,5 s sem mudar alturas, CLS < 0,005).
+
 `resumo-erros.test.js` (só o servidor estático; RPCs do briefing respondidas pelo Playwright) cobre a melhoria 59:
 resumo "Corrija N campos" no topo de `planos.html` e de cada etapa do `briefing.html` (padrão GOV.UK), com o foco ao
 aparecer, um link por campo (Tab + Enter leva ao campo), `aria-invalid` + mensagem na descrição acessível de cada campo,

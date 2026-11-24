@@ -170,7 +170,35 @@ test('todo texto do site (letras latinas e pontuação) está na fonte', () => {
 
 test('uma única fonte servida (o preload em todas as páginas é conferido em paginas.test.mjs)', () => {
   const css = readdirSync(new URL('assets/css/', raiz)).map((f) => ler(`assets/css/${f}`)).join('\n');
-  assert.equal((css.match(/@font-face/g) || []).length, 1, 'um único @font-face');
+  const faces = [...css.matchAll(/@font-face\s*\{([\s\S]*?)\}/g)].map((m) => m[1]);
+  // Melhoria 119: 1 face baixada + 4 faces de reserva só com local() (nada é baixado por elas).
+  const baixadas = faces.filter((f) => /url\(/.test(f));
+  assert.equal(baixadas.length, 1, 'um único @font-face com url()');
+  assert.match(baixadas[0], /font-display:\s*swap;/, 'font-display: swap (texto aparece na reserva, sem FOIT)');
+  for (const f of faces.filter((x) => !/url\(/.test(x))) {
+    assert.match(f, /font-family:\s*'Plus Jakarta Sans Reserva( Roboto)?';/, 'face sem url() só para a reserva');
+    assert.match(f, /src:\s*local\(/, 'reserva só com local()');
+  }
   const fontes = readdirSync(new URL('assets/fonts/', raiz)).filter((f) => /\.(woff2?|ttf|otf)$/.test(f));
   assert.deepEqual(fontes, ['plus-jakarta-sans-latin-wght.woff2']);
+});
+
+// Melhoria 119: medido com Playwright, a primeira tela de toda página usa os pesos 400, 600, 700 e 800. Quatro
+// instâncias estáticas (400/600/700/800) somariam 31 472 bytes em 4 pedidos contra 13 852 bytes num pedido do
+// arquivo variável: o preload único continua sendo o mais leve. A troca da reserva pela fonte não mexe no
+// layout porque as faces de reserva têm métricas ajustadas (testes/fontes/reserva.py → reserva.json).
+test('faces de reserva: métricas em tokens.css = testes/fontes/reserva.json; ordem em --fonte-base', () => {
+  const calc = JSON.parse(ler('testes/fontes/reserva.json'));
+  const faces = [...tokens.matchAll(/@font-face\s*\{([\s\S]*?)\}/g)].map((m) => m[1]).filter((f) => !/url\(/.test(f));
+  assert.equal(faces.length, 4, 'Arial 400/700 e Roboto 400/700');
+  const num = (f, d) => Number((new RegExp(d + ':\\s*([\\d.]+)%;').exec(f) || [])[1]);
+  for (const f of faces) {
+    const chave = (/Roboto'/.test(f) ? 'roboto-' : 'arial-') + (/font-weight:\s*(\d+)/.exec(f) || [])[1];
+    assert.ok(calc[chave], `valores calculados para ${chave}`);
+    for (const d of ['size-adjust', 'ascent-override', 'descent-override', 'line-gap-override']) {
+      assert.equal(num(f, d), calc[chave][d], `${chave}: ${d}`);
+    }
+    assert.ok(calc[chave]['size-adjust'] > 90 && calc[chave]['size-adjust'] < 115, `${chave}: size-adjust plausível`);
+  }
+  assert.match(tokens, /--fonte-base:\s*'Plus Jakarta Sans', 'Plus Jakarta Sans Reserva', 'Plus Jakarta Sans Reserva Roboto', system-ui/);
 });
