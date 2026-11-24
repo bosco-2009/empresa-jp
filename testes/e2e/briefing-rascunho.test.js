@@ -132,6 +132,8 @@ async function abrir(p, comHash) {
     await r.screenshot({ path: SAIDA + `/briefing-rascunho-${largura}.png` });
     if (largura === 320) {
       await r.emulateMedia({ colorScheme: 'dark' });
+      // Espera as transições de cor dos botões terminarem: o axe no meio da troca acusava contraste (teste instável).
+      await r.waitForFunction(() => document.getAnimations().every((an) => an.playState !== 'running'));
       await axe(r, 'confirmação no modo escuro (320)');
       await r.screenshot({ path: SAIDA + '/briefing-rascunho-320-escuro.png' });
     }
