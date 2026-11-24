@@ -43,6 +43,7 @@
     "tempo-resposta": "node e2e/tempo-resposta.test.js",
     "conteudos-resumo": "node e2e/conteudos-resumo.test.js",
     "exportar-resumo": "node e2e/exportar-resumo.test.js",
+    "copiar-resumo": "node e2e/copiar-resumo.test.js",
     "briefing-pendente": "node e2e/briefing-pendente.test.js",
     "briefing-parado": "node e2e/briefing-parado.test.js",
     "pix-gerado": "node e2e/pix-gerado.test.js",
