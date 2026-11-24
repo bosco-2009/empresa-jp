@@ -2,6 +2,10 @@
 // Fonte: um SVG por página em testes/og/svg/ (editável à mão) → PNG 1200×630 em assets/img/og/.
 //
 //   node testes/og/gerar.mjs          (precisa do Playwright de testes/ e de python3 + Pillow para compactar via testes/og/paleta.py; pyoxipng opcional)
+//   node testes/imagens/otimizar.mjs --zopfli   (depois: recompressão Zopfli sem perda, ~2% menor; melhoria 104)
+//
+// Formato (melhoria 104): PNG em paleta. Medido: JPEG e WebP não compensam nestas artes chapadas e WebP no
+// og:image não aparece em todas as redes; testes/funcoes/imagens.test.mjs confere og:image:type × arquivo.
 //
 // Só textos que já estão no site (títulos das páginas). Sem preços, números ou clientes: nada de [PROVISÓRIO] aqui.
 import { mkdirSync, writeFileSync, statSync, readFileSync } from 'node:fs';

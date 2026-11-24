@@ -2,11 +2,16 @@
 //
 //   node testes/imagens/otimizar.mjs              # grava as versões otimizadas
 //   node testes/imagens/otimizar.mjs --verificar  # só confere; sai com erro se algo ainda puder ser otimizado
+//   node testes/imagens/otimizar.mjs --zopfli     # + Zopfli nas imagens Open Graph (lento: ~40 s cada, ~2% menor)
 //
 // - SVG: regras próprias de testes/imagens/svg.mjs (sem dependências).
 // - PNG: recompressão SEM PERDA com oxipng (pip install pyoxipng), tirando metadados. Se o pyoxipng não estiver
 //   instalado, os PNGs são pulados com um aviso. Depois de cada PNG, os pixels são comparados com os de antes
 //   (Pillow); qualquer diferença desfaz a troca.
+// - --zopfli (melhoria 104): nas imagens Open Graph (assets/img/og/ e og-image.png) o oxipng usa o compressor
+//   Zopfli, ainda SEM PERDA. Medido na melhoria 104: JPEG (q80–90) e WebP não compensam nessas artes chapadas
+//   (JPEG fica 40–180% maior com PSNR pior; WebP q85 só 3–18% menor com PSNR ~37 dB, abaixo dos 40 dB do
+//   paleta.py, e nem toda rede social lê WebP no og:image). Por isso as OG continuam PNG em paleta.
 // - WebP do portfólio: já sai otimizado do testes/portfolio/gerar.py (só é medido aqui).
 import { readFileSync, writeFileSync, readdirSync, statSync, copyFileSync, unlinkSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -17,6 +22,8 @@ import { otimizarSvg } from './svg.mjs';
 
 const RAIZ = fileURLToPath(new URL('../../', import.meta.url));
 const verificar = process.argv.includes('--verificar');
+const zopfli = process.argv.includes('--zopfli');
+const ehOg = (rel) => rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png';
 
 export function listarImagens(pasta = join(RAIZ, 'assets/img')) {
   const saida = [];
@@ -31,8 +38,9 @@ export function listarImagens(pasta = join(RAIZ, 'assets/img')) {
 const PY_PNG = `
 import sys, oxipng
 from PIL import Image, ImageChops
-origem, copia = sys.argv[1], sys.argv[2]
-oxipng.optimize(copia, level=6, strip=oxipng.StripChunks.safe())
+origem, copia, zopfli = sys.argv[1], sys.argv[2], sys.argv[3] == '1'
+extra = {'deflate': oxipng.Deflaters.zopfli(5)} if zopfli else {}
+oxipng.optimize(copia, level=6, strip=oxipng.StripChunks.safe(), **extra)
 a = Image.open(origem).convert('RGBA'); b = Image.open(copia).convert('RGBA')
 print('igual' if a.size == b.size and ImageChops.difference(a, b).getbbox() is None else 'diferente')
 `;
@@ -57,7 +65,7 @@ for (const arq of [...listarImagens(), join(RAIZ, 'favicon.ico')]) {
   } else if (ext === '.png' && temOxipng && !verificar) {
     const copia = join(tmpdir(), `pbr-otimizar-${process.pid}.png`);
     copyFileSync(arq, copia);
-    const r = execFileSync('python3', ['-I', '-c', PY_PNG, arq, copia], { encoding: 'utf8' }).trim();
+    const r = execFileSync('python3', ['-I', '-c', PY_PNG, arq, copia, zopfli && ehOg(rel) ? '1' : '0'], { encoding: 'utf8' }).trim();
     const tam = statSync(copia).size;
     if (r === 'igual' && tam < b0) { copyFileSync(copia, arq); b1 = tam; }
     else if (r !== 'igual') console.log(`! ${rel}: pixels mudaram, mantido o original`);

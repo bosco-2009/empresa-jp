@@ -120,6 +120,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts): subconjunto pt-BR, pesos 400–800, ~14 KB
 │                              #   gerada por testes/fontes/subconjunto.py; travada em funcoes/fontes.test.mjs
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs em paleta pelo testes/og/paleta.py)
+│                              #   OG ficam em PNG (JPEG/WebP medidos e piores, melhoria 104); depois de gerar: testes/imagens/otimizar.mjs --zopfli
 │                              #   peso/dimensões checados por testes/funcoes/imagens.test.mjs; otimizar: testes/imagens/otimizar.mjs
 ├── testes/                    # Testes locais (Node/Playwright, MP e Supabase falsos) — não publicados
 │                              #   portfolio/gerar.py: imagens responsivas do portfólio (WebP+PNG 480/800/1200, sem EXIF)

@@ -59,8 +59,9 @@ function limite(rel) {
   if (ext === '.svg') return 2 * KB;
   if (ext === '.ico') return 4 * KB;
   if (rel.startsWith('assets/img/portfolio/')) return ext === '.webp' ? 150 * KB : 450 * KB;
-  // Melhoria 84: OG em 64–96 cores (testes/og/paleta.py) → a maior tem ~32 KB; limite = maior + 10%.
-  if (rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png') return 36 * KB;
+  // Melhoria 84: OG em 64–96 cores (testes/og/paleta.py). Melhoria 104: + Zopfli sem perda (otimizar.mjs --zopfli)
+  // → a maior tem 32 171 bytes (era 32 590); limite = maior + 10%. JPEG/WebP medidos e piores: continuam PNG.
+  if (rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png') return 34.6 * KB;
   if (ext === '.png') return 4.25 * KB; // ícones: o maior (icon-512) tem ~3,8 KB; limite = maior + 10%
   return 0; // tipo não previsto (jpg, gif, avif...): use WebP/PNG/SVG
 }
@@ -185,4 +186,45 @@ test('otimizador de SVG: regras próprias sem mudar o desenho', () => {
   assert.match(otimizarSvg(comUso), /role="img" aria-label="A"/);
   assert.deepEqual(problemasSvg('<svg viewBox="0 0 1 1" onload="x()"><script/></svg>'), ['<script>', 'atributo de evento (on*)']);
   assert.ok(problemasSvg('<svg viewBox="0 0 1 1"><image href="https://x.y/a.png"/></svg>').includes('link para recurso externo'));
+});
+
+// Melhoria 104: o que as metatags prometem às redes sociais bate com o arquivo de verdade.
+// og:image:type pelo conteúdo (assinatura), largura/altura reais, imagem do próprio site e leve o bastante
+// para o WhatsApp mostrar a prévia grande (ele ignora imagens pesadas; aqui o limite é ~35 KB).
+const ASSINATURAS = {
+  'image/png': (b) => b.toString('latin1', 1, 4) === 'PNG',
+  'image/jpeg': (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  'image/webp': (b) => b.toString('latin1', 0, 4) + b.toString('latin1', 8, 12) === 'RIFFWEBP',
+};
+const EXT_DO_TIPO = { 'image/png': '.png', 'image/jpeg': '.jpg', 'image/webp': '.webp' };
+
+test('og:image: tipo, dimensões e arquivo batem com as metatags em todas as páginas', () => {
+  const meta = (h, nome) => {
+    const tag = [...h.matchAll(/<meta\b[^>]*>/gi)].map((m) => m[0])
+      .find((t) => new RegExp(`\\s(?:property|name)="${nome.replace(/[.:]/g, '\\$&')}"`).test(t));
+    return tag ? (/\scontent="([^"]*)"/.exec(tag) || [])[1] : undefined;
+  };
+  let conferidas = 0;
+  for (const pagina of HTML) {
+    const h = ler(pagina).toString('utf8').replace(/<!--[\s\S]*?-->/g, '');
+    const url = meta(h, 'og:image');
+    if (!url) continue;
+    conferidas++;
+    const rel = (/\/(assets\/img\/[^?#"]+)$/.exec(url) || [])[1];
+    assert.ok(rel && existsSync(join(RAIZ, rel)), `${pagina}: og:image ${url} não é um arquivo de assets/img`);
+    const tipo = meta(h, 'og:image:type');
+    assert.ok(ASSINATURAS[tipo], `${pagina}: og:image:type "${tipo}" não é PNG nem JPEG (formatos que toda rede social lê)`);
+    if (tipo === 'image/webp') assert.fail(`${pagina}: og:image em WebP não aparece em todas as redes; use PNG ou JPEG`);
+    const buf = ler(rel);
+    assert.ok(ASSINATURAS[tipo](buf), `${pagina}: og:image:type ${tipo}, mas ${rel} não é desse tipo`);
+    assert.equal(extname(rel).replace('.jpeg', '.jpg'), EXT_DO_TIPO[tipo], `${pagina}: extensão de ${rel} diferente do tipo ${tipo}`);
+    const d = dimensoes(buf, tipo === 'image/png' ? '.png' : extname(rel));
+    if (d) {
+      assert.equal(String(d.largura), meta(h, 'og:image:width'), `${pagina}: og:image:width ≠ largura real de ${rel}`);
+      assert.equal(String(d.altura), meta(h, 'og:image:height'), `${pagina}: og:image:height ≠ altura real de ${rel}`);
+    }
+    const tw = meta(h, 'twitter:image');
+    if (tw) assert.equal(tw, url, `${pagina}: twitter:image diferente do og:image`);
+  }
+  assert.ok(conferidas >= 13, `conferiu ${conferidas} páginas com og:image`);
 });
