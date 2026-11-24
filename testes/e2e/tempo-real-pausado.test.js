@@ -151,6 +151,8 @@ const avisoVisivel = (a) => a.evaluate(() => {
   await a.waitForFunction(() => document.querySelector('[data-tempo-real-texto]').textContent === 'Tempo real de volta. Listas atualizadas.', null, { timeout: 5000 });
   ok(true, 'aviso "Tempo real de volta"');
   ok(await a.$eval('[data-tempo-real-atualizar]', (b) => b.hidden), 'sem botão Atualizar com o tempo real de volta');
+  ok(await a.locator('[data-tempo-real-fechar]').isVisible(), 'botão "Fechar aviso" com o tempo real de volta (melhoria 112)');
+  await a.mouse.move(1, 1); // o ponteiro sobre o aviso o seguraria na tela (melhoria 112)
   await a.waitForFunction(() => document.querySelector('[data-lista-pedidos]').textContent.includes('PBR-VEXTA3'), null, { timeout: 5000 });
   ok(true, 'pedido gravado durante a queda entrou ao reconectar (sem clicar)');
   ok((await contar(a, '[data-lista-pedidos] .admin-item')) === 3 && (await idsRepetidos(a, '[data-lista-pedidos] .admin-item')) === 0, 'pedidos: 3, sem repetidos');

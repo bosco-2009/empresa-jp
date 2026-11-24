@@ -85,7 +85,8 @@
     "links-planos": "node e2e/links-planos.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs",
-    "visibilidade-conteudo": "node e2e/visibilidade-conteudo.test.js"
+    "visibilidade-conteudo": "node e2e/visibilidade-conteudo.test.js",
+    "avisos-temporarios": "node e2e/avisos-temporarios.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
