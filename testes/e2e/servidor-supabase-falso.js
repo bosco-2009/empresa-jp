@@ -176,13 +176,30 @@ const servidor = http.createServer(async (req, res) => {
     }
 
     // ---------- tabelas (só as consultas usadas pelo painel) ----------
+    // Paginação como o PostgREST: ?limit=&offset= (o supabase-js .range() manda os dois) e, com
+    // "Prefer: count=exact", o total no cabeçalho Content-Range ("0-49/200" ou "*/0").
+    const pagina = (padrao) => {
+      const limite = Math.min(Number(url.searchParams.get('limit')) || padrao, 1000);
+      const deslocamento = Math.max(Number(url.searchParams.get('offset')) || 0, 0);
+      return { limite, deslocamento, sql: ` limit ${limite} offset ${deslocamento}` };
+    };
+    const comContagem = async (sqlBase, params, pg, linhas) => {
+      if (!/count=exact/.test(req.headers.prefer || '')) return undefined;
+      const t = Number((await comoUsuario(req, `select count(*)::int as n from (${sqlBase}) t`, params)).rows[0].n);
+      return { 'Content-Range': (linhas.length ? `${pg.deslocamento}-${pg.deslocamento + linhas.length - 1}` : '*') + '/' + t };
+    };
     if (url.pathname === '/rest/v1/conversas' && req.method === 'GET') {
-      const r = await comoUsuario(req, `
+      // mensagens!inner: só conversas com pelo menos uma mensagem (como o PostgREST faz com !inner)
+      const inner = /mensagens!inner/.test(url.searchParams.get('select') || '');
+      const base = `
         select c.id, c.nome, c.whatsapp, c.pagina_origem, c.status, c.nao_lidas_admin, c.criado_em, c.atualizado_em,
                coalesce((select json_agg(x) from (select m.texto, m.autor, m.criado_em from public.mensagens m
                           where m.conversa_id = c.id order by m.criado_em desc limit 1) x), '[]') as mensagens
-          from public.conversas c order by c.atualizado_em desc limit 300`);
-      return enviar(res, 200, r.rows);
+          from public.conversas c
+          ${inner ? 'where exists (select 1 from public.mensagens m where m.conversa_id = c.id)' : ''}`;
+      const pg = pagina(300);
+      const r = await comoUsuario(req, base + ' order by c.atualizado_em desc, c.id' + pg.sql);
+      return enviar(res, 200, r.rows, await comContagem(base, [], pg, r.rows));
     }
     if (url.pathname === '/rest/v1/conversas' && req.method === 'PATCH') {
       const id = (url.searchParams.get('id') || '').replace(/^eq\./, '');
@@ -195,10 +212,12 @@ const servidor = http.createServer(async (req, res) => {
       return enviar(res, r.rowCount ? 200 : 200, []);
     }
     if (url.pathname === '/rest/v1/briefings' && req.method === 'GET') {
-      const r = await comoUsuario(req, `select b.*, json_build_object('codigo', p.codigo, 'nome', p.nome, 'email', p.email,
+      const base = `select b.*, json_build_object('codigo', p.codigo, 'nome', p.nome, 'email', p.email,
           'whatsapp', p.whatsapp, 'plano_nome', p.plano_nome) as pedidos
-        from public.briefings b join public.pedidos p on p.id = b.pedido_id order by b.atualizado_em desc limit 500`);
-      return enviar(res, 200, r.rows);
+        from public.briefings b join public.pedidos p on p.id = b.pedido_id`;
+      const pg = pagina(500);
+      const r = await comoUsuario(req, base + ' order by b.atualizado_em desc, b.id' + pg.sql);
+      return enviar(res, 200, r.rows, await comContagem(base, [], pg, r.rows));
     }
     if (url.pathname === '/rest/v1/briefings' && req.method === 'PATCH') {
       const id = (url.searchParams.get('id') || '').replace(/^eq\./, '');
@@ -213,11 +232,15 @@ const servidor = http.createServer(async (req, res) => {
       const lista = pedidas.length && pedidas.every((c) => /^[a-z_]+$/.test(c)) ? pedidas.join(', ')
         : `id, codigo, plano_id, plano_nome, valor_centavos, nome, email, whatsapp, status,
         mp_preference_id, mp_payment_id, mp_status, mp_status_detalhe, aceite_termos_em, pago_em, criado_em, atualizado_em`;
+      const umId = (url.searchParams.get('id') || '').replace(/^eq\./, '');
+      const base = `select ${lista} from public.pedidos` + (umId ? ' where id = $1' : '');
+      const params = umId ? [umId] : [];
+      const pg = pagina(500);
       let r;
       try {
-        r = await comoUsuario(req, `select ${lista} from public.pedidos order by criado_em desc limit 500`);
+        r = await comoUsuario(req, base + ' order by criado_em desc, id' + pg.sql, params);
       } catch (e) { return erroPg(res, e); }
-      return enviar(res, 200, r.rows);
+      return enviar(res, 200, r.rows, await comContagem(base, params, pg, r.rows));
     }
     if (url.pathname === '/rest/v1/pedidos_eventos' && req.method === 'GET') {
       const id = (url.searchParams.get('pedido_id') || '').replace(/^eq\./, '');

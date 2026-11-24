@@ -71,8 +71,14 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run chat-boas-vindas && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run chat-boas-vindas && npm run paginacao-painel && npm run layout && npm run auditoria
 ```
+
+`paginacao-painel.test.js` (Supabase falso, 200 registros de teste) cobre as listas longas do painel (melhoria 49): conversas,
+pedidos e briefings em páginas de 50 (`range` + `count: 'exact'`), "Mostrando X de Y" e "Carregar mais", foco no primeiro item
+novo, tempo real sem perder o que já foi carregado, conversas sem mensagem fora do total (`mensagens!inner`), filtros/busca/
+exportação contando só o carregado, falha de rede sem perder o limite, "Ver pedido" de briefing abrindo pedido fora da página,
+4 larguras e axe. O Supabase falso agora entende `limit`/`offset` e devolve o total em `Content-Range`.
 
 `atalhos-painel.test.js` (Supabase falso) cobre os atalhos do painel (melhoria 41): `g` + `c`/`p`/`b`/`r` trocam de aba
 (e `g` esquecido por mais de 1,5 s não faz nada), `/` foca a busca da aba (Pedidos) ou a geral, nada dispara digitando num
