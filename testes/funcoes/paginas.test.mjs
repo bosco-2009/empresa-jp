@@ -228,7 +228,7 @@ test('blog: JSON-LD Article/Blog válido, links relativos resolvem, no sitemap e
 });
 
 test('trilha (melhoria 22): <nav aria-label="Trilha"> visível igual ao JSON-LD BreadcrumbList', () => {
-  const COM_TRILHA = [...BLOG, ...SEGMENTOS, 'planos.html', 'exemplos.html', ...DEMOS];
+  const COM_TRILHA = [...BLOG, ...SEGMENTOS, 'planos.html', 'exemplos.html', 'portfolio.html', 'termos.html', 'privacidade.html', ...DEMOS];
   for (const f of COM_TRILHA) {
     const h = ler(f);
     const navs = [...h.matchAll(/<nav class="migalhas[^"]*" aria-label="Trilha"><ol role="list">([\s\S]*?)<\/ol><\/nav>/g)];

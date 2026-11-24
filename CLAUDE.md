@@ -210,6 +210,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
   `portfolio.html`, posta pelo `main.js`); LCP esperado de cada página travado em `testes/e2e/lcp.test.js` (melhoria 64).
 - Orçamento de bytes por página (HTML + CSS + JS + fontes na carga) em `testes/e2e/orcamento-bytes.test.js` (melhoria 73):
   cresceu de propósito? `node testes/e2e/orcamento-bytes.test.js --medir` e cole o mapa novo.
+- Trilha (melhorias 22 e 91): páginas internas (blog, segmentos, exemplos, planos, portfólio, termos, privacidade) têm `<nav class="migalhas" aria-label="Trilha">`
+  e `BreadcrumbList` iguais; formato, ordem e presença de cada nível no sitemap em `testes/funcoes/trilhas.test.mjs`.
 - Enquanto `config.js` tiver `rascunho: true`, a página mostra o aviso de rascunho e mantém `noindex`.
 - Impressão (melhoria 77): `@media print` em `main.css` (comum), `legal.css` e `checkout.css`; o modo escuro de `tokens.css`
   vale só em `@media screen`. Links do conteúdo ganham o endereço impresso pelo `main.js` (`beforeprint`). Teste: `testes/e2e/impressao.test.js`.
