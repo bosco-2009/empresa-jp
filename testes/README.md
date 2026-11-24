@@ -183,6 +183,29 @@ Gera um SVG por página em `testes/og/svg/` e o PNG 1200×630 (< 100 KB) em `ass
 blog e cada artigo. Ao criar um artigo novo, acrescente-o à lista `IMAGENS` do script e aponte `og:image` (e o
 `image` do JSON-LD) para o PNG gerado; o `paginas.test.mjs` confere tamanho, peso e os caminhos.
 
+## Peso e dimensões das imagens (melhoria 42)
+
+```bash
+node --test testes/funcoes/imagens.test.mjs   # sem navegador: limites de bytes, dimensões, <img> com width/height
+node testes/imagens/otimizar.mjs              # otimiza SVG (regras próprias) e PNG sem perda (pyoxipng, opcional)
+node testes/imagens/otimizar.mjs --verificar  # só confere
+node testes/imagens/auditar.mjs               # navegador: tamanho real × exibido em todas as páginas (375/1280 px, densidade 2)
+```
+
+- `imagens.test.mjs` falha se uma imagem passar do limite do seu tipo (SVG 2 KB, ícone PNG 8 KB, ICO 4 KB,
+  Open Graph 80 KB, portfólio WebP 150 KB / PNG 450 KB; JPG/GIF/AVIF não previstos), se as dimensões reais não
+  baterem com o manifest/ícones/OG, se alguma `<img>` (no HTML ou criada pelo JS) não tiver `width`/`height`
+  (ou tiver proporção diferente da do arquivo), se um SVG tiver `<script>`, eventos `on*`, `<foreignObject>` ou recurso
+  externo, se ainda puder ser otimizado, ou se houver imagem órfã em `assets/img/`.
+- `svg.mjs`: o otimizador (tira prólogo, comentários, metadados e restos de editor; arredonda números a 2 casas;
+  encurta cores; junta espaços). Mantém `<title>`, `role` e `aria-*`.
+- `otimizar.mjs` só troca um PNG se os pixels decodificados forem idênticos aos de antes. Na melhoria 42: 812 → 740 KB
+  no total (ícones −9 a −26%, Open Graph −8 a −12%), sem mudar nenhum pixel. O `og/gerar.mjs` já aplica a mesma
+  recompressão quando o pyoxipng está instalado.
+- `auditar.mjs` grava `testes/e2e/saida/imagens.md` (arquivo, bytes, tamanho real e maior exibição) e sai com erro se uma
+  `<img>` estiver sem `width`/`height` ou distorcida; imagens raster mais de 2× maiores que o necessário, ou menores
+  (borradas), viram aviso.
+
 `pedido.test.js` (Supabase falso) cobre o acompanhamento do pedido (`pedido.html`): sem acesso e token errado, pagamento
 pendente e recusado, link pessoal (token sai da barra), nenhum dado pessoal na página, briefing recebido pelo botão "Atualizar",
 o dono mudando a etapa no detalhe do pedido do painel (em produção, ajustes finais, entregue), prazo do plano vindo do `config.js`,

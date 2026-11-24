@@ -111,6 +111,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs)
+│                              #   peso/dimensões checados por testes/funcoes/imagens.test.mjs; otimizar: testes/imagens/otimizar.mjs
 ├── testes/                    # Testes locais (Node/Playwright, MP e Supabase falsos) — não publicados
 │                              #   portfolio/gerar.py: imagens responsivas do portfólio (WebP+PNG 480/800/1200, sem EXIF)
 └── supabase/
@@ -146,6 +147,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
   sem `unsafe-eval`. Nada de `<script>` ou `style=""` inline (o JSON-LD é permitido por não ser executado).
   `connect-src` lista o Supabase do `config.js`; `script-src` lista a versão exata do supabase-js.
 - Links externos com `target="_blank"` sempre com `rel="noopener"`.
+- Imagens com limite de bytes por tipo, `width`/`height` sempre (inclusive as criadas pelo JS) e SVG sem script/recurso
+  externo (`testes/funcoes/imagens.test.mjs`); antes de commitar imagem nova, rode `node testes/imagens/otimizar.mjs`.
 - Imagens só da própria origem (`img-src 'self' data:`): portfólio em `assets/img/portfolio/`, geradas por
   `testes/portfolio/gerar.py` e usadas pelo campo `foto` (`<picture>` com `srcset`/`sizes`, WebP + PNG).
 

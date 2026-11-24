@@ -1,7 +1,7 @@
 // Gera as imagens Open Graph por página (melhoria 14).
 // Fonte: um SVG por página em testes/og/svg/ (editável à mão) → PNG 1200×630 em assets/img/og/.
 //
-//   node testes/og/gerar.mjs          (precisa do Playwright de testes/ e de python3 + Pillow para compactar)
+//   node testes/og/gerar.mjs          (precisa do Playwright de testes/ e de python3 + Pillow para compactar; pyoxipng opcional)
 //
 // Só textos que já estão no site (títulos das páginas). Sem preços, números ou clientes: nada de [PROVISÓRIO] aqui.
 import { mkdirSync, writeFileSync, statSync, readFileSync } from 'node:fs';
@@ -169,6 +169,8 @@ for (const img of IMAGENS) {
   await pagina.screenshot({ path: arqPng });
   // Compacta em 256 cores (fica bem abaixo de 100 KB e sem perda visível no fundo liso)
   execFileSync('python3', ['-I', '-c', 'import sys;from PIL import Image;p=sys.argv[1];Image.open(p).convert("RGB").quantize(256,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.FLOYDSTEINBERG).save(p,optimize=True)', arqPng]);
+  // Recompressão sem perda (melhoria 42), se o pyoxipng estiver instalado: os mesmos pixels, uns 9% a menos
+  try { execFileSync('python3', ['-I', '-c', 'import sys,oxipng;oxipng.optimize(sys.argv[1],level=6,strip=oxipng.StripChunks.safe())', arqPng], { stdio: 'ignore' }); } catch { /* opcional */ }
   console.log(`${img.nome}.png  ${Math.round(statSync(arqPng).size / 1024)} KB  (título até ${Math.round(larguraTexto)} px)`);
 }
 await navegador.close();
