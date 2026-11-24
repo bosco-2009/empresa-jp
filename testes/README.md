@@ -74,7 +74,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run sem-conexao && npm run layout && npm run auditoria
 ```
 
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
@@ -265,3 +265,9 @@ acessibilidade do Playwright (`ariaSnapshot`, salva em `e2e/saida/chat-arvore-ce
 textos de `config.chat.boasVindas` sem promessa de prazo, planos, pedido/obrigado (`<main data-chat-contexto="pedido">`),
 artigo do blog citando o título, padrão nas demais páginas, `config.chat` ausente ou texto vazio caindo no padrão,
 conversa já iniciada noutra página abrindo com a saudação geral, 4 larguras, rolagem e axe no painel.
+
+`sem-conexao.test.js` (sem Postgres: RPCs, Edge Functions e Realtime respondidos pelo Playwright) cobre a melhoria 53:
+em planos, briefing, pedido e chat, sem internet (`setOffline`) ou com a requisição caindo (`abort('internetdisconnected')`)
+aparece "Sem internet: …" com "Tentar de novo", nada do que foi digitado se perde, erros do servidor mantêm as mensagens
+próprias, briefing e pedido consultam sozinhos quando a conexão volta (envios nunca são refeitos sozinhos), foco tratado
+quando o botão some, 4 larguras, console limpo e axe. A lógica comum fica em `PBRRede` (`assets/js/main.js`).

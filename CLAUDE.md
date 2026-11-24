@@ -85,7 +85,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
 │   │   ├── inicio.js          # Síncrono no <head>: classes sem-js/modo-rascunho antes da 1ª pintura
-│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades, prefetch de planos/exemplos
+│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades, prefetch de planos/exemplos, PBRRede (sem internet, melhoria 53)
 │   │   ├── abertura.js        # Pular/encerrar a abertura de marca (a animação é CSS)
 │   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D, linha do tempo
 │   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
