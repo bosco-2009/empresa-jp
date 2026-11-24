@@ -10,6 +10,8 @@ Os textos ficam aqui. Regras: texto original, sem números, clientes, depoimento
 Preços NÃO entram aqui (vêm do config.js nas páginas de planos e no simulador).
 Depois de gerar, rode `node testes/conteudo/indicado.mjs --gravar` (bloco "Plano indicado", melhoria 65).
 O sufixo de versão ?v= dos CSS/JS (melhoria 69) é tirado do modelo e reposto no fim por testes/cache/versionar.mjs.
+Datas (melhoria 117): datePublished é PUBLICADO; o dateModified já gravado em cada página é preservado aqui e
+atualizado por `node testes/segmentos/data-modificacao.mjs --gravar` (última mudança de TEXTO no git).
 """
 import html
 import json
@@ -20,6 +22,33 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parents[2]
 SITE = 'https://bosco-2009.github.io/empresa-jp/'
 MODELO = RAIZ / 'blog' / 'site-ou-instagram.html'
+# Data em que as páginas de segmento entraram no site (git: commit que criou segmentos/, melhoria 25)
+PUBLICADO = '2026-11-20'
+MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro',
+         'novembro', 'dezembro']
+
+
+def por_extenso(iso):
+    a, m, d = (int(x) for x in iso.split('-'))
+    return f"{'1º' if d == 1 else d} de {MESES[m - 1]} de {a}"
+
+
+def modificado_gravado(sid):
+    """dateModified já gravado na página (preservado ao regenerar); sem página, a data da publicação."""
+    f = RAIZ / 'segmentos' / f'{sid}.html'
+    if f.exists():
+        m = re.search(r'"dateModified": "(\d{4}-\d{2}-\d{2})"', f.read_text(encoding='utf-8'))
+        if m:
+            return max(m.group(1), PUBLICADO)
+    return PUBLICADO
+
+
+def linha_datas(modificado):
+    """Linha visível de datas (o mesmo formato do blog); "atualizado em" só quando difere da publicação."""
+    atualizado = ''
+    if modificado != PUBLICADO:
+        atualizado = f'<span class="artigo__atualizado"> · atualizado em <time datetime="{modificado}">{por_extenso(modificado)}</time></span>'
+    return f'<p class="artigo__meta seg__meta">Publicado em <time datetime="{PUBLICADO}">{por_extenso(PUBLICADO)}</time>{atualizado}</p>'
 
 SEGMENTOS = [
     {
@@ -135,10 +164,22 @@ SEGMENTOS = [
 e = html.escape
 
 
-def json_ld(s, url):
+def json_ld(s, url, modificado):
     dados = {
         '@context': 'https://schema.org',
         '@graph': [
+            {
+                # Página que descreve o serviço: carrega as datas (Service não tem dateModified; melhoria 117)
+                '@type': 'WebPage',
+                '@id': url,
+                'url': url,
+                'name': f"{s['title']} — Portfólio BR",
+                'description': s['description'],
+                'inLanguage': 'pt-BR',
+                'datePublished': PUBLICADO,
+                'dateModified': modificado,
+                'mainEntity': {'@id': url + '#servico'},
+            },
             {
                 '@type': 'Service',
                 '@id': url + '#servico',
@@ -180,7 +221,7 @@ def json_ld(s, url):
     return '  <script type="application/ld+json">\n  ' + corpo.replace('\n', '\n  ') + '\n  </script>\n'
 
 
-def cabeca(s, modelo_head):
+def cabeca(s, modelo_head, modificado):
     url = f"{SITE}segmentos/{s['id']}.html"
     titulo = f"{s['title']} — Portfólio BR"
     alt = f"{s['h1']}: Portfólio BR"
@@ -201,14 +242,14 @@ def cabeca(s, modelo_head):
         h = h.replace(velho, novo)
     inicio = h.index('  <script type="application/ld+json">')
     fim = h.index('</script>\n', inicio) + len('</script>\n')
-    return h[:inicio] + json_ld(s, url) + h[fim:]
+    return h[:inicio] + json_ld(s, url, modificado) + h[fim:]
 
 
 def icone(nome, classe='icone'):
     return f'<svg class="{classe}" aria-hidden="true" focusable="false"><use href="#{nome}"/></svg>'
 
 
-def corpo(s):
+def corpo(s, modificado):
     sid = s['id']
     outros = [o for o in SEGMENTOS if o['id'] != sid]
     beneficios = '\n'.join(
@@ -232,6 +273,7 @@ def corpo(s):
             <a class="botao botao--primario" href="{sim}">Qual plano é para mim?</a>
             <a class="botao botao--contorno" href="../exemplos/{sid}.html">Ver um site de exemplo</a>
           </p>
+          {linha_datas(modificado)}
         </div>
       </header>
       <div class="container container--estreito artigo__corpo">
@@ -304,7 +346,8 @@ def main():
     pasta = RAIZ / 'segmentos'
     pasta.mkdir(exist_ok=True)
     for s in SEGMENTOS:
-        pagina = cabeca(s, modelo[:head_fim]) + corpo(s) + modelo[main_fim:]
+        modificado = modificado_gravado(s['id'])
+        pagina = cabeca(s, modelo[:head_fim], modificado) + corpo(s, modificado) + modelo[main_fim:]
         (pasta / f"{s['id']}.html").write_text(pagina, encoding='utf-8')
         print(f"segmentos/{s['id']}.html")
     # Dados das imagens OG, lidos por testes/og/gerar.mjs
