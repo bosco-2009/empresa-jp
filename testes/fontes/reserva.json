@@ -1,0 +1,27 @@
+{
+  "caracteres": 86269,
+  "arial-400": {
+    "size-adjust": 104.79,
+    "ascent-override": 99.05,
+    "descent-override": 21.18,
+    "line-gap-override": 0.0
+  },
+  "arial-700": {
+    "size-adjust": 100.48,
+    "ascent-override": 103.3,
+    "descent-override": 22.09,
+    "line-gap-override": 0.0
+  },
+  "roboto-400": {
+    "size-adjust": 105.45,
+    "ascent-override": 98.43,
+    "descent-override": 21.05,
+    "line-gap-override": 0.0
+  },
+  "roboto-700": {
+    "size-adjust": 107.04,
+    "ascent-override": 96.97,
+    "descent-override": 20.74,
+    "line-gap-override": 0.0
+  }
+}

@@ -121,6 +121,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda; preconnect ao Supabase só em planos/briefing/obrigado/pedido e na intenção do chat (94)
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts): subconjunto pt-BR, pesos 400–800, ~14 KB
 │                              #   gerada por testes/fontes/subconjunto.py; travada em funcoes/fontes.test.mjs
+│                              #   reserva com métricas ajustadas (Arial/Roboto locais) em tokens.css: testes/fontes/reserva.py --gravar (melhoria 119)
 │   └── img/                   # miniaturas/: cartões do blog e "Leia também", feitas das OG por testes/blog/miniaturas.py (melhoria 106)
 │                              # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs em paleta pelo testes/og/paleta.py)
 │                              #   OG ficam em PNG (JPEG/WebP medidos e piores, melhoria 104); depois de gerar: testes/imagens/otimizar.mjs --zopfli
@@ -214,7 +215,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
   iguais ao `canonical` em toda página com canonical (`testes/funcoes/idioma.test.mjs`).
 - CSS por página: regra usada só numa página vai no CSS dela (`home.css`, `checkout.css`...), não em `main.css`
   (teste `testes/e2e/css-critico.test.js`). Conteúdo preenchido pelo JS acima da dobra reserva o espaço (CLS 0).
-- Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
+- Fonte self-hosted com `font-display: swap` e faces de reserva `local()` com `size-adjust`/`*-override` (melhoria 119: troca
+  sem deslocamento com a fonte atrasada; `testes/e2e/fonte-reserva.test.js`); um só arquivo variável pré-carregado (a 1ª tela usa 400–800); scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
 - Imagens: `decoding="async"` em todas; `fetchpriority="high"` só no elemento LCP real (hoje a 1ª foto de
   `portfolio.html`, posta pelo `main.js`, e a miniatura do 1º cartão de `blog/index.html`, sem lazy; melhoria 106); LCP esperado de cada página travado em `testes/e2e/lcp.test.js` (melhoria 64).
 - `content-visibility: auto` (melhoria 109) nas seções abaixo da dobra da home (`home.css`) e no fim dos artigos (`blog.css`),
