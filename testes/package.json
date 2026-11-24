@@ -57,6 +57,7 @@
     "checklist-pedido": "node e2e/checklist-pedido.test.js",
     "alvos-toque": "node e2e/alvos-toque.test.js",
     "nomes-links": "node e2e/nomes-links.test.js",
+    "orcamento-bytes": "node e2e/orcamento-bytes.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
