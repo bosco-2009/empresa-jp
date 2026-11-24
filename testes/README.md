@@ -39,6 +39,9 @@ node --test testes/funcoes/*.test.mjs
   `node testes/conteudo/indicado.mjs --gravar` (depois de `testes/segmentos/gerar.py`, rode de novo). E2E: `npm run indicado`.
   O mesmo script grava a faixa final "Gostou deste exemplo?" de `exemplos/*.html` (item 95: regra `segmento:<id>`,
   `data-origem-cta="exemplo/<id>"`, antes do rodapé, sem JS). E2E: `npm run exemplo-chamada` (só o servidor estático).
+- `segmentos-datas.test.mjs` (item 117): páginas de `segmentos/` com nó `WebPage` (datePublished/dateModified, `mainEntity` →
+  Service) e linha visível "Publicado em … · atualizado em …"; só o texto lido do `<main>` conta (sem tags, sem "Plano indicado");
+  datas iguais ao git. Depois de `gerar.py` ou de mudar o texto: `node testes/segmentos/data-modificacao.mjs --gravar`.
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
 - `versao-arquivos.test.mjs` (item 69): toda referência local a CSS, JS e fonte (HTML e `url()` dos CSS) leva `?v=<8 hex do
   sha256 do arquivo>`, atualizada; o preload da fonte é o mesmo endereço do `@font-face`. Mudou CSS/JS/fonte/`config.js`?

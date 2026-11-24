@@ -58,6 +58,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │                              #   dateModified + "atualizado em" pela última mudança de TEXTO no git: testes/blog/data-modificacao.mjs --gravar (melhoria 101)
 │                              #   bloco "Plano indicado" (artigos e segmentos): regra em config.planoIndicado, gravado por testes/conteudo/indicado.mjs --gravar
 ├── segmentos/                 # 6 páginas de SEO por segmento (JSON-LD Service), geradas por testes/segmentos/gerar.py
+│                              #   datePublished/dateModified (nó WebPage) + "atualizado em" pela última mudança de TEXTO no git: testes/segmentos/data-modificacao.mjs --gravar (melhoria 117)
 ├── planos.html                # Planos + checkout Mercado Pago (Fase 3)
 ├── obrigado.html              # Retorno do checkout: status pela RPC pedido_consultar (Fase 3)
 ├── pedido.html                # Cliente acompanha as etapas (RPC pedido_acompanhar, código + token; melhoria 30)

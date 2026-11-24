@@ -51,8 +51,11 @@ const hoje = () => new Date().toISOString().slice(0, 10);
 /**
  * Data (AAAA-MM-DD) da última alteração de texto do arquivo, ou `anterior` quando o histórico não basta.
  * `historico` permite testar sem git: lista do mais novo para o mais antigo de { data, texto } (texto null = sem pai).
+ * `extrair` diz o que é o texto da página (padrão: o do artigo; as páginas de segmento usam o delas, melhoria 117).
  */
-export function ultimaAlteracaoDeTexto(f, anterior, { historico = historicoGit(f), atual = textoEditorial(ler(f)) } = {}) {
+export function ultimaAlteracaoDeTexto(f, anterior, {
+  extrair = textoEditorial, historico = historicoGit(f, extrair), atual = extrair(ler(f)),
+} = {}) {
   // Primeiro item do histórico = versão commitada (HEAD); se o arquivo local difere dela, mudou hoje
   if (historico.length && historico[0].texto !== null && atual !== historico[0].texto) return hoje();
   for (let i = 0; i < historico.length; i++) {
@@ -65,7 +68,7 @@ export function ultimaAlteracaoDeTexto(f, anterior, { historico = historicoGit(f
 }
 
 /** Versões do arquivo no git, do commit mais novo para o mais antigo. */
-function historicoGit(f) {
+function historicoGit(f, extrair = textoEditorial) {
   const log = git('log', '--format=%H %cs', '--', f);
   if (!log) return [];
   const raso = git('rev-parse', '--is-shallow-repository')?.trim() === 'true';
@@ -75,7 +78,7 @@ function historicoGit(f) {
     const conteudo = git('show', `${hash}:${f}`);
     const ultimo = i === commits.length - 1;
     // No último commit da lista: se ele não for borda de clone raso, foi onde o arquivo nasceu
-    return { data, texto: conteudo === null ? null : textoEditorial(conteudo), criado: ultimo && !bordas.includes(hash) };
+    return { data, texto: conteudo === null ? null : extrair(conteudo), criado: ultimo && !bordas.includes(hash) };
   });
 }
 
