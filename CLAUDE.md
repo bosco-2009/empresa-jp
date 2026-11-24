@@ -89,7 +89,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
 │   │   ├── inicio.js          # Síncrono no <head>: classes sem-js/modo-rascunho antes da 1ª pintura
-│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades, prefetch de planos/exemplos, PBRRede (sem internet, melhoria 53)
+│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades, prefetch de planos/exemplos, PBRRede (sem internet, melhoria 53); foco no destino das âncoras e --altura-topo do cabeçalho (melhoria 107)
 │   │   ├── abertura.js        # Pular/encerrar a abertura de marca (a animação é CSS)
 │   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D, linha do tempo
 │   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
@@ -184,6 +184,9 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 **Acessibilidade (WCAG 2.1 AA como meta)**
 - `lang="pt-BR"`, landmarks (`header`, `nav`, `main`, `footer`), um único `h1` por página, hierarquia de títulos.
 - Link "Pular para o conteúdo", foco visível, navegação completa por teclado.
+- Links internos (`#destino`) levam o FOCO ao destino (`main.js`; sem foco próprio ganha `tabindex="-1"` temporário) e o
+  cabeçalho fixo é descontado pelo `scroll-padding-top` (`--altura-topo`); não somar `scroll-margin-top` para o cabeçalho
+  (`testes/e2e/foco-ancoras.test.js`, melhoria 107).
 - Contraste mínimo 4,5:1 em texto normal e 3:1 em texto grande/ícones.
 - Imagens com `alt` (vazio quando decorativas), botões com rótulo acessível.
 - Respeitar `prefers-reduced-motion`.
