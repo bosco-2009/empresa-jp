@@ -1,6 +1,7 @@
 // Uso: veja testes/README.md (precisa só do servidor estático em :8080)
 // Melhoria 35: planos.html mostra "O que acontece depois de pagar" (etapas de pedido.html, textos do config.js)
 // logo abaixo do botão de pagar e as dúvidas de checkout (config.faq com checkout: true), com link para cada uma.
+// Melhoria 55: as dúvidas cobrem prazo, depois do pagamento, alterações e pagamento, com JSON-LD FAQPage validado.
 const { chromium } = require('playwright');
 
 const SITE = process.env.SITE || 'http://localhost:8080/';
@@ -43,13 +44,32 @@ async function abrir(browser, url, opcoes = {}) {
   ok(!(await prazo()).includes('..'), 'sem ponto duplicado');
   ok(await p.isVisible('[data-depois-acompanhar]'), 'nota sobre o link de acompanhamento');
 
-  console.log('\n[2] Dúvidas sobre o pagamento');
+  console.log('\n[2] Dúvidas antes de contratar (melhorias 35 e 55)');
   const esperadas = await p.evaluate(() => PBR_CONFIG.faq.filter((f) => f.checkout === true).map((f) => f.pergunta));
   const perguntas = await p.$$eval('#duvidas-pagamento .faq__pergunta', (xs) => xs.map((x) => x.textContent));
-  ok(esperadas.length === 3 && JSON.stringify(perguntas) === JSON.stringify(esperadas), '3 perguntas de checkout do config.faq: ' + perguntas.join(' | '));
+  ok(esperadas.length >= 4 && JSON.stringify(perguntas) === JSON.stringify(esperadas), esperadas.length + ' perguntas de compra do config.faq: ' + perguntas.join(' | '));
+  ok(await p.textContent('#duvidas-pagamento-titulo') === 'Dúvidas antes de contratar', 'título "Dúvidas antes de contratar"');
+  // Os quatro assuntos pedidos: prazo, depois do pagamento, formas de pagamento e alterações
+  const assuntos = { prazo: /quanto tempo|prazo/i, depois: /preciso enviar|depois do pagamento/i, formas: /formas de pagamento/i, alteracoes: /altera/i };
+  for (const [nome, re] of Object.entries(assuntos)) ok(perguntas.some((t) => re.test(t)), 'cobre o assunto: ' + nome);
+
+  // JSON-LD FAQPage só desta página: igual ao que está na tela
+  const lds = await p.$$eval('script[type="application/ld+json"]', (xs) => xs.map((x) => JSON.parse(x.textContent)));
+  const faqs = lds.flatMap((x) => x['@graph'] || [x]).filter((x) => x['@type'] === 'FAQPage');
+  ok(faqs.length === 1, 'um único FAQPage na página (' + faqs.length + ')');
+  const fp = faqs[0] || { mainEntity: [] };
+  const canonical = await p.getAttribute('link[rel="canonical"]', 'href');
+  ok(fp['@context'] === 'https://schema.org' && fp.url === canonical && fp['@id'] === canonical + '#duvidas-pagamento', 'FAQPage com @context, url canônica e @id da seção: ' + fp['@id']);
+  const respostasTela = await p.$$eval('#duvidas-pagamento .faq__resposta', (xs) => xs.map((x) => x.textContent));
+  ok(JSON.stringify(fp.mainEntity.map((q) => q.name)) === JSON.stringify(perguntas), 'perguntas do JSON-LD = perguntas exibidas, na ordem');
+  ok(JSON.stringify(fp.mainEntity.map((q) => q.acceptedAnswer && q.acceptedAnswer.text)) === JSON.stringify(respostasTela), 'respostas do JSON-LD = respostas exibidas');
+  ok(fp.mainEntity.every((q) => q['@type'] === 'Question' && q.acceptedAnswer['@type'] === 'Answer' && q.name.trim() && q.acceptedAnswer.text.trim()),
+    'cada item é Question com Answer e texto');
+  ok(fp.mainEntity.every((q) => !/\[PROVIS|<[a-z]/i.test(q.name + q.acceptedAnswer.text)), 'sem [PROVISÓRIO] nem HTML no texto');
+  ok(await p.$$eval('#duvidas-pagamento details.faq__item > summary', (xs) => xs.length) === perguntas.length, 'cada dúvida é um <details> com <summary>');
   const ids = await p.$$eval('#duvidas-pagamento .faq__item', (xs) => xs.map((x) => x.id));
   ok(ids.every((i) => /^faq-[a-z0-9-]+$/.test(i)), 'cada pergunta tem id para link direto');
-  ok(await p.$$eval('#duvidas-pagamento [data-faq-copiar]', (xs) => xs.length) === 3, '"Copiar link" em cada pergunta');
+  ok(await p.$$eval('#duvidas-pagamento [data-faq-copiar]', (xs) => xs.length) === perguntas.length, '"Copiar link" em cada pergunta');
   await p.click('[data-depois-duvidas] a');
   await p.waitForTimeout(300);
   ok(await p.evaluate(() => location.hash) === '#duvidas-pagamento', 'link "Veja as respostas" leva às dúvidas');
@@ -62,6 +82,7 @@ async function abrir(browser, url, opcoes = {}) {
 
   const h = await abrir(browser, '');
   ok(await h.$$eval('#duvidas .faq__item', (xs) => xs.length) === home, 'a home continua com todas as perguntas (' + home + ')');
+  ok(await h.$$eval('script[data-ld-faq]', (xs) => xs.length) === 0, 'a home não ganha o FAQPage filtrado (mantém o completo)');
   await h.context().close();
 
   console.log('\n[3] Larguras, console e axe (claro e escuro)');
