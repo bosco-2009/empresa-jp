@@ -91,6 +91,13 @@ cd testes && npm run mp                # Mercado Pago falso
 cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run impressao && npm run tempo-real-pausado && npm run jsonld-organizacao && npm run layout && npm run auditoria
 ```
 
+`briefing-erro-rede.test.js` (sem Postgres: RPCs, Edge Function e Storage respondidos pelo Playwright, item 82) derruba a rede
+no meio do envio (`abort`), responde 503 e pendura a requisição (relógio controlado, prazo de 20 s): o briefing mostra a mensagem
+no `role="alert"` com "Tentar de novo", o rascunho continua inteiro e o reenvio funciona pelo teclado; um arquivo com falha fica na
+lista com a mensagem num `role="alert"`, "Tentar de novo" (o mesmo arquivo) e "Descartar"; a nova tentativa reaproveita a URL
+assinada e um 409 do Storage (arquivo que já tinha chegado) conta como enviado, sem duplicar; enviar com arquivo pendente leva à
+etapa 4 com foco no "Tentar de novo". Recusas (limite, tipo) continuam sumindo sozinhas. 4 larguras × claro/escuro, axe e alvos.
+
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
 (melhoria 50): resumo agrupado por etapa com `h3` e "Editar etapa N: …", ida à etapa certa só pelo teclado (foco na legenda),
 "Voltar à revisão" devolvendo o foco ao mesmo "Editar", envio descrito por `aria-describedby`, 4 larguras, escuro e movimento reduzido.
