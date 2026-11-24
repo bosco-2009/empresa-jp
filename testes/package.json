@@ -59,6 +59,7 @@
     "nomes-links": "node e2e/nomes-links.test.js",
     "orcamento-bytes": "node e2e/orcamento-bytes.test.js",
     "lembrar-simulador": "node e2e/lembrar-simulador.test.js",
+    "barra-plano": "node e2e/barra-plano.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
