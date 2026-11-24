@@ -60,6 +60,7 @@
     "sem-conexao": "node e2e/sem-conexao.test.js",
     "resumo-erros": "node e2e/resumo-erros.test.js",
     "fila-espera": "node e2e/fila-espera.test.js",
+    "conversas-nao-lidas": "node e2e/conversas-nao-lidas.test.js",
     "lcp": "node e2e/lcp.test.js",
     "indicado": "node e2e/indicado.test.js",
     "checklist-pedido": "node e2e/checklist-pedido.test.js",

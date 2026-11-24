@@ -88,7 +88,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run chat-ocioso && npm run resumo && npm run tempo-resposta && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run briefing-etapa-anuncio && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run pedidos-atrasados && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run impressao && npm run tempo-real-pausado && npm run jsonld-organizacao && npm run planos-404 && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run chat-ocioso && npm run resumo && npm run tempo-resposta && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run briefing-etapa-anuncio && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run pedidos-atrasados && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run conversas-nao-lidas && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run impressao && npm run tempo-real-pausado && npm run jsonld-organizacao && npm run planos-404 && npm run layout && npm run auditoria
 ```
 
 `chat-ocioso.test.js` (só o servidor estático, item 89): o `chat.css` é citado com `media="not all"` + `data-chat-css` em toda
@@ -116,6 +116,12 @@ etapa 4 com foco no "Tentar de novo". Recusas (limite, tipo) continuam sumindo s
 também), no chat aberto, no simulador respondido, em `planos.html` com plano escolhido e no painel com dados. Destino de link =
 endereço sem `?v=` (`index.html` = pasta; WhatsApp pelo número); de botão = `aria-controls`/`value`/`data-*`. Repetiu? Use texto
 mais claro ou complemento `visualmente-oculto`. Um controle prova que o teste acusa dois "Saiba mais" diferentes.
+
+`conversas-nao-lidas.test.js` (item 93) grava conversas com horários e não lidas controlados e confere na aba Conversas a ordem
+"Maior espera" (as que aguardam resposta primeiro, quem espera há mais tempo no topo, o resto pela última atividade), "Só não lidas"
+combinável com os filtros (a conversa aberta não some depois de lida), a ordem travada na fila "Aguardando resposta" (com dica por
+`aria-describedby`), o estado lembrado no `localStorage` do admin (valor estragado ignorado), tempo real e nada gravado no banco;
+4 larguras, axe, teclado e alvos de toque.
 
 `tempo-resposta.test.js` (item 88) grava conversas com horários controlados e confere, na aba Resumo, a mediana e o p90 do
 tempo entre a 1ª mensagem do visitante e a 1ª resposta do dono (só a 1ª resposta conta; sem resposta à parte), "sem dados

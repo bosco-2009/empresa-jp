@@ -100,7 +100,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3) + aviso de pedido em aberto (reabrir, melhoria 39) + máscara/validação ao sair (46) + dados da última tentativa (60) + aviso do plano indicado pelo simulador (74) + barra fixa do plano no celular (75)
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
 │   │   ├── pedido.js          # Etapas do pedido para o cliente (pago → briefing → produção → entregue)
-│   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+)
+│   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+); ordem "Maior espera" e "Só não lidas" lembradas no localStorage (93)
 │   │   ├── admin-respostas.js # Respostas rápidas do chat do painel (localStorage do admin)
 │   │   ├── admin-pedidos.js   # Aba Pedidos (Fase 3) + abandonado/WhatsApp (23) + pagos sem contato/boas-vindas (51) + lista de verificação local por pedido (66) + atrasados pelo prazo do plano em dias úteis (83)
 │   │   ├── admin-briefings.js # Aba Briefings do painel (Fase 4)
