@@ -7,6 +7,9 @@
 //      é pedida com prioridade alta.
 //  [3] portfolio.html com um projeto FALSO só neste teste (o config.js real continua sem projetos): a 1ª foto
 //      vira o LCP, sai com loading="eager" + fetchpriority="high"; as demais e as da home continuam lazy.
+// Melhoria 119 (fonte): o LCP de texto é pintado na reserva ajustada antes da fonte chegar; o preload continua um
+// só (arquivo variável de 13 852 bytes; a 1ª tela usa 400/600/700/800, e 4 estáticas somariam 31 472 bytes), então
+// não há ganho de bytes a registrar aqui: o ganho foi o CLS da troca (0,028 → 0 na home a 375 px, fonte-reserva.test.js).
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');

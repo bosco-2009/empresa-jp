@@ -16,6 +16,7 @@
     "fase4": "node e2e/fase4.test.js",
     "auditoria": "node e2e/auditoria.test.js",
     "movimento": "node e2e/movimento.test.js",
+    "fonte-reserva": "node e2e/fonte-reserva.test.js",
     "mockup": "node e2e/mockup.test.js",
     "exemplos": "node e2e/exemplos.test.js",
     "simulador": "node e2e/simulador.test.js",
