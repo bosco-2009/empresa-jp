@@ -104,7 +104,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3) + "Como concluir o pagamento" no pendente, reabrindo a mesma preferência (melhoria 100)
 │   │   ├── pedido.js          # Etapas do pedido para o cliente (pago → briefing → produção → entregue); pendente: "Como concluir o pagamento" (melhoria 105)
 │   │   ├── concluir-pagamento.js # Bloco "Como concluir o pagamento" + reabrir a mesma preferência (obrigado.html e pedido.html; 100/105)
-│   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+); ordem "Maior espera" e "Só não lidas" lembradas no localStorage (93)
+│   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+); ordem "Maior espera" e "Só não lidas" lembradas no localStorage (93); selo da aba Conversas = quantas aguardam resposta (122)
 │   │   ├── admin-respostas.js # Respostas rápidas do chat do painel (localStorage do admin)
 │   │   ├── admin-pedidos.js   # Aba Pedidos (Fase 3) + abandonado/WhatsApp (23) + pagos sem contato/boas-vindas (51) + lista de verificação local por pedido (66) + atrasados pelo prazo do plano em dias úteis (83) + filtros Pix/boleto gerado e Sem pagamento com lembrete (108) + link direto `#pedidos/<codigo>` com voltar/avançar (118)
 │   │   ├── admin-briefings.js # Aba Briefings do painel (Fase 4)
