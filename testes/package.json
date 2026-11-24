@@ -42,6 +42,7 @@
     "pedido-aberto": "node e2e/pedido-aberto.test.js",
     "briefing-rascunho": "node e2e/briefing-rascunho.test.js",
     "form-celular": "node e2e/form-celular.test.js",
+    "chat-boas-vindas": "node e2e/chat-boas-vindas.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
