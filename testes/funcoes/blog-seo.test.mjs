@@ -217,3 +217,50 @@ test('sem dados locais inventados: nenhuma cidade, endereço, geo, nota ou conta
     }
   }
 });
+
+// ---------- dateModified pelo texto do artigo (melhoria 101) ----------
+import { ultimaAlteracaoDeTexto, aplicar, aplicarNoIndice, calcular, dataPorExtenso, datasGravadas } from '../blog/data-modificacao.mjs';
+
+test('data de modificação: só mudança de texto conta, com criação, borda de clone raso e alteração local', () => {
+  const f = 'blog/site-ou-instagram.html';
+  const v = (data, texto, criado = false) => ({ data, texto, criado });
+  // HEAD mudou só o <head> (mesmo texto) → vale o commit anterior que mudou o texto
+  assert.equal(ultimaAlteracaoDeTexto(f, 'X', { atual: 'B', historico: [v('2026-12-05', 'B'), v('2026-12-01', 'B'), v('2026-11-25', 'A', true)] }), '2026-12-01');
+  // nunca mudou desde a criação → data da criação
+  assert.equal(ultimaAlteracaoDeTexto(f, 'X', { atual: 'A', historico: [v('2026-12-05', 'A'), v('2026-11-19', 'A', true)] }), '2026-11-19');
+  // clone raso: a borda não é criação → mantém a data gravada
+  assert.equal(ultimaAlteracaoDeTexto(f, '2026-11-20', { atual: 'A', historico: [v('2026-12-05', 'A'), v('2026-11-30', 'A')] }), '2026-11-20');
+  // texto alterado e não commitado → hoje
+  assert.equal(ultimaAlteracaoDeTexto(f, 'X', { atual: 'C', historico: [v('2026-12-05', 'A', true)] }), new Date().toISOString().slice(0, 10));
+  // sem histórico → mantém a gravada
+  assert.equal(ultimaAlteracaoDeTexto(f, '2026-11-19', { atual: 'A', historico: [] }), '2026-11-19');
+});
+
+test('data de modificação: "atualizado em" só quando difere da publicação, e JSON-LD/meta/índice acompanham', () => {
+  assert.equal(dataPorExtenso('2026-12-01'), '1º de dezembro de 2026');
+  assert.equal(dataPorExtenso('2027-03-15'), '15 de março de 2027');
+  const original = ler('blog/site-ou-instagram.html');
+  const { publicado } = datasGravadas(original);
+  const novo = aplicar(original, publicado, '2027-03-15');
+  assert.match(novo, /"dateModified": "2027-03-15"/);
+  assert.match(novo, /<meta property="article:modified_time" content="2027-03-15">/);
+  assert.match(novo, /class="artigo__meta">[^\n]*<\/time><span class="artigo__atualizado"> · atualizado em <time datetime="2027-03-15">15 de março de 2027<\/time><\/span> · leitura de \d+ min<\/p>/);
+  assert.equal(aplicar(novo, publicado, '2027-03-15'), novo, 'aplicar duas vezes não duplica a linha');
+  assert.equal(aplicar(novo, publicado, publicado), original, 'voltar à data da publicação remove a linha');
+  const indice = aplicarNoIndice(ler('blog/index.html'), 'site-ou-instagram', '2027-03-15');
+  const post = nos(JSON.parse(blocosLd(indice)[0])).find((n) => n.url === `${SITE}blog/site-ou-instagram.html`);
+  assert.equal(post.dateModified, '2027-03-15');
+  assert.equal(indice.split('2027-03-15').length - 1, 1, 'só o artigo certo muda no índice');
+});
+
+test('data de modificação: páginas em dia com o git (node testes/blog/data-modificacao.mjs --gravar)', () => {
+  for (const { f, slug, publicado, data } of calcular()) {
+    const h = ler(f);
+    assert.equal(datasGravadas(h).modificado, data, `${f}: dateModified desatualizado`);
+    const linha = /<span class="artigo__atualizado"> · atualizado em <time datetime="([^"]+)">/.exec(h);
+    if (data === publicado) assert.equal(linha, null, `${f}: sem "atualizado em" quando igual à publicação`);
+    else assert.equal(linha?.[1], data, `${f}: "atualizado em" visível com a data certa`);
+    const post = nos(JSON.parse(blocosLd(ler('blog/index.html'))[0])).find((n) => n.url === `${SITE}blog/${slug}.html`);
+    assert.equal(post.dateModified, data, `blog/index.html: dateModified de ${slug}`);
+  }
+});

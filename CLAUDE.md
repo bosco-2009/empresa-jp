@@ -55,6 +55,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │                              #   faixa final "Gostou deste exemplo?" (plano de config.planoIndicado do segmento) gravada por testes/conteudo/indicado.mjs --gravar (melhoria 95)
 ├── blog/                      # index.html + 3 artigos + autor.html (ProfilePage) + feed.xml (RSS); JSON-LD validado em testes/funcoes/blog-seo.test.mjs
 │                              #   leitura estimada e "Leia também": testes/blog/leitura.mjs --gravar (travado em funcoes/blog-leitura.test.mjs)
+│                              #   dateModified + "atualizado em" pela última mudança de TEXTO no git: testes/blog/data-modificacao.mjs --gravar (melhoria 101)
 │                              #   bloco "Plano indicado" (artigos e segmentos): regra em config.planoIndicado, gravado por testes/conteudo/indicado.mjs --gravar
 ├── segmentos/                 # 6 páginas de SEO por segmento (JSON-LD Service), geradas por testes/segmentos/gerar.py
 ├── planos.html                # Planos + checkout Mercado Pago (Fase 3)
