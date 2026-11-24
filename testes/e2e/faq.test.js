@@ -61,7 +61,7 @@ const visiveis = (p) => p.$$eval('.faq__item', (xs) => xs.filter((x) => !x.hidde
   await p.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(SITE).origin });
   await p.click('#faq-tem-mensalidade [data-faq-copiar]');
   await p.waitForTimeout(200);
-  ok(await p.evaluate(() => navigator.clipboard.readText()) === SITE + '#faq-tem-mensalidade' && (await p.textContent('#faq-tem-mensalidade [data-faq-copiar]')) === 'Link copiado', '"Copiar link" copia o endereço da pergunta');
+  ok(await p.evaluate(() => navigator.clipboard.readText()) === SITE + '#faq-tem-mensalidade' && (await p.textContent('#faq-tem-mensalidade [data-faq-copiado]')) === 'Link copiado.', '"Copiar link" copia o endereço da pergunta (confirmação em role="status")');
   ok((await p.getAttribute('#faq-tem-mensalidade [data-faq-copiar]', 'aria-label')).includes('Tem mensalidade?'), 'botão com nome único para leitor de tela');
   ok(p.erros.length === 0, 'console limpo' + (p.erros.length ? ': ' + p.erros.join(' | ') : ''));
   await p.context().close();
