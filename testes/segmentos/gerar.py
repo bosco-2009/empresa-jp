@@ -8,6 +8,7 @@ O <head> comum, o cabeçalho e o rodapé são copiados de um artigo do blog (mes
 para continuarem idênticos aos da home (testes/funcoes/paginas.test.mjs confere).
 Os textos ficam aqui. Regras: texto original, sem números, clientes, depoimentos ou promessas de resultado.
 Preços NÃO entram aqui (vêm do config.js nas páginas de planos e no simulador).
+Depois de gerar, rode `node testes/conteudo/indicado.mjs --gravar` (bloco "Plano indicado", melhoria 65).
 """
 import html
 import json
@@ -265,6 +266,8 @@ def corpo(s):
           <h2 id="seg-plano">Qual plano escolher?</h2>
           <p>Os planos mudam conforme o número de páginas e o que o site precisa fazer, como ter catálogo ou cardápio com pedido. Responda 4 perguntas rápidas no simulador e veja qual plano faz sentido para o seu caso, ou compare todos lado a lado.</p>
           <p>Quer entender o caminho do pagamento até o site no ar? Leia <a href="../blog/como-funciona-a-criacao-do-seu-site.html">como funciona a criação do seu site</a>.</p>
+          <!-- indicado:inicio -->
+          <!-- indicado:fim -->
         </section>
 
         <aside class="artigo__chamada" aria-labelledby="seg-chamada">

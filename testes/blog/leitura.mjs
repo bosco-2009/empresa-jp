@@ -17,7 +17,9 @@ export const ler = (f) => readFileSync(new URL(f, raiz), 'utf8');
 /** Texto do corpo do artigo, sem tags, sem a chamada final e sem os relacionados. */
 export function corpoDoArtigo(html) {
   const inicio = html.indexOf('artigo__corpo">');
-  const fim = html.indexOf('<aside class="artigo__chamada"', inicio);
+  // o corpo termina no bloco "Plano indicado" (melhoria 65) ou, sem ele, na chamada final
+  const indicado = html.indexOf('<!-- indicado:inicio -->', inicio);
+  const fim = indicado >= 0 ? indicado : html.indexOf('<aside class="artigo__chamada"', inicio);
   if (inicio < 0 || fim < 0) throw new Error('corpo do artigo não encontrado');
   return html.slice(inicio + 'artigo__corpo">'.length, fim)
     .replace(/<[^>]+>/g, ' ')
