@@ -83,9 +83,9 @@ cada pedido e no "veio de" de cada conversa.
    { nome: 'Nome do cliente', segmento: 'Segmento', url: 'https://...', foto: 'loja-da-ana', alt: 'Página inicial do site da …' }
    ```
    Rode `node --test testes/funcoes/*.test.mjs`: ele confere se as 6 imagens de cada `foto` existem.
-3. Inclua `portfolio.html` no `sitemap.xml`:
-   ```xml
-   <url><loc>https://bosco-2009.github.io/empresa-jp/portfolio.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+3. Atualize o `sitemap.xml` (o `portfolio.html` entra sozinho quando a lista de projetos deixa de estar vazia):
+   ```bash
+   node testes/seo/gerar-sitemap.mjs
    ```
 O link "Portfólio" aparece sozinho no menu e no rodapé quando a lista deixa de estar vazia.
 
