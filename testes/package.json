@@ -5,6 +5,7 @@
   "scripts": {
     "sql": "../supabase/tests/rodar_local.sh",
     "funcoes": "node --test funcoes/*.test.mjs",
+    "briefing-erro-rede": "node e2e/briefing-erro-rede.test.js",
     "servidor": "node e2e/servidor-supabase-falso.js",
     "mp": "node e2e/mercadopago-falso.js",
     "layout": "node e2e/layout.test.js",
