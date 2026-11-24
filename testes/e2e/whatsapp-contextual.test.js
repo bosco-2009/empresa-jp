@@ -71,7 +71,8 @@ async function axe(p, seletor) {
 
   console.log('\n[2] Home: cada card de plano com a mensagem do plano');
   {
-    const p = await abrir(browser, 'index.html', configCom);
+    // Fora do horário: o link do WhatsApp fica no lugar do "Tirar dúvida no chat" (melhoria 120)
+    const p = await abrir(browser, 'index.html', configCom, { relogio: new Date('2026-11-22T06:00:00Z') });
     const cards = await p.evaluate(() => [...document.querySelectorAll('[data-lista-planos] > li')].map((li) => ({
       nome: li.querySelector('.plano__nome').textContent,
       href: (li.querySelector('.plano__whats a') || {}).href || '',
