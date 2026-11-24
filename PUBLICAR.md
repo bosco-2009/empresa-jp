@@ -118,7 +118,8 @@ O link "Portfólio" aparece sozinho no menu e no rodapé quando a lista deixa de
 
 Troque `https://bosco-2009.github.io/empresa-jp/` pelo novo endereço em **todos** estes lugares:
 - `config.js` → `site.url`;
-- `canonical`, `og:url`, `og:image` e o JSON-LD nas páginas (procure por `bosco-2009.github.io`);
+- `canonical`, `hreflang` (`pt-BR` e `x-default`), `og:url`, `og:image` e o JSON-LD nas páginas (procure por `bosco-2009.github.io`;
+  `node --test testes/funcoes/idioma.test.mjs` confere que os `hreflang` seguem o `canonical`);
 - `sitemap.xml` e `robots.txt`;
 - `404.html`: troque o prefixo `/empresa-jp/` por `/` em todos os `href`/`src`;
 - Supabase → secrets `SITE_URL` e `ORIGENS_PERMITIDAS` (CORS das Edge Functions);

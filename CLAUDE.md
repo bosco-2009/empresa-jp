@@ -200,6 +200,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 **SEO e desempenho**
 - Cada página com `title` (≤ 60 caracteres), `meta description` (70–160), únicos, Open Graph, `canonical`, favicon e manifest
   (`testes/funcoes/metatags.test.mjs` descobre as páginas sozinho e barra `[PROVISÓRIO]` nas metatags).
+- Idioma (melhoria 85): `lang="pt-BR"`, `og:locale` `pt_BR`, `inLanguage` `pt-BR` e `<link rel="alternate" hreflang="pt-BR">` + `x-default`
+  iguais ao `canonical` em toda página com canonical (`testes/funcoes/idioma.test.mjs`).
 - CSS por página: regra usada só numa página vai no CSS dela (`home.css`, `checkout.css`...), não em `main.css`
   (teste `testes/e2e/css-critico.test.js`). Conteúdo preenchido pelo JS acima da dobra reserva o espaço (CLS 0).
 - Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
