@@ -51,7 +51,7 @@ async function abrir(browser, largura, caminho, rede, antes) {
   });
   p.on('pageerror', (e) => p.erros.push('pageerror: ' + e.message));
   await p.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
-  await p.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
   await p.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js', (r) => r.fulfill({
     path: SUPA_JS, contentType: 'application/javascript', headers: { 'Access-Control-Allow-Origin': '*' }
   }));

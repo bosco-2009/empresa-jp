@@ -18,7 +18,7 @@ function ok(c, m) { if (c) console.log('  ✔ ' + m); else { falhas++; console.l
   const erros = [];
   p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') erros.push(m.text()); });
   p.on('response', (r) => { if (r.status() >= 400) erros.push(r.status() + ' ' + r.url()); });
-  await p.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
   await p.addInitScript(() => sessionStorage.setItem('pbr_abertura_vista', '1'));
 
   await p.goto(SITE, { waitUntil: 'networkidle' });

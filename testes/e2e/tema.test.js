@@ -55,7 +55,7 @@ const ESCURO = 'rgb(8, 16, 31)';
     ok(await fundo(p) === ESCURO, 'outra página já abre escura');
     // a escolha é aplicada antes da 1ª pintura (inicio.js síncrono): o atributo existe antes dos scripts defer
     const cedo = await p.evaluate(() => new Promise((r) => {
-      const x = new XMLHttpRequest(); x.open('GET', location.href); x.onload = () => r(/<script src="[^"]*inicio\.js"><\/script>/.test(x.responseText)); x.send();
+      const x = new XMLHttpRequest(); x.open('GET', location.href); x.onload = () => r(/<script src="[^"]*inicio\.js(?:\?v=[0-9a-f]+)?"><\/script>/.test(x.responseText)); x.send();
     }));
     ok(cedo && await p.evaluate(() => document.documentElement.getAttribute('data-tema')) === 'escuro', 'inicio.js (síncrono no <head>) aplica data-tema="escuro"');
     ok(await p.evaluate(() => window.__cls) === 0, 'CLS 0 com o botão e o tema salvo');

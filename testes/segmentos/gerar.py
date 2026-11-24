@@ -9,9 +9,12 @@ para continuarem idênticos aos da home (testes/funcoes/paginas.test.mjs confere
 Os textos ficam aqui. Regras: texto original, sem números, clientes, depoimentos ou promessas de resultado.
 Preços NÃO entram aqui (vêm do config.js nas páginas de planos e no simulador).
 Depois de gerar, rode `node testes/conteudo/indicado.mjs --gravar` (bloco "Plano indicado", melhoria 65).
+O sufixo de versão ?v= dos CSS/JS (melhoria 69) é tirado do modelo e reposto no fim por testes/cache/versionar.mjs.
 """
 import html
 import json
+import re
+import subprocess
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
@@ -294,7 +297,8 @@ def corpo(s):
 
 
 def main():
-    modelo = MODELO.read_text(encoding='utf-8')
+    # Sem o ?v= do modelo: as trocas abaixo usam os caminhos puros; a versão é reposta no fim.
+    modelo = re.sub(r'\?v=[0-9a-f]+"', '"', MODELO.read_text(encoding='utf-8'))
     head_fim = modelo.index('  <main id="conteudo"')
     main_fim = modelo.index('  </main>\n') + len('  </main>\n')
     pasta = RAIZ / 'segmentos'
@@ -306,6 +310,7 @@ def main():
     # Dados das imagens OG, lidos por testes/og/gerar.mjs
     og = [{'nome': f"segmento-{s['id']}", 'titulo': s['og'], 'linha': s['og_linha'], 'alt': f"{s['h1']}: Portfólio BR"} for s in SEGMENTOS]
     (Path(__file__).parent / 'og.json').write_text(json.dumps(og, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    subprocess.run(['node', str(RAIZ / 'testes/cache/versionar.mjs')], check=True)
 
 
 if __name__ == '__main__':

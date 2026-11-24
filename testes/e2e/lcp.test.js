@@ -132,7 +132,7 @@ const ESPERADO = {
   }
   const imagem = png(1200, 900);
   const rotas = async (p) => {
-    await p.route('**/config.js', (r) => r.fulfill({ body: configComProjetos, contentType: 'application/javascript' }));
+    await p.route('**/config.js*', (r) => r.fulfill({ body: configComProjetos, contentType: 'application/javascript' }));
     // O mesmo PNG responde por todas as larguras/formatos (o teste do portfólio cobre a escolha do WebP).
     await p.route('**/assets/img/portfolio/*', (r) => r.fulfill({ body: imagem, contentType: 'image/png' }));
   };
