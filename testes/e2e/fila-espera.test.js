@@ -96,6 +96,14 @@ const nomes = (a) => a.$$eval('[data-lista-conversas] .admin-item__nome', (els) 
   ok(true, 'botão mostra o total: Ana e Bia (Caio respondido, Davi fechada)');
   ok((await a.textContent('[data-espera-total]')) === '2 conversas aguardando resposta.', 'região viva com o total');
   ok((await a.getAttribute('[data-espera-total]', 'role')) === 'status', 'contador total com role=status');
+  // Selo da aba "Conversas" (melhoria 122): o total que precisa de resposta, visível de qualquer aba.
+  const seloAba = await a.$eval('[data-selo-aba="conversas"]', (s) => ({ oculto: s.hidden, visual: s.querySelector('[aria-hidden]') && s.querySelector('[aria-hidden]').textContent, titulo: s.title }));
+  ok(!seloAba.oculto && seloAba.visual === '2' && seloAba.titulo === '2 conversas aguardando resposta', 'selo da aba Conversas: 2 (' + JSON.stringify(seloAba) + ')');
+  const nomeAba = (await a.$eval('[data-aba-link="conversas"]', (l) => l.textContent.replace(/\s+/g, ' ').trim()));
+  ok(nomeAba === 'Conversas 2, 2 aguardando resposta', 'nome da aba para o leitor de tela: "' + nomeAba + '"');
+  await a.click('[data-aba-link="pedidos"]');
+  ok(await a.isVisible('[data-selo-aba="conversas"]'), 'selo continua visível na aba Pedidos');
+  await a.click('[data-aba-link="conversas"]');
   ok((await a.$$('[aria-live], [role=status]')).length > 0 && (await a.$$eval('[data-espera]', (e) => e.every((x) => !x.closest('[aria-live],[role=status],[role=alert]')))),
     'etiquetas "há N min" fora de regiões vivas');
   const abertas = await nomes(a);
@@ -139,6 +147,7 @@ const nomes = (a) => a.$$eval('[data-lista-conversas] .admin-item__nome', (els) 
   await a.waitForFunction(() => document.querySelector('[data-filtro="aguardando"]').textContent === 'Aguardando resposta (1)', null, { timeout: 8000 });
   ok(true, 'contador cai para 1');
   ok((await a.textContent('[data-espera-total]')) === '1 conversa aguardando resposta.', 'região viva no singular');
+  ok((await a.getAttribute('[data-selo-aba="conversas"]', 'title')) === '1 conversa aguardando resposta', 'selo da aba cai para 1 (singular)');
   ok((await nomes(a)).join(',') === 'Ana Espera', 'fila só com a Ana');
   ok(psql(`select count(*) from public.mensagens`) === String(+mensagensAntes + 1), 'banco: só a resposta do dono foi gravada');
 
@@ -163,6 +172,7 @@ const nomes = (a) => a.$$eval('[data-lista-conversas] .admin-item__nome', (els) 
   await v.click('[data-filtro="aguardando"]');
   ok(await v.isVisible('[data-lista-vazia]') && (await v.textContent('[data-lista-vazia]')) === 'Nenhuma conversa aguardando resposta.', 'mensagem de fila vazia');
   ok((await v.textContent('[data-filtro="aguardando"]')) === 'Aguardando resposta', 'sem número quando não há fila');
+  ok(await v.$eval('[data-selo-aba="conversas"]', (s) => s.hidden && s.textContent === ''), 'selo da aba some quando ninguém espera');
   await v.click('[data-filtro="todas"]');
   ok((await v.textContent('[data-lista-vazia]')) === 'Nenhuma conversa aqui ainda.' && !(await v.isVisible('[data-lista-vazia]')), 'texto padrão volta nos outros filtros');
   ok(v.erros.length === 0, 'console sem erros (fila vazia)');
@@ -180,6 +190,8 @@ const nomes = (a) => a.$$eval('[data-lista-conversas] .admin-item__nome', (els) 
     ok(fora === 0, `${largura}px todos os filtros visíveis`);
     const alvo = await p.$eval('[data-filtro="aguardando"]', (b) => { const r = b.getBoundingClientRect(); return r.height >= 24 && r.width >= 24; });
     ok(alvo, `${largura}px alvo de toque do filtro ≥ 24 px`);
+    const abas = await p.$$eval('.admin-aba', (as) => as.filter((x) => { const r = x.getBoundingClientRect(); return r.right > innerWidth + 0.5 || r.left < 0; }).length);
+    ok(abas === 0, `${largura}px abas com o selo cabem na tela`);
     await p.screenshot({ path: `${SAIDA}/fila-espera-${largura}.png` });
     await axe(p, largura + 'px');
     ok(p.erros.length === 0, `${largura}px console sem erros` + (p.erros.length ? ' -> ' + p.erros.join(' | ') : ''));
