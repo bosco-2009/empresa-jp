@@ -109,7 +109,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── admin-briefings.js # Aba Briefings do painel (Fase 4)
 │   │   ├── admin-avisos.js    # Painel: não lidas no título/favicon e notificações do navegador (melhoria 8)
 │   │   ├── admin-exportar.js  # Painel: filtros de período/origem e CSV gerado no navegador (melhoria 20)
-│   │   ├── admin-resumo.js    # Painel: aba Resumo do mês (cartões e comparação; "De onde vieram os pedidos" por cta, 70; "Baixar CSV" sem dados pessoais, 76; tempo de primeira resposta: mediana e p90, 88; só dados já carregados)
+│   │   ├── admin-resumo.js    # Painel: aba Resumo do mês (cartões e comparação; "De onde vieram os pedidos" por cta, 70; "Baixar CSV" sem dados pessoais, 76; tempo de primeira resposta: mediana e p90, 88; "Copiar resumo" em texto para o WhatsApp, 113; só dados já carregados)
 │   │   ├── admin-busca.js     # Painel: busca global nas três abas (dados já carregados, teclado; melhoria 37)
 │   │   ├── admin-paginacao.js # Painel: listas em páginas de 50, "Mostrando X de Y" e "Carregar mais" (melhoria 49)
 │   │   ├── admin-tempo-real.js # Painel: aviso "tempo real pausado" com Atualizar quando um canal Realtime cai (melhoria 79)
