@@ -64,6 +64,7 @@
     "conversas-nao-lidas": "node e2e/conversas-nao-lidas.test.js",
     "lcp": "node e2e/lcp.test.js",
     "indicado": "node e2e/indicado.test.js",
+    "exemplo-chamada": "node e2e/exemplo-chamada.test.js",
     "checklist-pedido": "node e2e/checklist-pedido.test.js",
     "alvos-toque": "node e2e/alvos-toque.test.js",
     "nomes-links": "node e2e/nomes-links.test.js",

@@ -100,6 +100,9 @@ const linhas = (a, s) => a.$$eval(s, (trs) => trs.map((tr) => [...tr.children].m
   ok(JSON.stringify(casos) === JSON.stringify(['blog/site-ou-instagram', 'segmento/moda', '', '', '', '', '', '']), 'ctaDe: ' + JSON.stringify(casos));
   const rot = await a.evaluate(() => [window.PBRAdminResumo.rotuloCta('segmento/saude'), window.PBRAdminResumo.rotuloCta('blog/site-ou-instagram')]);
   ok(rot[0].nome === 'Saúde' && rot[0].tipo === 'Página de segmento' && rot[1].nome === 'Site ou instagram' && rot[1].tipo === 'Artigo do blog', 'rótulos legíveis');
+  // melhoria 95: a faixa final das páginas de exemplo marca "exemplo/<segmento>"
+  const ex = await a.evaluate(() => [window.PBRAdminResumo.ctaDe('/ · utm: a · cta: exemplo/servicos'), window.PBRAdminResumo.rotuloCta('exemplo/servicos')]);
+  ok(ex[0] === 'exemplo/servicos' && ex[1].tipo === 'Site de exemplo' && ex[1].nome === 'Serviços', 'cta de site de exemplo reconhecido: ' + JSON.stringify(ex));
 
   console.log('\n[2] Este mês (1280 px)');
   const antes = a.consultas.length;

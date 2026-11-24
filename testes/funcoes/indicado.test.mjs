@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync } from 'node:fs';
-import { paginas, lerConfig, ler } from '../conteudo/indicado.mjs';
+import { paginas, paginasExemplo, lerConfig, ler } from '../conteudo/indicado.mjs';
 
 const config = lerConfig();
 
@@ -33,4 +33,31 @@ test('o bloco funciona sem JS e não inventa números', () => {
   }
   assert.ok(ler('blog/site-ou-instagram.html').includes('<h2 id="indicado-titulo"'));
   assert.ok(ler('segmentos/moda.html').includes('<h3 id="indicado-titulo"'));
+});
+
+// Melhoria 95: faixa final "Gostou deste exemplo?" nas páginas de exemplo, com a regra do segmento.
+test('toda página de exemplo tem a faixa final igual à regra do segmento (rode testes/conteudo/indicado.mjs --gravar)', () => {
+  const exs = paginasExemplo();
+  assert.equal(exs.length, 6, 'seis páginas de exemplo');
+  for (const p of exs) {
+    assert.ok(config.planoIndicado[p.chave], 'falta regra ' + p.chave + ' para ' + p.arquivo);
+    assert.equal(p.atual, p.esperado, p.arquivo + ' desatualizado');
+  }
+});
+
+test('a faixa final é fixa no HTML, aponta para o plano indicado e mantém o exemplo fora do índice', () => {
+  for (const p of paginasExemplo()) {
+    const b = p.atual.slice(p.atual.indexOf('<!-- exemplo-chamada:inicio -->'), p.atual.indexOf('<!-- exemplo-chamada:fim -->'));
+    const id = config.planoIndicado[p.chave];
+    assert.ok(b.includes(`href="../planos.html?plano=${id}" data-origem-cta="exemplo/${p.slug}"`), p.arquivo + ': link do plano com data-origem-cta');
+    assert.ok(b.includes(`href="../index.html?segmento=${p.slug}#simulador"`), p.arquivo + ': link do simulador com o segmento');
+    assert.match(b, /Gostou deste exemplo\? Um site assim para o seu negócio/, p.arquivo);
+    assert.match(b, /site de exemplo/i, p.arquivo + ': deixa claro que era um exemplo');
+    assert.doesNotMatch(b, /R\$|%|\[PROVIS|<script/, p.arquivo + ': sem preço, porcentagem, provisório ou script');
+    // depois do </main> e antes do rodapé; o resto da página continua como era
+    assert.ok(p.atual.indexOf('</main>') < p.atual.indexOf('<!-- exemplo-chamada:inicio -->'), p.arquivo + ': depois do conteúdo');
+    assert.ok(p.atual.indexOf('<!-- exemplo-chamada:fim -->') < p.atual.indexOf('<footer class="ex-rodape">'), p.arquivo + ': antes do rodapé');
+    assert.match(p.atual, /<meta name="robots" content="noindex, follow">/, p.arquivo + ': continua noindex');
+    assert.equal((p.atual.match(/id="exemplo-chamada-titulo"/g) || []).length, 1, p.arquivo + ': id único');
+  }
 });
