@@ -39,7 +39,9 @@
     "busca-global": "node e2e/busca-global.test.js",
     "atalhos-painel": "node e2e/atalhos-painel.test.js",
     "css-critico": "node e2e/css-critico.test.js",
-    "pedido-aberto": "node e2e/pedido-aberto.test.js"
+    "pedido-aberto": "node e2e/pedido-aberto.test.js",
+    "imagens": "node imagens/auditar.mjs",
+    "imagens:otimizar": "node imagens/otimizar.mjs"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
