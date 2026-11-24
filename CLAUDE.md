@@ -177,6 +177,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Contraste mínimo 4,5:1 em texto normal e 3:1 em texto grande/ícones.
 - Imagens com `alt` (vazio quando decorativas), botões com rótulo acessível.
 - Respeitar `prefers-reduced-motion`.
+- Alvos de toque (links/botões fora de texto corrido) com pelo menos 24×24 px de verdade, via token `--alvo-minimo`
+  (WCAG 2.2 2.5.8; `testes/e2e/alvos-toque.test.js` em 320/375 px, páginas, chat e painel).
 
 **Animações**
 - Só CSS/JS próprios (sem bibliotecas; a CSP bloqueia CDNs novos). Animações contínuas só com `transform`/`opacity`.

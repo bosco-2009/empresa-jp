@@ -80,7 +80,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run layout && npm run auditoria
 ```
 
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
@@ -104,6 +104,13 @@ escrita no banco, 4 larguras e axe. O Supabase falso entende `conversas?whatsapp
 cinco checkbox nativos com data de cada marcação, contagem "etapas N de 5" no cartão, teclado, aviso em `role=status`,
 salvo só no `localStorage` do admin (id + datas), sincronia entre abas, armazenamento bloqueado, nada gravado no banco;
 320/375/768/1280 px + axe.
+
+`alvos-toque.test.js` (Supabase falso) cobre os alvos de toque (melhoria 68, WCAG 2.2 2.5.8): em 320 e 375 px, em todas as
+páginas (com e sem o menu móvel aberto), no chat aberto e no painel (login, conversas, pedidos, detalhe, briefings, resumo),
+cada link/botão/campo visível mede 24×24 CSS px ou tem espaçamento (círculo de 24 px sem encostar em outro alvo). Exceções:
+link em texto corrido, `<label>` equivalente com 24 px, link esticado (`::after` no cartão), alvos cobertos ou `aria-hidden`.
+Regra mais rígida que a WCAG: fora de texto corrido, nenhum alvo depende só do espaçamento (token `--alvo-minimo`).
+Um controle injeta botões de 16 px colados para provar que o teste acusa o problema.
 
 `atalhos-painel.test.js` (Supabase falso) cobre os atalhos do painel (melhoria 41): `g` + `c`/`p`/`b`/`r` trocam de aba
 (e `g` esquecido por mais de 1,5 s não faz nada), `/` foca a busca da aba (Pedidos) ou a geral, nada dispara digitando num
