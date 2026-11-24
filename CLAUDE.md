@@ -99,7 +99,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── origem.js          # utm_* + domínio de referência na chegada → chat (pagina_origem) e pedido (origem)
 │   │   ├── chat.js            # Widget do chat ao vivo (Fase 2); supabase-js só ao abrir/intenção ou com conversa salva; boas-vindas por página (config.chat, melhoria 48); montado no ócio/1ª interação, chat.css com media="not all" + data-chat-css (89)
 │   │   ├── planos.js          # Formulário de contratação → Edge Function criar-pagamento (Fase 3) + aviso de pedido em aberto (reabrir, melhoria 39) + máscara/validação ao sair (46) + dados da última tentativa (60) + aviso do plano indicado pelo simulador (74) + barra fixa do plano no celular (75)
-│   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3)
+│   │   ├── obrigado.js        # Retorno do Mercado Pago e consulta do status (Fase 3) + "Como concluir o pagamento" no pendente, reabrindo a mesma preferência (melhoria 100)
 │   │   ├── pedido.js          # Etapas do pedido para o cliente (pago → briefing → produção → entregue)
 │   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+); ordem "Maior espera" e "Só não lidas" lembradas no localStorage (93)
 │   │   ├── admin-respostas.js # Respostas rápidas do chat do painel (localStorage do admin)
