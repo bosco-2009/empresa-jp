@@ -133,7 +133,9 @@ async function descricao(p, seletor) {
     console.log('Envio com campos faltando');
     await p.click('[data-botao-pagar]');
     const foco = await p.evaluate(() => document.activeElement.id);
-    ok(foco === 'checkout-nome', 'envio foca o primeiro campo com erro (' + foco + ')');
+    // Melhoria 59: o foco vai para o resumo "Corrija N campos", cujo 1º link leva ao primeiro campo com erro
+    ok(foco === 'checkout-resumo-erros', 'envio foca o resumo de erros (' + foco + ')');
+    ok(await p.$eval('#checkout-resumo-erros a', (a) => a.getAttribute('href')) === '#checkout-nome', '1º link do resumo leva ao primeiro campo com erro');
     ok(await erroVisivel(p, 'nome') && await erroVisivel(p, 'aceite'), 'envio mostra os erros de todos os campos');
     await p.check('#checkout-aceite');
     ok(!(await erroVisivel(p, 'aceite')), 'marcar o aceite tira o erro dele');
