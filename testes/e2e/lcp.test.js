@@ -26,12 +26,15 @@ function paginas(dir, prefixo = '') {
 // Elemento LCP esperado por página (medido a 375 e 1280 px). Todas as páginas públicas têm LCP de texto; o seletor
 // aceita as variações por largura (no celular um parágrafo do topo pode ser maior que o h1). Se uma página nova ou
 // uma imagem nova mudar o LCP, este mapa precisa ser revisto de propósito.
+// Melhoria 106: em blog/index.html a miniatura do 1º cartão (imagem estática, sem lazy e com fetchpriority="high")
+// é maior que o título e passou a ser o LCP; é a única imagem estática do site com prioridade alta.
+const LCP_IMAGEM = { 'blog/index.html': '.blog-cartao .miniatura img' };
+const PRIORIDADE_ESTATICA = { 'blog/index.html': 'miniaturas/blog-site-ou-instagram-400.png' };
 const TEXTO = 'h1, h2, p, li, aside, div, span, dd, dt, label, legend, a';
 const ESPERADO = {
   'index.html': 'h1.hero__titulo',
   'planos.html': 'h1, .pagina-topo__texto',
   'termos.html': 'h1, p',
-  'blog/index.html': 'h1, .pagina-topo__texto',
 };
 
 (async () => {
@@ -40,7 +43,11 @@ const ESPERADO = {
   for (const p of todas) {
     const html = fs.readFileSync(path.join(RAIZ, p), 'utf8');
     const imgs = [...html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]);
-    if (/fetchpriority="high"/.test(html)) ok(false, p + ': fetchpriority="high" estático (nenhuma imagem estática é LCP)');
+    const altas = imgs.filter((t) => /fetchpriority="high"/.test(t));
+    if (PRIORIDADE_ESTATICA[p]) {
+      ok(altas.length === 1 && altas[0].includes(PRIORIDADE_ESTATICA[p]) && !/loading=/.test(altas[0]),
+        p + ': só a imagem LCP tem fetchpriority="high" estático, sem loading="lazy"');
+    } else if (altas.length) ok(false, p + ': fetchpriority="high" estático (nenhuma imagem estática desta página é LCP)');
     for (const tag of imgs) {
       if (!/\swidth="\d+"/.test(tag) || !/\sheight="\d+"/.test(tag)) ok(false, p + ': <img> sem width/height: ' + tag);
       if (!/\sdecoding="async"/.test(tag)) ok(false, p + ': <img> sem decoding="async": ' + tag);
@@ -97,8 +104,13 @@ const ESPERADO = {
       const nome = `${url} @${largura}`;
       if (!m.r) { ok(false, nome + ': nenhum LCP medido'); await m.ctx.close(); continue; }
       const desc = m.r.tag + (m.r.classe ? '.' + m.r.classe.split(' ')[0] : '');
-      ok(!m.r.url && await m.seletorOk(ESPERADO[url] || TEXTO), `${nome}: LCP é texto (${desc})`);
-      ok(m.r.altas.length === 0, `${nome}: nenhuma imagem com fetchpriority="high"`);
+      if (LCP_IMAGEM[url]) {
+        ok(!!m.r.url && await m.seletorOk(LCP_IMAGEM[url]), `${nome}: LCP é a miniatura do 1º cartão (${desc})`);
+        ok(m.r.altas.length === 1 && m.r.altas[0].includes('blog-site-ou-instagram-'), `${nome}: só a imagem LCP com fetchpriority="high"`);
+      } else {
+        ok(!m.r.url && await m.seletorOk(ESPERADO[url] || TEXTO), `${nome}: LCP é texto (${desc})`);
+        ok(m.r.altas.length === 0, `${nome}: nenhuma imagem com fetchpriority="high"`);
+      }
       ok(m.erros.length === 0, `${nome}: sem erros no console` + (m.erros.length ? ': ' + m.erros.join(' | ') : ''));
       await m.ctx.close();
     }

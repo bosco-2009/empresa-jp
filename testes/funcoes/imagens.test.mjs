@@ -62,6 +62,8 @@ function limite(rel) {
   // Melhoria 84: OG em 64–96 cores (testes/og/paleta.py). Melhoria 104: + Zopfli sem perda (otimizar.mjs --zopfli)
   // → a maior tem 32 171 bytes (era 32 590); limite = maior + 10%. JPEG/WebP medidos e piores: continuam PNG.
   if (rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png') return 34.6 * KB;
+  // Melhoria 106: miniaturas do blog (testes/blog/miniaturas.py). Maiores: WebP 800 = 16 886 B, PNG 400 = 14 216 B; + 10%
+  if (rel.startsWith('assets/img/miniaturas/')) return ext === '.webp' ? 18.6 * KB : 15.7 * KB;
   if (ext === '.png') return 4.25 * KB; // ícones: o maior (icon-512) tem ~3,8 KB; limite = maior + 10%
   return 0; // tipo não previsto (jpg, gif, avif...): use WebP/PNG/SVG
 }
