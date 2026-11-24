@@ -189,6 +189,18 @@ const servidor = http.createServer(async (req, res) => {
       return { 'Content-Range': (linhas.length ? `${pg.deslocamento}-${pg.deslocamento + linhas.length - 1}` : '*') + '/' + t };
     };
     if (url.pathname === '/rest/v1/conversas' && req.method === 'GET') {
+      // Aba Pedidos (melhoria 51): ?select=whatsapp,mensagens!inner(autor)&mensagens.autor=eq.admin&whatsapp=in.(...)
+      const emWhats = /^in\.\((.*)\)$/.exec(url.searchParams.get('whatsapp') || '');
+      if (emWhats) {
+        const numeros = emWhats[1].split(',').map((n) => n.replace(/"/g, '').trim()).filter(Boolean);
+        const autor = (url.searchParams.get('mensagens.autor') || '').replace(/^eq\./, '');
+        registro.push({ consulta: 'conversas-whatsapp', numeros, autor });
+        const r = await comoUsuario(req, `select c.whatsapp, json_agg(json_build_object('autor', m.autor)) as mensagens
+            from public.conversas c join public.mensagens m on m.conversa_id = c.id
+           where c.whatsapp = any($1) and ($2 = '' or m.autor = $2)
+           group by c.id, c.whatsapp limit 1000`, [numeros, autor]);
+        return enviar(res, 200, r.rows);
+      }
       // mensagens!inner: só conversas com pelo menos uma mensagem (como o PostgREST faz com !inner)
       const inner = /mensagens!inner/.test(url.searchParams.get('select') || '');
       const base = `
