@@ -120,7 +120,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda; preconnect ao Supabase só em planos/briefing/obrigado/pedido e na intenção do chat (94)
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts): subconjunto pt-BR, pesos 400–800, ~14 KB
 │                              #   gerada por testes/fontes/subconjunto.py; travada em funcoes/fontes.test.mjs
-│   └── img/                   # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs em paleta pelo testes/og/paleta.py)
+│   └── img/                   # miniaturas/: cartões do blog e "Leia também", feitas das OG por testes/blog/miniaturas.py (melhoria 106)
+│                              # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs em paleta pelo testes/og/paleta.py)
 │                              #   OG ficam em PNG (JPEG/WebP medidos e piores, melhoria 104); depois de gerar: testes/imagens/otimizar.mjs --zopfli
 │                              #   peso/dimensões checados por testes/funcoes/imagens.test.mjs; otimizar: testes/imagens/otimizar.mjs
 ├── testes/                    # Testes locais (Node/Playwright, MP e Supabase falsos) — não publicados
@@ -210,8 +211,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - CSS por página: regra usada só numa página vai no CSS dela (`home.css`, `checkout.css`...), não em `main.css`
   (teste `testes/e2e/css-critico.test.js`). Conteúdo preenchido pelo JS acima da dobra reserva o espaço (CLS 0).
 - Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
-- Imagens: `decoding="async"` em todas; `fetchpriority="high"` só no elemento LCP real (hoje só a 1ª foto de
-  `portfolio.html`, posta pelo `main.js`); LCP esperado de cada página travado em `testes/e2e/lcp.test.js` (melhoria 64).
+- Imagens: `decoding="async"` em todas; `fetchpriority="high"` só no elemento LCP real (hoje a 1ª foto de
+  `portfolio.html`, posta pelo `main.js`, e a miniatura do 1º cartão de `blog/index.html`, sem lazy; melhoria 106); LCP esperado de cada página travado em `testes/e2e/lcp.test.js` (melhoria 64).
 - Orçamento de bytes por página (HTML + CSS + JS + fontes na carga) em `testes/e2e/orcamento-bytes.test.js` (melhoria 73):
   cresceu de propósito? `node testes/e2e/orcamento-bytes.test.js --medir` e cole o mapa novo.
 - Trilha (melhorias 22 e 91): páginas internas (blog, segmentos, exemplos, planos, portfólio, termos, privacidade) têm `<nav class="migalhas" aria-label="Trilha">`
