@@ -71,8 +71,13 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run css-critico && npm run pedido-aberto && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run layout && npm run auditoria
 ```
+
+`atalhos-painel.test.js` (Supabase falso) cobre os atalhos do painel (melhoria 41): `g` + `c`/`p`/`b`/`r` trocam de aba
+(e `g` esquecido por mais de 1,5 s não faz nada), `/` foca a busca da aba (Pedidos) ou a geral, nada dispara digitando num
+campo, `j`/`k` andam na lista e `Enter` abre, o foco continua no mesmo item quando o tempo real redesenha a lista, `?` abre o
+`<dialog>` (Esc fecha e devolve o foco), atalhos de uma tecla desligáveis e lembrados (WCAG 2.1.4), 4 larguras e axe.
 
 `pedido-aberto.test.js` (Supabase e MP falsos) cobre o aviso "Você tem um pedido em aberto" de `planos.html` (melhoria 39):
 volta do Mercado Pago sem pagar, "Concluir pagamento" reabrindo a **mesma** preferência (sem pedido duplicado nem nada novo
