@@ -40,6 +40,7 @@
     "atalhos-painel": "node e2e/atalhos-painel.test.js",
     "css-critico": "node e2e/css-critico.test.js",
     "pedido-aberto": "node e2e/pedido-aberto.test.js",
+    "briefing-rascunho": "node e2e/briefing-rascunho.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
