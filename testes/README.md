@@ -169,6 +169,11 @@ chegada, chat (`pagina_origem`), pedido (Edge Function real → `pedidos.origem`
 `tema.test.js` cobre o modo escuro: segue o sistema, botão (teclado, localStorage, sem CLS), exemplos e painel sempre
 claros, cabeçalho em uma linha e axe no escuro em todas as páginas × 4 larguras.
 
+`contraste-escuro.test.js` (item 52) mede o contraste com cálculo próprio na home, planos e blog, nos temas escuro e
+claro × 4 larguras: textos e placeholders (4,5:1, ou 3:1 em texto grande), bordas de campos e ícones (3:1). Esconde o que
+está na frente, fotografa só o fundo e lê os pixels atrás de cada linha de texto, então vale também sobre gradientes
+(onde o axe fica "incompleto"). Os `<details>` são abertos para medir as respostas do FAQ. Roda o axe junto.
+
 `faq.test.js` cobre o FAQ: ids `#faq-...` estáveis, link direto abrindo a pergunta, busca sem acentos (com as
 `palavras` extras do `config.js`), "Copiar link", JSON-LD FAQPage e axe claro/escuro em 4 larguras.
 
