@@ -89,6 +89,12 @@ print(json.dumps(out))
       ok(d.alt === 'Captura do projeto de teste' && d.w === '1200' && d.h === '900' && d.loading === 'lazy', 'alt, width/height e loading="lazy"');
       ok(d.tipo === 'image/webp', '<source type="image/webp">');
       ok(await p.isVisible('[data-secao-portfolio]') && await p.isHidden('[data-portfolio-vazio]'), 'seção aparece com projeto real; aviso de vazio some');
+      // JSON-LD do portfólio (melhoria 61): CollectionPage + ItemList só com os projetos do config.js
+      const ld = await p.evaluate(() => { const s = document.querySelector('script[data-ld-portfolio]'); return s ? JSON.parse(s.textContent) : null; });
+      const can = await p.getAttribute('link[rel="canonical"]', 'href');
+      ok(ld && ld['@type'] === 'CollectionPage' && ld.url === can && ld['@id'] === can + '#pagina', 'JSON-LD CollectionPage com url = canonical');
+      ok(ld && ld.mainEntity.numberOfItems === 1 && ld.mainEntity.itemListElement[0].item.name === 'Projeto de teste'
+        && ld.mainEntity.itemListElement[0].item.genre === 'Teste automatizado' && !/review|rating/i.test(JSON.stringify(ld)), 'ItemList com o projeto real, sem avaliações');
       await p.addScriptTag({ url: new URL('/__axe.min.js', p.url()).href });
       const v = await p.evaluate(async () => (await axe.run()).violations.filter((x) => ['serious', 'critical'].includes(x.impact)).map((x) => x.id));
       ok(v.length === 0, 'axe sem violações sérias' + (v.length ? ': ' + v.join(', ') : ''));
@@ -117,6 +123,7 @@ print(json.dumps(out))
   await p3.route('**/config.js', (r) => r.fulfill({ body: configBase, contentType: 'application/javascript' }));
   await p3.goto(SITE + 'portfolio.html', { waitUntil: 'networkidle' });
   ok(await p3.locator('.projeto').count() === 0 && await p3.isVisible('[data-portfolio-vazio]'), 'sem projetos: portfolio.html só mostra o aviso de vazio');
+  ok(await p3.locator('script[data-ld-portfolio]').count() === 0, 'sem projetos: nenhum JSON-LD de portfólio');
   await p3.goto(SITE, { waitUntil: 'networkidle' });
   ok(await p3.isHidden('[data-secao-portfolio]'), 'sem projetos: seção da home continua oculta');
   ok(pedidas.length === 0, 'sem projetos: nenhuma imagem do portfólio baixada');
