@@ -92,12 +92,15 @@ O link "Portfólio" aparece sozinho no menu e no rodapé quando a lista deixa de
 ## 6. Tirar o rascunho
 
 1. `config.js` → `rascunho: false`.
-2. Remover estas duas linhas de **`index.html`, `planos.html`, `termos.html`, `privacidade.html` e `portfolio.html`**:
+2. Remover estas duas linhas de **todas as páginas públicas**: `index.html`, `planos.html`, `exemplos.html`, `termos.html`,
+   `privacidade.html`, `portfolio.html`, as 5 páginas de `blog/` e as 6 de `segmentos/`. Para listar exatamente quais têm a linha:
+   `grep -l "Rascunho: remover esta linha" -r --include=*.html .`
    ```html
    <!-- Rascunho: remover esta linha ao publicar, junto com rascunho: false no config.js (ver PUBLICAR.md) -->
    <meta name="robots" content="noindex, nofollow">
    ```
-   **Não** remova o `noindex` de `obrigado.html`, `briefing.html`, `pedido.html`, `404.html` e `admin/index.html`: elas nunca
+   **Não** remova o `noindex` de `obrigado.html`, `briefing.html`, `pedido.html`, `404.html`, `admin/index.html` e dos sites de
+   exemplo `exemplos/*.html` (negócios fictícios): elas nunca
    devem ser indexadas (o comentário delas é diferente).
 3. Rode `node --test testes/funcoes/*.test.mjs`. O teste "noindex" confere se as páginas certas ficaram com ou sem `noindex`.
 
