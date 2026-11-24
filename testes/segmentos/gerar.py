@@ -58,7 +58,7 @@ SEGMENTOS = [
     {
         'id': 'beleza', 'paleta': 'salao', 'icone': 'i-tesoura',
         'curto': 'Beleza', 'trilha': 'Sites para salões e barbearias', 'quem': 'o seu salão',
-        'title': 'Site para salão de beleza, barbearia e estética',
+        'title': 'Site para salão, barbearia e estética',
         'h1': 'Site para salão de beleza, barbearia e estética',
         'description': 'Serviços com duração e valor, galeria dos seus trabalhos e agendamento pelo WhatsApp. Veja o que um site resolve para o seu salão ou barbearia.',
         'intro': 'Quem procura um salão quer saber três coisas: o que você faz, quanto tempo leva e como marcar. Um site responde tudo isso de uma vez e deixa o agendamento a um toque, pelo WhatsApp.',
@@ -76,7 +76,7 @@ SEGMENTOS = [
     {
         'id': 'saude', 'paleta': 'saude', 'icone': 'i-saude',
         'curto': 'Saúde', 'trilha': 'Sites para consultórios e clínicas', 'quem': 'o seu consultório',
-        'title': 'Site para consultório, clínica e profissionais de saúde',
+        'title': 'Site para consultório e clínica de saúde',
         'h1': 'Site para consultório, clínica e profissionais de saúde',
         'description': 'Especialidades explicadas com clareza, equipe apresentada e primeira consulta sem dúvidas. Veja o que um site resolve para o seu consultório ou clínica.',
         'intro': 'Antes de marcar a primeira consulta, o paciente quer saber quem vai atendê-lo, onde fica e como agendar. Um site sóbrio e bem organizado reúne essas informações e transmite a seriedade que a área pede.',
@@ -94,7 +94,7 @@ SEGMENTOS = [
     {
         'id': 'servicos', 'paleta': 'servicos', 'icone': 'i-chave',
         'curto': 'Serviços', 'trilha': 'Sites para prestadores de serviço', 'quem': 'o seu negócio',
-        'title': 'Site para oficina, reformas e prestadores de serviço',
+        'title': 'Site para oficina, reformas e serviços',
         'h1': 'Site para oficina, reformas e prestadores de serviço',
         'description': 'Serviços bem descritos, área de atendimento clara e pedido de orçamento organizado pelo WhatsApp. Veja o que um site resolve para quem presta serviço.',
         'intro': 'Quem precisa de um eletricista, de um mecânico ou de uma reforma quer confiar em quem vai entrar em casa ou cuidar do carro. Um site mostra o que você faz, onde atende e facilita o pedido de orçamento.',
