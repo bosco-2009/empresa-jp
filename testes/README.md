@@ -71,7 +71,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run chat-boas-vindas && npm run layout && npm run auditoria
 ```
 
 `atalhos-painel.test.js` (Supabase falso) cobre os atalhos do painel (melhoria 41): `g` + `c`/`p`/`b`/`r` trocam de aba
@@ -235,3 +235,8 @@ acessibilidade do Playwright (`ariaSnapshot`, salva em `e2e/saida/chat-arvore-ce
 - rótulos "(opcional)" e descrições (dica do WhatsApp, aviso de privacidade, erro) dos campos;
 - `aria-live` só numa região de anúncio: respostas novas do atendente (com o chat aberto ou fechado), nunca o
   histórico restaurado nem as mensagens do próprio visitante; axe e console limpos.
+
+`chat-boas-vindas.test.js` (Supabase falso) cobre a primeira mensagem automática do chat por página (melhoria 48):
+textos de `config.chat.boasVindas` sem promessa de prazo, planos, pedido/obrigado (`<main data-chat-contexto="pedido">`),
+artigo do blog citando o título, padrão nas demais páginas, `config.chat` ausente ou texto vazio caindo no padrão,
+conversa já iniciada noutra página abrindo com a saudação geral, 4 larguras, rolagem e axe no painel.
