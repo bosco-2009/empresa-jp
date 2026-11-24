@@ -136,7 +136,7 @@ const linhas = (a, s) => a.$$eval(s, (trs) => trs.map((tr) => [...tr.children].m
   await a.selectOption('[data-resumo-mes]', { index: 4 });
   ok(await a.isHidden('[data-resumo-conteudos-tabela]') && await a.isHidden('[data-resumo-conteudos-nota]'), 'mês sem dados esconde a tabela');
   const vazio = (await a.textContent('[data-resumo-conteudos-vazio]')).trim();
-  ok(await a.isVisible('[data-resumo-conteudos-vazio]') && /^Nenhuma conversa ou pedido de .+ passou por um artigo do blog ou página de segmento\.$/.test(vazio), 'vazio explicado: ' + vazio);
+  ok(await a.isVisible('[data-resumo-conteudos-vazio]') && /^Nenhuma conversa ou pedido de .+ passou por um atalho para os planos \(blog, segmentos, exemplos, simulador ou planos da página inicial\)\.$/.test(vazio), 'vazio explicado: ' + vazio);
 
   console.log('\n[4] Atualiza com o tempo real (pedido pendente pago)');
   await a.selectOption('[data-resumo-mes]', { index: 0 });
