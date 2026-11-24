@@ -81,6 +81,7 @@
     "jsonld-organizacao": "node e2e/jsonld-organizacao.test.js",
     "planos-404": "node e2e/planos-404.test.js",
     "foco-ancoras": "node e2e/foco-ancoras.test.js",
+    "links-planos": "node e2e/links-planos.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
