@@ -28,6 +28,9 @@ node --test testes/funcoes/*.test.mjs
 - `sitemap.test.mjs`: o `sitemap.xml` tem exatamente as páginas públicas (com o comentário de rascunho; `portfolio.html`
   só com projetos reais), nunca exemplos/privadas/admin, canonical = `loc`, `lastmod` válido; o `blog/feed.xml` tem um item
   por artigo. Para regerar: `node testes/seo/gerar-sitemap.mjs` (`--conferir` só confere). `lastmod` vem do `git log`.
+- `blog-leitura.test.mjs` (item 57): "leitura de N min" (200 palavras/min, arredondado) igual no artigo, no cartão de
+  `blog/index.html`, nos cartões de "Leia também" e no JSON-LD (`wordCount`/`timeRequired`); cada artigo tem 2–3 relacionados
+  fixos no HTML com exatamente um link para página de segmento. Mudou um artigo? `node testes/blog/leitura.mjs --gravar`.
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
 
 O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então o código testado é o mesmo do deploy.
