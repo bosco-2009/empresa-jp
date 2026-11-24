@@ -137,7 +137,8 @@ function uteisAtras(n) {
   await a.waitForSelector('[data-lista-pedidos] .admin-item');
   await a.waitForFunction(() => document.querySelector('[data-filtro-pedido="atrasado"]').textContent === 'Atrasados (2)');
   ok(true, 'contador: Bruno (1 dia útil) e Carla (2 dias úteis)');
-  const tags = await a.$$eval('.admin-item__tag--alerta', (els) => els.map((e) => e.closest('.admin-item').querySelector('.admin-item__nome').textContent.slice(0, 10) + '|' + e.textContent));
+  // Só as etiquetas de atraso (o "Briefing parado" da melhoria 103 também usa o estilo de alerta).
+  const tags = await a.$$eval('.admin-item__tag--alerta', (els) => els.filter((e) => /^Atrasado/.test(e.textContent)).map((e) => e.closest('.admin-item').querySelector('.admin-item__nome').textContent.slice(0, 10) + '|' + e.textContent));
   ok(tags.length === 2 && tags.includes('PBR-BBBBB2|Atrasado · 1 dia útil') && tags.includes('PBR-CCCCC3|Atrasado · 2 dias úteis'), 'etiquetas: ' + tags.join(', '));
   await a.click('[data-filtro-pedido="atrasado"]');
   ok((await a.getAttribute('[data-filtro-pedido="atrasado"]', 'aria-pressed')) === 'true', 'botão com aria-pressed');
@@ -163,7 +164,7 @@ function uteisAtras(n) {
   ok((await prazo('PBR-DDDDD4')) === null, 'site entregue: sem linha de prazo');
   ok((await prazo('PBR-EEEEE5')) === null, 'plano sem prazo numérico: sem linha de prazo');
   ok((await prazo('PBR-FFFFF6')) === null, 'sem briefing: sem linha de prazo');
-  ok(!(await a.$$eval('.admin-item__tag--alerta', (els) => els.map((e) => e.closest('.admin-item').textContent).join(' '))).match(/PBR-(AAAAA2|DDDDD4|EEEEE5|FFFFF6)/), 'nenhuma etiqueta nos que não atrasaram');
+  ok(!(await a.$$eval('.admin-item__tag--alerta', (els) => els.filter((e) => /^Atrasado/.test(e.textContent)).map((e) => e.closest('.admin-item').textContent).join(' '))).match(/PBR-(AAAAA2|DDDDD4|EEEEE5|FFFFF6)/), 'nenhuma etiqueta nos que não atrasaram');
 
   console.log('\n[4] Resumo: cartão "Pedidos atrasados"');
   await a.click('[data-aba-link="resumo"]');
