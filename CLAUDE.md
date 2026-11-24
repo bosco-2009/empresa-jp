@@ -204,6 +204,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
 - Imagens: `decoding="async"` em todas; `fetchpriority="high"` só no elemento LCP real (hoje só a 1ª foto de
   `portfolio.html`, posta pelo `main.js`); LCP esperado de cada página travado em `testes/e2e/lcp.test.js` (melhoria 64).
+- Orçamento de bytes por página (HTML + CSS + JS + fontes na carga) em `testes/e2e/orcamento-bytes.test.js` (melhoria 73):
+  cresceu de propósito? `node testes/e2e/orcamento-bytes.test.js --medir` e cole o mapa novo.
 - Enquanto `config.js` tiver `rascunho: true`, a página mostra o aviso de rascunho e mantém `noindex`.
 - Meta: Lighthouse mobile ≥ 90 nas quatro categorias (medido na Fase 5: 99/100/100/100 nas páginas públicas).
 
