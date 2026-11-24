@@ -107,7 +107,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── admin-busca.js     # Painel: busca global nas três abas (dados já carregados, teclado; melhoria 37)
 │   │   ├── admin-paginacao.js # Painel: listas em páginas de 50, "Mostrando X de Y" e "Carregar mais" (melhoria 49)
 │   │   ├── admin-atalhos.js   # Painel: atalhos g c/p/b/r, /, j/k e ? (desligáveis, WCAG 2.1.4); foco mantido no redesenho (melhoria 41)
-│   │   ├── briefing.js        # Briefing em etapas + upload por URL assinada (Fase 4); rascunho local com retomada da etapa (melhoria 43)
+│   │   ├── briefing.js        # Briefing em etapas + upload por URL assinada (Fase 4); rascunho local com retomada da etapa (melhoria 43); revisão com "Editar" por etapa (50)
 │   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4)
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)

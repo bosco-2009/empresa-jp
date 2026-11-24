@@ -174,7 +174,8 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   ok((await c.inputValue('#b-nome_negocio')) === 'Ateliê da Iara' && (await c.inputValue('#b-textos_servicos')).includes('Vestidos'), 'rascunho restaurado depois de recarregar');
   ok((await c.textContent('[data-rascunho-status]')).includes('rascunho'), 'aviso de rascunho salvo neste aparelho');
 
-  for (let i = 0; i < 3; i++) await c.click('[data-etapa-proxima]');
+  // Desde a melhoria 43 o rascunho retoma na etapa onde parou (3): avança até a etapa 4.
+  while (!(await c.isVisible('[data-etapa="4"]'))) await c.click('[data-etapa-proxima]');
   ok(await c.isVisible('[data-etapa="4"]'), 'etapa 4 (domínio e arquivos)');
   await c.check('input[name=tem_dominio][value=sim]');
   ok(await c.isVisible('#b-dominio'), 'campo do domínio aparece ao marcar "Sim"');
