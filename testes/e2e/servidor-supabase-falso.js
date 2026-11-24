@@ -119,6 +119,7 @@ async function chamarFuncao(nome, req, res) {
 }
 
 const registro = []; // chamadas recebidas (para o teste inspecionar)
+let realtimeBloqueado = false; // queda simulada do Realtime (/__realtime/derrubar)
 
 const servidor = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
@@ -126,6 +127,13 @@ const servidor = http.createServer(async (req, res) => {
   try {
     // ---------- testes: inspeção ----------
     if (url.pathname === '/__registro') return enviar(res, 200, registro);
+    // Queda do Realtime (melhoria 79): derruba os WebSockets abertos e recusa novos até /__realtime/liberar.
+    if (url.pathname === '/__realtime/derrubar') {
+      realtimeBloqueado = true;
+      for (const ws of sockets) ws.terminate();
+      return enviar(res, 200, { derrubados: true });
+    }
+    if (url.pathname === '/__realtime/liberar') { realtimeBloqueado = false; return enviar(res, 200, { liberado: true }); }
 
     // ---------- Storage (bucket "briefings") ----------
     const st = /^\/storage\/v1\/object\/(upload\/sign|sign)\/([\w-]+)\/(.+)$/.exec(url.pathname);
@@ -332,6 +340,7 @@ async function storage(acao, bucket, caminho, url, req, res) {
 const wss = new WebSocketServer({ server: servidor, path: '/realtime/v1/websocket' });
 const sockets = new Set();
 wss.on('connection', (ws, req) => {
+  if (realtimeBloqueado) return ws.terminate();
   const params = new URL(req.url, 'http://x').searchParams;
   ws.canais = new Map(); // topic -> { joinRef, pcIds, claims }
   ws.tokenInicial = params.get('apikey');
