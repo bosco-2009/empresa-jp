@@ -86,7 +86,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run layout && npm run auditoria
 ```
 
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
@@ -134,6 +134,11 @@ escrita no banco, 4 larguras e axe. O Supabase falso entende `conversas?whatsapp
 conversas, pedidos e pagos do mês agrupados pelo `cta: blog/...`/`cta: segmento/...` do fim de `conversas.pagina_origem` e
 `pedidos.origem` (cta cortado, de outro tipo ou fora do fim é ignorado), tabela com `caption` e `th scope`, total e "X de Y no
 mês", troca de mês, mês vazio explicado, tempo real, nenhuma consulta nova ao abrir o Resumo, 4 larguras e axe.
+
+`exportar-resumo.test.js` (Supabase falso) cobre o "Baixar CSV" da aba Resumo (melhoria 76): botão desligado antes dos dados,
+arquivo `resumo-portfolio-br-AAAA-MM.csv` (BOM, ";" e CRLF) com os cartões do mês escolhido e do anterior, a tabela "De onde
+vieram os pedidos" com total e observações; nenhum nome, e-mail, WhatsApp, código de pedido ou texto de visitante no arquivo;
+nenhuma consulta nova; aviso em `role=status`; teclado; troca de mês, mês vazio, tempo real, escape de fórmula, 4 larguras e axe.
 
 `checklist-pedido.test.js` (Supabase falso) cobre a lista de verificação por pedido aprovado no painel (melhoria 66):
 cinco checkbox nativos com data de cada marcação, contagem "etapas N de 5" no cartão, teclado, aviso em `role=status`,
