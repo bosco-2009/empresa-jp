@@ -114,7 +114,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── briefing.js        # Briefing em etapas + upload por URL assinada (Fase 4); rascunho local com retomada da etapa (melhoria 43); revisão com "Editar" por etapa (50); falha de rede/5xx/tempo esgotado com "Tentar de novo" no envio e por arquivo, sem duplicar (82)
 │   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4)
 │   │   ├── resumo-erros.js    # Resumo "Corrija N campos" com links para os campos (planos e briefing; melhoria 59)
-│   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
+│   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda; preconnect ao Supabase só em planos/briefing/obrigado/pedido e na intenção do chat (94)
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts): subconjunto pt-BR, pesos 400–800, ~14 KB
 │                              #   gerada por testes/fontes/subconjunto.py; travada em funcoes/fontes.test.mjs
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs em paleta pelo testes/og/paleta.py)
