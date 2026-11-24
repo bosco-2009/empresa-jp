@@ -250,8 +250,11 @@ o dono mudando a etapa no detalhe do pedido do painel (em produção, ajustes fi
 
 `depois-pagar.test.js` (só precisa do servidor estático) cobre a melhoria 35 em `planos.html`: o bloco "O que acontece
 depois de pagar" logo abaixo do botão (etapas e textos de `config.depoisDoPagamento`, prazo do plano escolhido atualizado
-ao trocar de plano) e a seção "Dúvidas sobre o pagamento" (só as perguntas de `config.faq` com `checkout: true`, com link
+ao trocar de plano) e a seção "Dúvidas antes de contratar" (só as perguntas de `config.faq` com `checkout: true`, com link
 direto `#faq-...` e "Copiar link"), sem mudar o FAQ da home; 320/375/768/1280 px, claro e escuro, console e axe.
+Melhoria 55: as dúvidas de compra cobrem prazo, o que acontece depois do pagamento, alterações e formas de pagamento,
+e a página ganha um JSON-LD `FAQPage` próprio, validado (perguntas e respostas iguais às exibidas, `@id` e `url` da
+página canônica, um único FAQPage na página, sem `[PROVISÓRIO]` nem HTML no texto).
 
 `chat-acessivel.test.js` (Supabase falso + servidor estático) cobre a melhoria 36 no widget do chat, pela árvore de
 acessibilidade do Playwright (`ariaSnapshot`, salva em `e2e/saida/chat-arvore-celular.txt`):
