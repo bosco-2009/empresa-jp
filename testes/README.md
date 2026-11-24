@@ -28,6 +28,9 @@ node --test testes/funcoes/*.test.mjs
 - `sitemap.test.mjs`: o `sitemap.xml` tem exatamente as páginas públicas (com o comentário de rascunho; `portfolio.html`
   só com projetos reais), nunca exemplos/privadas/admin, canonical = `loc`, `lastmod` válido; o `blog/feed.xml` tem um item
   por artigo. Para regerar: `node testes/seo/gerar-sitemap.mjs` (`--conferir` só confere). `lastmod` vem do `git log`.
+- `links-internos.test.mjs` (item 71): em todas as páginas HTML, cada `href`/`src`/`srcset`/`poster` local, `og:image`/`og:url`
+  e endereço absoluto do próprio site aponta para um arquivo que existe, e cada âncora `#id` (inclusive em outra página)
+  existe no destino. Ignora links externos e os montados pelo JS; as abas do painel (`data-aba-link`) são rotas do JS.
 - `blog-leitura.test.mjs` (item 57): "leitura de N min" (200 palavras/min, arredondado) igual no artigo, no cartão de
   `blog/index.html`, nos cartões de "Leia também" e no JSON-LD (`wordCount`/`timeRequired`); cada artigo tem 2–3 relacionados
   fixos no HTML com exatamente um link para página de segmento. Mudou um artigo? `node testes/blog/leitura.mjs --gravar`.
