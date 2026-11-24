@@ -63,6 +63,7 @@
     "barra-plano": "node e2e/barra-plano.test.js",
     "impressao": "node e2e/impressao.test.js",
     "tempo-real-pausado": "node e2e/tempo-real-pausado.test.js",
+    "jsonld-organizacao": "node e2e/jsonld-organizacao.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },

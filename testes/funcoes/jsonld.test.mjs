@@ -129,3 +129,43 @@ test('portfolio.html: sem JSON-LD de projetos no HTML (só o JS gera, e só com 
   assert.match(js, /data-ld-portfolio/, 'main.js gera o JSON-LD do portfólio');
   assert.match(js, /projetos\.length > 0\)[\s\S]{0,4000}data-ld-portfolio/, 'JSON-LD do portfólio só dentro do bloco com projetos reais');
 });
+
+// Melhoria 80: Organization + WebSite da home montados só com o que é real no config.js.
+test('index.html: Organization e WebSite com campos obrigatórios, coerentes com o config.js e o canonical', () => {
+  const html = ler('index.html');
+  const can = canonical(html);
+  const cfg = janela.PBR_CONFIG;
+  assert.equal(can, SITE, 'canonical da home = config.site.url');
+  const todos = blocosLd(html).flatMap((d) => nos(d));
+  const org = todos.find((n) => n['@type'] === 'Organization');
+  const site = todos.find((n) => n['@type'] === 'WebSite');
+  assert.ok(org && site, 'Organization e WebSite presentes no HTML (funcionam sem JS)');
+  assert.equal(org['@id'], can + '#organizacao');
+  assert.equal(org.url, can);
+  assert.equal(org.name, cfg.site.nome, 'nome = config.site.nome');
+  assert.match(org.logo, /\.png$/, 'logo em PNG');
+  const logo = org.logo.slice(SITE.length);
+  assert.doesNotThrow(() => readFileSync(new URL(logo, raiz)), `logo existe (${logo})`);
+  const png = readFileSync(new URL(logo, raiz));
+  assert.ok(png.readUInt32BE(16) >= 112 && png.readUInt32BE(20) >= 112, 'logo com pelo menos 112×112 px');
+  assert.deepEqual(org.sameAs, [`https://www.instagram.com/${cfg.contato.instagram}/`], 'sameAs = Instagram do config.js');
+  // Contatos e dados da empresa nunca ficam fixos no HTML: vêm do config.js (main.js), só quando reais.
+  for (const c of ['email', 'telephone', 'contactPoint', 'legalName', 'taxID', 'address']) {
+    assert.ok(!(c in org), `Organization estática sem ${c}`);
+  }
+  assert.equal(site['@id'], can + '#site');
+  assert.equal(site.url, can);
+  assert.equal(site.name, cfg.site.nome);
+  assert.equal(site.inLanguage, 'pt-BR');
+  assert.deepEqual(site.publisher, { '@id': org['@id'] }, 'WebSite publicado pela Organization');
+  assert.ok(!('potentialAction' in site), 'sem SearchAction: o site não tem busca interna');
+});
+
+test('main.js: contatos do JSON-LD só entram quando reais (sem [PROVISÓRIO], formato validado)', () => {
+  const js = ler('assets/js/main.js');
+  const bloco = js.slice(js.indexOf('Melhoria 80'), js.indexOf("'@type': 'Service'"));
+  assert.ok(bloco.length > 100, 'bloco da Organization encontrado');
+  assert.match(bloco, /provis\[óo\]rio/i, 'descarta valores marcados [PROVISÓRIO]');
+  assert.match(bloco, /whatsDisponivel/, 'telefone só com WhatsApp válido');
+  assert.match(bloco, /org\.email = email/, 'e-mail validado antes de entrar');
+});
