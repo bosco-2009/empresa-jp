@@ -48,6 +48,11 @@ async function axe(p) {
     const id = config.planoIndicado[chave];
     const nome = config.planos.find((x) => x.id === id).nome;
     const b = p.locator('.indicado');
+    // nos artigos o bloco fica abaixo da dobra com content-visibility: auto (melhoria 109): o Playwright só o
+    // considera visível depois que ele chega perto da tela, como acontece com o visitante ao rolar
+    // (innerText só devolve o texto depois que o bloco é renderizado, um quadro após chegar à tela)
+    await b.scrollIntoViewIfNeeded();
+    for (let i = 0; i < 30 && !(await b.locator('.indicado__titulo').innerText()); i++) await p.waitForTimeout(100);
     ok(await b.isVisible() && (await b.locator('a[data-indicado-link]').getAttribute('href')) === '../planos.html?plano=' + id
       && (await b.locator('.indicado__titulo').innerText()).includes(nome), `${chave}: plano ${nome} visível, link ?plano=${id}`);
     await p.close();

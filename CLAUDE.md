@@ -216,6 +216,11 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - Fonte self-hosted com `font-display: swap`; scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
 - Imagens: `decoding="async"` em todas; `fetchpriority="high"` só no elemento LCP real (hoje a 1ª foto de
   `portfolio.html`, posta pelo `main.js`, e a miniatura do 1º cartão de `blog/index.html`, sem lazy; melhoria 106); LCP esperado de cada página travado em `testes/e2e/lcp.test.js` (melhoria 64).
+- `content-visibility: auto` (melhoria 109) nas seções abaixo da dobra da home (`home.css`) e no fim dos artigos (`blog.css`),
+  só em `@media screen`, com `--altura-estimada` = maior altura do conteúdo na faixa (nunca menor; teste
+  `testes/e2e/visibilidade-conteudo.test.js`). Mudou o conteúdo de uma seção? Meça de novo. JS que mede elementos na carga
+  mede antes a seção (ver `revelar.js`). Testes que leem um bloco abaixo da dobra rolam até ele antes (`innerText`/`isVisible`);
+  screenshot `fullPage` mostra esses blocos vazios (o navegador não pinta o que está fora da tela).
 - Orçamento de bytes por página (HTML + CSS + JS + fontes na carga) em `testes/e2e/orcamento-bytes.test.js` (melhoria 73):
   cresceu de propósito? `node testes/e2e/orcamento-bytes.test.js --medir` e cole o mapa novo.
 - Trilha (melhorias 22 e 91): páginas internas (blog, segmentos, exemplos, planos, portfólio, termos, privacidade) têm `<nav class="migalhas" aria-label="Trilha">`
