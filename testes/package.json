@@ -45,6 +45,7 @@
     "exportar-resumo": "node e2e/exportar-resumo.test.js",
     "briefing-pendente": "node e2e/briefing-pendente.test.js",
     "briefing-parado": "node e2e/briefing-parado.test.js",
+    "pix-gerado": "node e2e/pix-gerado.test.js",
     "depois-pagar": "node e2e/depois-pagar.test.js",
     "chat-acessivel": "node e2e/chat-acessivel.test.js",
     "chat-limite": "node e2e/chat-limite.test.js",
