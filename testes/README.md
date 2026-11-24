@@ -277,3 +277,16 @@ em planos, briefing, pedido e chat, sem internet (`setOffline`) ou com a requisi
 aparece "Sem internet: …" com "Tentar de novo", nada do que foi digitado se perde, erros do servidor mantêm as mensagens
 próprias, briefing e pedido consultam sozinhos quando a conexão volta (envios nunca são refeitos sozinhos), foco tratado
 quando o botão some, 4 larguras, console limpo e axe. A lógica comum fica em `PBRRede` (`assets/js/main.js`).
+
+## Fonte mais leve (melhoria 58)
+
+```bash
+pip install fonttools brotli --break-system-packages
+python3 testes/fontes/subconjunto.py           # regrava assets/fonts/plus-jakarta-sans-latin-wght.woff2
+python3 testes/fontes/subconjunto.py --checar  # confere se o arquivo servido está em dia
+```
+
+Parte da fonte original em `testes/fontes/original/` (Plus Jakarta Sans "latin", 27 KB) e gera o subconjunto
+pt-BR com o eixo de peso 400–800 (~14 KB, mesmos desenhos: screenshots idênticos pixel a pixel). O teste
+`testes/funcoes/fontes.test.mjs` trava o peso máximo, confere o `unicode-range` do `tokens.css` com a fonte e
+falha se alguma página usar uma letra latina ou pontuação que a fonte não tenha (aí, acrescente-a à lista do script).

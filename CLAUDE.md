@@ -111,7 +111,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── briefing.js        # Briefing em etapas + upload por URL assinada (Fase 4); rascunho local com retomada da etapa (melhoria 43); revisão com "Editar" por etapa (50)
 │   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4)
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda
-│   ├── fonts/                 # Fontes self-hosted (sem Google Fonts: LGPD + desempenho)
+│   ├── fonts/                 # Fontes self-hosted (sem Google Fonts): subconjunto pt-BR, pesos 400–800, ~14 KB
+│                              #   gerada por testes/fontes/subconjunto.py; travada em funcoes/fontes.test.mjs
 │   └── img/                   # Logo, favicon, ícones, imagem Open Graph (og/: uma por página, gerada por testes/og/gerar.mjs)
 │                              #   peso/dimensões checados por testes/funcoes/imagens.test.mjs; otimizar: testes/imagens/otimizar.mjs
 ├── testes/                    # Testes locais (Node/Playwright, MP e Supabase falsos) — não publicados
