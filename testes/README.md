@@ -31,6 +31,9 @@ node --test testes/funcoes/*.test.mjs
 - `blog-leitura.test.mjs` (item 57): "leitura de N min" (200 palavras/min, arredondado) igual no artigo, no cartão de
   `blog/index.html`, nos cartões de "Leia também" e no JSON-LD (`wordCount`/`timeRequired`); cada artigo tem 2–3 relacionados
   fixos no HTML com exatamente um link para página de segmento. Mudou um artigo? `node testes/blog/leitura.mjs --gravar`.
+- `indicado.test.mjs` (item 65): bloco "Plano indicado" no fim dos artigos e das páginas de segmento igual à regra
+  `config.planoIndicado` (todo artigo/segmento com regra, plano existente, sem preço no bloco). Mudou a regra ou um plano?
+  `node testes/conteudo/indicado.mjs --gravar` (depois de `testes/segmentos/gerar.py`, rode de novo). E2E: `npm run indicado`.
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
 
 O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então o código testado é o mesmo do deploy.

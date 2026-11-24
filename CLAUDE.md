@@ -54,6 +54,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 ├── exemplos/                  # moda, restaurante, beleza, saude, servicos, pet: fictícios, sempre noindex
 ├── blog/                      # index.html + 3 artigos + autor.html (ProfilePage) + feed.xml (RSS); JSON-LD validado em testes/funcoes/blog-seo.test.mjs
 │                              #   leitura estimada e "Leia também": testes/blog/leitura.mjs --gravar (travado em funcoes/blog-leitura.test.mjs)
+│                              #   bloco "Plano indicado" (artigos e segmentos): regra em config.planoIndicado, gravado por testes/conteudo/indicado.mjs --gravar
 ├── segmentos/                 # 6 páginas de SEO por segmento (JSON-LD Service), geradas por testes/segmentos/gerar.py
 ├── planos.html                # Planos + checkout Mercado Pago (Fase 3)
 ├── obrigado.html              # Retorno do checkout: status pela RPC pedido_consultar (Fase 3)
