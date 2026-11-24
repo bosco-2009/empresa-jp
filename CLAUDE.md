@@ -92,6 +92,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D, linha do tempo
 │   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
 │   │   ├── simulador.js       # Home: "Qual plano é para mim?" (regras em config.simulador); guarda o último indicado (30 dias, melhoria 74)
+│   │   ├── retomada.js        # Home: "Continue de onde parou" abaixo do hero (rascunho do checkout, melhoria 60; inicio.js decide antes da pintura; dispensar 7 dias, melhoria 90)
 │   │   ├── comparativo.js     # planos.html#comparativo: tabela (≥48rem) e abas no celular (config.comparativo)
 │   │   ├── tema.js            # Botão do modo escuro (a escolha é aplicada antes da pintura pelo inicio.js)
 │   │   ├── origem.js          # utm_* + domínio de referência na chegada → chat (pagina_origem) e pedido (origem)
