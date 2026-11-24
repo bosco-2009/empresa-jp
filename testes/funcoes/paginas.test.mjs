@@ -122,6 +122,48 @@ test('SEO: canonical e Open Graph no subcaminho final; imagem OG 1200x630', () =
   for (const f of ARTIGOS) assert.ok(ler(f).includes(`"image": "${SITE}assets/img/og/${OG_POR_PAGINA[f]}.png"`), `${f}: JSON-LD image`);
 });
 
+// Cartões de compartilhamento (melhoria 47): WhatsApp, Facebook, LinkedIn e X montam a prévia com estas tags
+test('cartões de compartilhamento: título, tipo e texto alternativo da imagem coerentes com a imagem OG', () => {
+  // Textos alternativos de cada imagem: os mesmos usados para gerá-la (testes/og/gerar.mjs e testes/segmentos/og.json)
+  const gerador = ler('testes/og/gerar.mjs');
+  const ALT_DA_IMAGEM = { 'og-image': 'Portfólio BR: sites profissionais para pequenos negócios' };
+  for (const [, nome, alt] of gerador.matchAll(/nome: '([^']+)'[\s\S]*?alt: '([^']+)'/g)) ALT_DA_IMAGEM[`og/${nome}`] = alt;
+  for (const s of JSON.parse(ler('testes/segmentos/og.json'))) ALT_DA_IMAGEM[`og/${s.nome}`] = s.alt;
+  for (const f of [...TODAS]) {
+    const h = ler(f);
+    const t = (/<title>([^<]+)<\/title>/.exec(h) || [])[1];
+    assert.equal(meta(h, 'og:title'), t, `${f}: og:title igual ao <title>`);
+    assert.equal(meta(h, 'og:site_name'), 'Portfólio BR', `${f}: og:site_name`);
+    assert.ok((meta(h, 'og:description') || '').length >= 20, `${f}: og:description`);
+    assert.equal(meta(h, 'og:locale'), 'pt_BR', `${f}: og:locale`);
+    assert.equal(meta(h, 'og:image:type'), 'image/png', `${f}: og:image:type`);
+    assert.equal(meta(h, 'twitter:card'), 'summary_large_image', `${f}: twitter:card`);
+    const img = (/assets\/img\/(.+)\.png$/.exec(meta(h, 'og:image') || '') || [])[1];
+    assert.ok(img in ALT_DA_IMAGEM, `${f}: imagem OG conhecida (${img})`);
+    assert.equal(meta(h, 'og:image:alt'), ALT_DA_IMAGEM[img], `${f}: og:image:alt descreve a imagem ${img}`);
+    assert.equal(meta(h, 'twitter:image:alt'), ALT_DA_IMAGEM[img], `${f}: twitter:image:alt igual ao og:image:alt`);
+    // Uma tag de cada (duplicadas confundem os leitores de prévia)
+    for (const tag of ['og:title', 'og:image', 'og:image:alt', 'twitter:card', 'twitter:image:alt']) {
+      assert.equal(h.split(`"${tag}"`).length - 1, 1, `${f}: ${tag} uma única vez`);
+    }
+  }
+});
+
+test('sites de exemplo nunca indexáveis nem divulgados como página do site', () => {
+  const sitemap = ler('sitemap.xml').replace(/<!--[\s\S]*?-->/g, '');
+  for (const f of DEMOS) {
+    const h = ler(f);
+    assert.match(h, /<meta name="robots" content="noindex[,"]/, `${f}: noindex`);
+    assert.doesNotMatch(h, /Rascunho: remover/, `${f}: sem o comentário de rascunho (o noindex fica ao publicar)`);
+    assert.doesNotMatch(h, /<link rel="canonical"|property="og:|name="twitter:/, `${f}: sem canonical nem cartão de compartilhamento`);
+    assert.ok(!sitemap.includes(f), `${f}: fora do sitemap.xml`);
+  }
+  for (const f of PRIVADAS) assert.ok(!sitemap.includes(`/${f}<`), `${f}: fora do sitemap.xml`);
+  // O PUBLICAR.md manda tirar o noindex só das páginas com o comentário de rascunho: elas são exatamente as públicas
+  const comComentario = [...TODAS, ...DEMOS, 'admin/index.html'].filter((f) => ler(f).includes('Rascunho: remover esta linha')).sort();
+  assert.deepEqual(comComentario, [...PUBLICAS].sort(), 'comentário de rascunho só nas páginas públicas');
+});
+
 test('noindex: privadas sempre; públicas só enquanto config.rascunho = true', () => {
   for (const f of PRIVADAS) assert.match(ler(f), /<meta name="robots" content="noindex, nofollow">/, `${f}: sempre noindex`);
   for (const f of PUBLICAS) {
