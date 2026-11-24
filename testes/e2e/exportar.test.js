@@ -125,7 +125,7 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.trim(
   const ped = await baixar(a, '[data-exportar-pedidos]');
   const lp = linhasCsv(ped.texto);
   ok(/^pedidos-portfolio-br-\d{4}-\d{2}-\d{2}\.csv$/.test(ped.nome), 'nome do arquivo: ' + ped.nome);
-  ok(lp[0] === '"Código";"Criado em";"Status";"Plano";"Valor (R$)";"Cliente";"E-mail";"WhatsApp";"Canal de origem";"Origem (detalhe)";"Pago em";"Briefing"', 'cabeçalho dos pedidos');
+  ok(lp[0] === '"Código";"Criado em";"Status";"Plano";"Valor (R$)";"Cliente";"E-mail";"WhatsApp";"Canal de origem";"Origem (detalhe)";"Pago em";"Briefing";"Atraso (dias úteis)"', 'cabeçalho dos pedidos');
   ok(lp.length === 3, 'só os 2 pedidos do recorte no CSV');
   ok(lp.some((l) => l.includes('"PBR-AAAAA2"') && l.includes('"497,00"') && l.includes('"Carla ""Aspas"""') && l.includes('"instagram"')), 'aspas escapadas e valor em reais');
   ok(lp.some((l) => l.includes('"\'=SOMA(1;1)"')), 'nome que parece fórmula ganha apóstrofo (sem injeção de CSV)');

@@ -51,6 +51,7 @@
     "chat-boas-vindas": "node e2e/chat-boas-vindas.test.js",
     "paginacao-painel": "node e2e/paginacao-painel.test.js",
     "pagos-sem-contato": "node e2e/pagos-sem-contato.test.js",
+    "pedidos-atrasados": "node e2e/pedidos-atrasados.test.js",
     "sem-conexao": "node e2e/sem-conexao.test.js",
     "resumo-erros": "node e2e/resumo-erros.test.js",
     "fila-espera": "node e2e/fila-espera.test.js",
