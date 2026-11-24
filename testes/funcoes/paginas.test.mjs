@@ -25,6 +25,8 @@ const PRIVADAS = ['obrigado.html', 'briefing.html', 'pedido.html', '404.html'];
 // Imagens Open Graph por página (melhoria 14): geradas por testes/og/gerar.mjs em assets/img/og/. As demais usam og-image.png
 const OG_POR_PAGINA = {
   'planos.html': 'planos', 'exemplos.html': 'exemplos', 'blog/index.html': 'blog',
+  // Melhoria 111: termos, privacidade, portfólio e acompanhamento do pedido com imagem própria
+  'termos.html': 'termos', 'privacidade.html': 'privacidade', 'portfolio.html': 'portfolio', 'pedido.html': 'pedido',
   ...Object.fromEntries(ARTIGOS.map((f) => [f, 'blog-' + f.slice(5, -5)])),
   ...Object.fromEntries(IDS_SEGMENTOS.map((s) => [`segmentos/${s}.html`, 'segmento-' + s])),
 };

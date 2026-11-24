@@ -64,6 +64,32 @@ const IMAGENS = [
     linha: 'Do pagamento ao site no ar, passo a passo',
     alt: 'Artigo: Como funciona a criação do seu site com a Portfólio BR',
   },
+
+  // Páginas institucionais e de acompanhamento (melhoria 111): títulos e frases tirados das próprias páginas
+  {
+    nome: 'termos', selo: 'Termos de uso', enfeite: 'documento',
+    titulo: [[['Termos de uso', false]], [['e de ', false], ['contratação', true]]],
+    linha: 'Planos, pagamento, prazos e arrependimento',
+    alt: 'Termos de uso e de contratação da Portfólio BR: planos, pagamento, prazos e arrependimento',
+  },
+  {
+    nome: 'privacidade', selo: 'LGPD', enfeite: 'cadeado',
+    titulo: [[['Política de', false]], [['privacidade', true]]],
+    linha: 'Seus dados tratados de acordo com a LGPD',
+    alt: 'Política de privacidade da Portfólio BR: dados pessoais tratados de acordo com a LGPD',
+  },
+  {
+    nome: 'portfolio', selo: 'Portfólio', enfeite: 'galeria',
+    titulo: [[['Sites que', false]], [['já criamos', true]]],
+    linha: 'Só projetos reais, entregues a clientes',
+    alt: 'Portfólio da Portfólio BR: sites que já criamos, só projetos reais',
+  },
+  {
+    nome: 'pedido', selo: 'Seu pedido', enfeite: 'etapas',
+    titulo: [[['Acompanhe as', false]], [['etapas do', false]], [['seu site', true]]],
+    linha: 'Pagamento · Briefing · Produção · Entrega',
+    alt: 'Acompanhe as etapas do seu site na Portfólio BR: pagamento, briefing, produção e entrega',
+  },
 ];
 
 // Páginas por segmento (melhoria 25): textos em testes/segmentos/og.json, gerado por testes/segmentos/gerar.py
@@ -117,6 +143,44 @@ function enfeite(tipo) {
       <rect x="74" y="${6 + i * 106}" width="${180 - i * 18}" height="13" rx="6.5" fill="#3A4C78"/>
       <rect x="74" y="${28 + i * 106}" width="${120 - i * 10}" height="10" rx="5" fill="#2A3B66"/>`).join(''));
   }
+  if (tipo === 'documento') {
+    // Folha de contrato: linhas de texto, cláusulas marcadas e um campo de aceite
+    return g(`
+      <rect x="20" y="-10" width="250" height="380" rx="22" fill="#13224A" stroke="#2A3B66" stroke-width="3"/>
+      <rect x="48" y="24" width="130" height="18" rx="9" fill="${SOL}"/>
+      ${[0, 1, 2].map((i) => `
+      <circle cx="58" cy="${88 + i * 70}" r="10" fill="${VERDE}"/>
+      <rect x="80" y="${80 + i * 70}" width="${160 - i * 24}" height="11" rx="5.5" fill="#3A4C78"/>
+      <rect x="80" y="${100 + i * 70}" width="${130 - i * 14}" height="9" rx="4.5" fill="#2A3B66"/>`).join('')}
+      <rect x="48" y="300" width="194" height="42" rx="21" fill="${VERDE}"/>
+      <path d="M126 321 l9 9 l18 -19" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`);
+  }
+  if (tipo === 'cadeado') {
+    // Escudo com cadeado: dados guardados com cuidado
+    return g(`
+      <path d="M145 -6 L262 40 V160 C262 262 200 330 145 360 C90 330 28 262 28 160 V40 Z" fill="#13224A" stroke="#2A3B66" stroke-width="3"/>
+      <path d="M145 30 L232 64 V160 C232 238 186 292 145 318 C104 292 58 238 58 160 V64 Z" fill="none" stroke="${VERDE}" stroke-width="3" opacity=".7"/>
+      <path d="M115 150 V124 a30 30 0 0 1 60 0 V150" fill="none" stroke="${SOL}" stroke-width="12" stroke-linecap="round"/>
+      <rect x="95" y="146" width="100" height="86" rx="16" fill="${SOL}"/>
+      <circle cx="145" cy="180" r="11" fill="${NOITE}"/>
+      <rect x="140" y="184" width="10" height="26" rx="5" fill="${NOITE}"/>`);
+  }
+  if (tipo === 'galeria') {
+    // Janela de navegador com grade de miniaturas abstratas (sem nomes de clientes)
+    const mini = (x, y, cor) => `
+      <rect x="${x}" y="${y}" width="104" height="96" rx="12" fill="#F6F7FA"/>
+      <rect x="${x}" y="${y}" width="104" height="40" rx="12" fill="${cor}"/>
+      <rect x="${x}" y="${y + 28}" width="104" height="12" fill="${cor}"/>
+      <rect x="${x + 12}" y="${y + 54}" width="64" height="9" rx="4.5" fill="#566074" opacity=".5"/>
+      <rect x="${x + 12}" y="${y + 72}" width="44" height="12" rx="6" fill="${cor === SOL ? VERDE : SOL}"/>`;
+    return g(`
+      <rect x="0" y="-10" width="290" height="380" rx="22" fill="#13224A" stroke="#2A3B66" stroke-width="3"/>
+      <circle cx="30" cy="18" r="7" fill="#3A4C78"/><circle cx="52" cy="18" r="7" fill="#3A4C78"/><circle cx="74" cy="18" r="7" fill="#3A4C78"/>
+      <rect x="96" y="10" width="170" height="16" rx="8" fill="#2A3B66"/>
+      ${mini(28, 50, VERDE)}${mini(158, 50, '#3A4C78')}${mini(28, 162, '#3A4C78')}${mini(158, 162, SOL)}
+      <rect x="28" y="278" width="234" height="62" rx="14" fill="none" stroke="#2A3B66" stroke-width="2" stroke-dasharray="6 8"/>
+      <rect x="92" y="303" width="106" height="12" rx="6" fill="#3A4C78"/>`);
+  }
   // 'texto': página de artigo
   return g(`
     <rect x="20" y="0" width="250" height="330" rx="22" fill="#13224A" stroke="#2A3B66" stroke-width="3"/>
@@ -160,9 +224,13 @@ function svg(img) {
 `;
 }
 
+// Gerar só algumas: node testes/og/gerar.mjs termos privacidade (sem nomes, gera todas)
+const SO = process.argv.slice(2).filter((a) => !a.startsWith('-'));
+for (const n of SO) if (!IMAGENS.some((i) => i.nome === n)) throw new Error(`imagem OG desconhecida: ${n}`);
+
 const navegador = await chromium.launch();
 const pagina = await navegador.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
-for (const img of IMAGENS) {
+for (const img of IMAGENS.filter((i) => !SO.length || SO.includes(i.nome))) {
   const arqSvg = new URL(`${img.nome}.svg`, pastaSvg);
   writeFileSync(arqSvg, svg(img));
   await pagina.goto(arqSvg.href);

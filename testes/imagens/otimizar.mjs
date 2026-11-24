@@ -3,6 +3,7 @@
 //   node testes/imagens/otimizar.mjs              # grava as versões otimizadas
 //   node testes/imagens/otimizar.mjs --verificar  # só confere; sai com erro se algo ainda puder ser otimizado
 //   node testes/imagens/otimizar.mjs --zopfli     # + Zopfli nas imagens Open Graph (lento: ~40 s cada, ~2% menor)
+//   node testes/imagens/otimizar.mjs --zopfli og/termos og/pedido   # só os arquivos cujo caminho contém um dos trechos
 //
 // - SVG: regras próprias de testes/imagens/svg.mjs (sem dependências).
 // - PNG: recompressão SEM PERDA com oxipng (pip install pyoxipng), tirando metadados. Se o pyoxipng não estiver
@@ -23,6 +24,7 @@ import { otimizarSvg } from './svg.mjs';
 const RAIZ = fileURLToPath(new URL('../../', import.meta.url));
 const verificar = process.argv.includes('--verificar');
 const zopfli = process.argv.includes('--zopfli');
+const SO = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 const ehOg = (rel) => rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png';
 
 export function listarImagens(pasta = join(RAIZ, 'assets/img')) {
@@ -51,6 +53,7 @@ try { execFileSync('python3', ['-I', '-c', 'import oxipng, PIL'], { stdio: 'igno
 let antes = 0, depois = 0, pendentes = 0;
 for (const arq of [...listarImagens(), join(RAIZ, 'favicon.ico')]) {
   const rel = relative(RAIZ, arq);
+  if (SO.length && !SO.some((t) => rel.includes(t))) continue;
   const ext = extname(arq).toLowerCase();
   const b0 = statSync(arq).size;
   let b1 = b0;
