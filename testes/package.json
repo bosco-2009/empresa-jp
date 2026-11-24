@@ -62,6 +62,7 @@
     "lembrar-simulador": "node e2e/lembrar-simulador.test.js",
     "barra-plano": "node e2e/barra-plano.test.js",
     "impressao": "node e2e/impressao.test.js",
+    "tempo-real-pausado": "node e2e/tempo-real-pausado.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
