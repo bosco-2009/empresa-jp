@@ -87,6 +87,7 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.trim(
     insert into public.briefings (pedido_id, nome_negocio) select id, 'Doces da Joana' from public.pedidos where codigo = 'PBR-JJJJJ3';
   `);
   const adminAntes = psql(`select count(*) from public.mensagens where autor = 'admin'`);
+  const registroAntes = (await (await fetch(API + '/__registro')).json()).length; // o registro do servidor é cumulativo
 
   const browser = await chromium.launch();
 
@@ -165,7 +166,7 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.trim(
     ok(!(await a.isVisible('[data-recuperar][data-modo="boas-vindas"]')), cod + ': sem boas-vindas');
   }
   ok(psql(`select count(*) from public.mensagens where autor = 'admin'`) === String(Number(adminAntes) + 1), 'nada enviado pelo sistema (só a resposta do teste)');
-  ok(!(await (await fetch(API + '/__registro')).json()).some((x) => x.insert || (x.patch && x.patch !== 'conversas')), 'nenhuma escrita no banco pelo painel');
+  ok(!(await (await fetch(API + '/__registro')).json()).slice(registroAntes).some((x) => x.insert || (x.patch && x.patch !== 'conversas')), 'nenhuma escrita no banco pelo painel');
   ok(a.erros.length === 0, 'console sem erros' + (a.erros.length ? ': ' + a.erros.join(' | ') : ''));
   await a.context().close();
 
