@@ -165,7 +165,7 @@ async function pedidosLocais(p) {
   await pagar(y, 'recusado');
   await y.waitForFunction(() => document.querySelector('[data-resultado]').getAttribute('data-estado') === 'recusado', null, { timeout: 10000 });
   ok((await tituloResultado(y)).includes('não aprovado'), 'obrigado.html: recusado');
-  ok((await y.getAttribute('[data-resultado-acoes] a.botao--primario', 'href')) === 'planos.html?plano=profissional', '"Tentar de novo" volta ao mesmo plano');
+  ok((await y.getAttribute('[data-resultado-acoes] a.botao--primario', 'href')) === 'planos.html?plano=profissional&retomar=1', '"Tentar de novo" volta ao mesmo plano (com retomar=1, melhoria 60)');
   await axe(y, 'obrigado recusado');
   const idEva = Object.keys(await pedidosLocais(y))[0];
 
