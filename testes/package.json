@@ -56,6 +56,7 @@
     "indicado": "node e2e/indicado.test.js",
     "checklist-pedido": "node e2e/checklist-pedido.test.js",
     "alvos-toque": "node e2e/alvos-toque.test.js",
+    "nomes-links": "node e2e/nomes-links.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
