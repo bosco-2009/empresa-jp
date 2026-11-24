@@ -100,7 +100,7 @@ async function pedidosLocais(p) {
       ok((await p.textContent('[data-resumo-plano]')).replace(/\u00a0/g, ' ').includes('R$ 497'), 'trocar o plano atualiza o resumo');
       ok(new URL(p.url()).searchParams.get('plano') === 'essencial', 'URL acompanha o plano escolhido');
       await p.click('[data-botao-pagar]');
-      ok(await p.evaluate(() => document.activeElement.id) === 'checkout-nome', 'envio vazio: foco no primeiro campo com erro');
+      ok(await p.evaluate(() => document.activeElement.id) === 'checkout-resumo-erros', 'envio vazio: foco no resumo de erros (melhoria 59)');
       ok(await p.locator('[aria-invalid=true]').count() === 4, 'nome, e-mail, WhatsApp e aceite marcados como inválidos');
       ok(psql('select count(*) from public.pedidos') === '0', 'nada é criado com o formulário inválido');
       await axe(p, 'planos.html com erros de validação');

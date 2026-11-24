@@ -77,7 +77,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run sem-conexao && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run sem-conexao && npm run resumo-erros && npm run layout && npm run auditoria
 ```
 
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
@@ -290,3 +290,9 @@ Parte da fonte original em `testes/fontes/original/` (Plus Jakarta Sans "latin",
 pt-BR com o eixo de peso 400–800 (~14 KB, mesmos desenhos: screenshots idênticos pixel a pixel). O teste
 `testes/funcoes/fontes.test.mjs` trava o peso máximo, confere o `unicode-range` do `tokens.css` com a fonte e
 falha se alguma página usar uma letra latina ou pontuação que a fonte não tenha (aí, acrescente-a à lista do script).
+
+`resumo-erros.test.js` (só o servidor estático; RPCs do briefing respondidas pelo Playwright) cobre a melhoria 59:
+resumo "Corrija N campos" no topo de `planos.html` e de cada etapa do `briefing.html` (padrão GOV.UK), com o foco ao
+aparecer, um link por campo (Tab + Enter leva ao campo), `aria-invalid` + mensagem na descrição acessível de cada campo,
+item que some quando o campo é corrigido, rótulo nos links repetidos ("Referência 1: ..."), movimento reduzido e
+4 larguras × claro/escuro sem rolagem horizontal, com axe e console limpos.

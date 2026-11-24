@@ -153,7 +153,7 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   await axe(c, 'briefing etapa 1');
 
   await c.click('[data-etapa-proxima]');
-  ok(await c.evaluate(() => document.activeElement.id) === 'b-nome_negocio' && await c.isVisible('#b-nome_negocio-erro'), 'etapa 1: nome do negócio obrigatório');
+  ok(await c.evaluate(() => document.activeElement.id) === 'b-resumo-erros' && await c.isVisible('#b-nome_negocio-erro'), 'etapa 1: nome do negócio obrigatório (foco no resumo de erros, melhoria 59)');
   await c.fill('#b-nome_negocio', 'Ateliê da Iara');
   await c.fill('#b-segmento', 'Costura sob medida');
   await c.fill('#b-cidade', 'Santos/SP');

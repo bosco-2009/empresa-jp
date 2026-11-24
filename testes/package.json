@@ -48,6 +48,7 @@
     "paginacao-painel": "node e2e/paginacao-painel.test.js",
     "pagos-sem-contato": "node e2e/pagos-sem-contato.test.js",
     "sem-conexao": "node e2e/sem-conexao.test.js",
+    "resumo-erros": "node e2e/resumo-erros.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },
