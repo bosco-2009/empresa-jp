@@ -86,7 +86,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run impressao && npm run layout && npm run auditoria
 ```
 
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
@@ -116,6 +116,12 @@ a barra fica oculta com o formulário na tela e aparece ao descer até o compara
 (acompanhando a troca de plano); "Continuar" leva ao 1º campo vazio, depois ao aceite e ao botão de pagar; some com campo de texto
 em foco (teclado); não cobre o rodapé no fim da página nem o botão do chat; CLS 0, entrada animada só sem movimento reduzido,
 axe (claro e escuro) e console. A 768/1280 px e sem JS nunca aparece nem reserva espaço.
+
+`impressao.test.js` (só o servidor estático; as RPCs do pedido são simuladas no próprio teste, item 77) cobre a impressão de
+`termos.html`, `privacidade.html`, `pedido.html` e `obrigado.html` com `emulateMedia({ media: 'print' })`, claro e escuro:
+cabeçalho no fluxo (sem sticky), sem menu, chat, abertura, tema nem botões; fundo branco e texto escuro mesmo no modo escuro;
+links do conteúdo com o endereço impresso (sem query nem token) e âncoras sem endereço; link pessoal do briefing fora do papel;
+nada passa da largura útil da A4; PDF gerado em `e2e/saida/impressao-*.pdf` (comprovantes em 1 folha) e 1ª página em PNG.
 
 `paginacao-painel.test.js` (Supabase falso, 200 registros de teste) cobre as listas longas do painel (melhoria 49): conversas,
 pedidos e briefings em páginas de 50 (`range` + `count: 'exact'`), "Mostrando X de Y" e "Carregar mais", foco no primeiro item
