@@ -1,7 +1,7 @@
 // Gera as imagens Open Graph por página (melhoria 14).
 // Fonte: um SVG por página em testes/og/svg/ (editável à mão) → PNG 1200×630 em assets/img/og/.
 //
-//   node testes/og/gerar.mjs          (precisa do Playwright de testes/ e de python3 + Pillow para compactar; pyoxipng opcional)
+//   node testes/og/gerar.mjs          (precisa do Playwright de testes/ e de python3 + Pillow para compactar via testes/og/paleta.py; pyoxipng opcional)
 //
 // Só textos que já estão no site (títulos das páginas). Sem preços, números ou clientes: nada de [PROVISÓRIO] aqui.
 import { mkdirSync, writeFileSync, statSync, readFileSync } from 'node:fs';
@@ -167,10 +167,9 @@ for (const img of IMAGENS) {
   if (larguraTexto > 760) throw new Error(`${img.nome}: título invade o enfeite (${Math.round(larguraTexto)} px)`);
   const arqPng = fileURLToPath(new URL(`${img.nome}.png`, pastaPng));
   await pagina.screenshot({ path: arqPng });
-  // Compacta em 256 cores (fica bem abaixo de 100 KB e sem perda visível no fundo liso)
-  execFileSync('python3', ['-I', '-c', 'import sys;from PIL import Image;p=sys.argv[1];Image.open(p).convert("RGB").quantize(256,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.FLOYDSTEINBERG).save(p,optimize=True)', arqPng]);
-  // Recompressão sem perda (melhoria 42), se o pyoxipng estiver instalado: os mesmos pixels, uns 9% a menos
-  try { execFileSync('python3', ['-I', '-c', 'import sys,oxipng;oxipng.optimize(sys.argv[1],level=6,strip=oxipng.StripChunks.safe())', arqPng], { stdio: 'ignore' }); } catch { /* opcional */ }
+  // Compacta em 64 cores sem pontilhado (melhoria 84): ~45% menor, sem perda visível no fundo liso.
+  // O paleta.py confere o PSNR contra a captura e recomprime sem perda com o pyoxipng, se houver.
+  execFileSync('python3', ['-I', fileURLToPath(new URL('testes/og/paleta.py', raiz)), arqPng], { stdio: 'inherit' });
   console.log(`${img.nome}.png  ${Math.round(statSync(arqPng).size / 1024)} KB  (título até ${Math.round(larguraTexto)} px)`);
 }
 await navegador.close();

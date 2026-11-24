@@ -59,8 +59,9 @@ function limite(rel) {
   if (ext === '.svg') return 2 * KB;
   if (ext === '.ico') return 4 * KB;
   if (rel.startsWith('assets/img/portfolio/')) return ext === '.webp' ? 150 * KB : 450 * KB;
-  if (rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png') return 80 * KB;
-  if (ext === '.png') return 8 * KB; // ícones
+  // Melhoria 84: OG em 64–96 cores (testes/og/paleta.py) → a maior tem ~32 KB; limite = maior + 10%.
+  if (rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png') return 36 * KB;
+  if (ext === '.png') return 4.25 * KB; // ícones: o maior (icon-512) tem ~3,8 KB; limite = maior + 10%
   return 0; // tipo não previsto (jpg, gif, avif...): use WebP/PNG/SVG
 }
 
@@ -75,6 +76,16 @@ test('cada imagem fica dentro do limite de bytes do seu tipo', () => {
     assert.ok(max > 0, `${rel}: tipo de imagem não previsto (use SVG, PNG ou WebP)`);
     const bytes = statSync(join(RAIZ, rel)).size;
     assert.ok(bytes <= max, `${rel}: ${bytes} bytes passa do limite de ${max}`);
+  }
+});
+
+test('imagens Open Graph em PNG indexado (paleta), como sai do testes/og/paleta.py', () => {
+  const og = IMAGENS.filter((rel) => rel.startsWith('assets/img/og/') || rel === 'assets/img/og-image.png');
+  assert.ok(og.length >= 13, 'encontrou as imagens OG');
+  for (const rel of og) {
+    const png = ler(rel);
+    // IHDR: byte 25 = tipo de cor (3 = paleta). Em RGB/RGBA o arquivo volta a passar de 300 KB.
+    assert.equal(png[25], 3, `${rel}: não está em paleta; rode node testes/og/gerar.mjs (ou testes/og/paleta.py)`);
   }
 });
 
