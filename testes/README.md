@@ -240,6 +240,11 @@ da árvore de acessibilidade do Chromium, foco no primeiro erro ao enviar, 4 lar
 - abas no celular (setas, Home/End, tabindex móvel); "Escolher" marca o plano no formulário;
 - link da home, oculto sem JS; 4 larguras com axe.
 
+`comparativo-leitor.test.js` (melhoria 92) lê a árvore de acessibilidade do Chromium (CDP): nome da tabela pelo
+`caption`, cabeçalho "Recurso", nome do plano antes do selo, cabeçalho em toda linha (inclusive "Contratar"), nome
+acessível de cada célula igual ao `config.comparativo` ("Incluído"/"Não incluído"/texto) e as abas a 375 px só pelo
+teclado (Tab, Home/End, setas, Alt+seta ignorada, painel nomeado, itens "recurso: valor", Enter no "Escolher").
+
 `para-quem.test.js` cobre a seção "Para quem é" da home: um ícone próprio por segmento, frase sem números,
 links para os sites de exemplo (nome acessível único), revelação na rolagem e axe em 4 larguras.
 

@@ -41,7 +41,7 @@ const ORCAMENTO = {
   'index.html': 265216,
   'obrigado.html': 240640,
   'pedido.html': 249856,
-  'planos.html': 280576,
+  'planos.html': 281600,
   'portfolio.html': 228352,
   'privacidade.html': 219136,
   'segmentos/beleza.html': 238592,
