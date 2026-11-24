@@ -42,6 +42,7 @@ async function novaPagina(browser, opcoes) {
 }
 
 async function axe(p, rotulo) {
+  await p.mouse.move(0, 0); // ponteiro parado sobre um botão em transição de hover confunde o cálculo de contraste
   await p.addScriptTag({ url: new URL('/__axe.min.js', p.url()).href });
   const v = await p.evaluate(async () => (await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] }))
     .violations.filter((x) => x.impact === 'serious' || x.impact === 'critical')
@@ -130,10 +131,11 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.trim(
 
   console.log('\n[3] Com briefing ou pago há menos de 24 h: sem lembrete');
   await a.click('[data-filtro-pedido="todos"]');
+  // Sem lembrete de briefing; como o dono ainda não falou com eles, o bloco é o de boas-vindas (melhoria 51).
   for (const cod of ['PBR-FFFFF6', 'PBR-DDDDD4']) {
     await a.click(`[data-lista-pedidos] .admin-item:has-text("${cod}")`);
     await a.waitForFunction((c) => document.querySelector('[data-pedido-titulo]').textContent.startsWith(c), cod);
-    ok(await a.isHidden('[data-recuperar]'), cod + ': sem bloco');
+    ok((await a.getAttribute('[data-recuperar]', 'data-modo')) === 'boas-vindas', cod + ': sem lembrete de briefing (só boas-vindas)');
   }
 
   console.log('\n[4] O briefing chega: o lembrete some (tempo real)');

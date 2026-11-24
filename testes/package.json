@@ -45,6 +45,7 @@
     "form-celular": "node e2e/form-celular.test.js",
     "chat-boas-vindas": "node e2e/chat-boas-vindas.test.js",
     "paginacao-painel": "node e2e/paginacao-painel.test.js",
+    "pagos-sem-contato": "node e2e/pagos-sem-contato.test.js",
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs"
   },

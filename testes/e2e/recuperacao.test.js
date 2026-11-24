@@ -41,6 +41,7 @@ async function novaPagina(browser, opcoes) {
 }
 
 async function axe(p, rotulo) {
+  await p.mouse.move(0, 0); // ponteiro parado sobre um botão em transição de hover confunde o cálculo de contraste
   await p.addScriptTag({ url: new URL('/__axe.min.js', p.url()).href });
   const v = await p.evaluate(async () => (await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] }))
     .violations.filter((x) => x.impact === 'serious' || x.impact === 'critical')
@@ -123,11 +124,13 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.trim(
 
   console.log('\n[3] Pedido pendente recente e aprovado: sem bloco de recuperação');
   await a.click('[data-filtro-pedido="todos"]');
-  for (const cod of ['PBR-CCCCC3', 'PBR-DDDDD4']) {
-    await a.click(`[data-lista-pedidos] .admin-item:has-text("${cod}")`);
-    await a.waitForFunction((c) => document.querySelector('[data-pedido-titulo]').textContent.startsWith(c), cod);
-    ok(await a.isHidden('[data-recuperar]'), cod + ': sem bloco');
-  }
+  await a.click('[data-lista-pedidos] .admin-item:has-text("PBR-CCCCC3")');
+  await a.waitForFunction(() => document.querySelector('[data-pedido-titulo]').textContent.startsWith('PBR-CCCCC3'));
+  ok(await a.isHidden('[data-recuperar]'), 'PBR-CCCCC3: sem bloco');
+  // Aprovado sem mensagem do dono: o bloco aparece como boas-vindas (melhoria 51), nunca como recuperação.
+  await a.click('[data-lista-pedidos] .admin-item:has-text("PBR-DDDDD4")');
+  await a.waitForFunction(() => document.querySelector('[data-pedido-titulo]').textContent.startsWith('PBR-DDDDD4'));
+  ok((await a.getAttribute('[data-recuperar]', 'data-modo')) === 'boas-vindas', 'PBR-DDDDD4: sem recuperação (só boas-vindas)');
   ok(a.erros.length === 0, 'console sem erros' + (a.erros.length ? ': ' + a.erros.join(' | ') : ''));
   await a.context().close();
 
