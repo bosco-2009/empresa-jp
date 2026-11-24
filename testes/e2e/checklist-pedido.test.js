@@ -34,7 +34,7 @@ async function novaPagina(browser, opcoes) {
   p.erros = [];
   p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') p.erros.push(m.text()); });
   p.on('pageerror', (e) => p.erros.push('pageerror: ' + e.message));
-  await p.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
   await p.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js', (r) => r.fulfill({
     path: require.resolve('@supabase/supabase-js/dist/umd/supabase.js'), contentType: 'application/javascript',
     headers: { 'Access-Control-Allow-Origin': '*' }
@@ -145,7 +145,7 @@ const tagDe = (a, cod) => a.$eval(`[data-lista-pedidos] .admin-item:has-text("${
   const b = await a.context().newPage();
   b.erros = [];
   b.on('pageerror', (e) => b.erros.push(e.message));
-  await b.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+  await b.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
   await b.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js', (r) => r.fulfill({
     path: require.resolve('@supabase/supabase-js/dist/umd/supabase.js'), contentType: 'application/javascript'
   }));

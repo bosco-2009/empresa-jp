@@ -103,6 +103,8 @@ O link "Portfólio" aparece sozinho no menu e no rodapé quando a lista deixa de
    exemplo `exemplos/*.html` (negócios fictícios): elas nunca
    devem ser indexadas (o comentário delas é diferente).
 3. Rode `node --test testes/funcoes/*.test.mjs`. O teste "noindex" confere se as páginas certas ficaram com ou sem `noindex`.
+4. Rode `node testes/cache/versionar.mjs` (o `config.js` mudou: o sufixo `?v=` das páginas precisa acompanhar, senão
+   quem já visitou o site pode continuar vendo o `config.js` antigo).
 
 ## 7. Publicar no GitHub Pages
 
@@ -145,6 +147,9 @@ Depois crie o arquivo `CNAME` com o domínio e configure o DNS conforme a docume
 
 ## 9. Manutenção
 
+- **Mudou algum CSS, JS, fonte ou o `config.js`?** Rode `node testes/cache/versionar.mjs` antes do commit. Ele atualiza o
+  sufixo `?v=<hash>` das referências nas páginas (o GitHub Pages não permite cabeçalhos de cache; com a versão no endereço,
+  o visitante nunca fica com arquivo velho). O teste `versao-arquivos.test.mjs` acusa referência desatualizada.
 - **Projeto Supabase ou versão do supabase-js mudou?** Atualize a CSP (`<meta http-equiv="Content-Security-Policy">`)
   em todas as páginas e no `admin/index.html`. O teste `paginas.test.mjs` confere se estão iguais e coerentes com o `config.js`.
 - **Retenção de dados:** a rotina automática de limpeza (conversas, briefings e arquivos antigos, conforme `legal.retencao*`)

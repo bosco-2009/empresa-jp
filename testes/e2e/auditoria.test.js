@@ -44,7 +44,7 @@ function ok(cond, msg) { if (!cond) { falhas++; console.log('  ✘ ' + msg); } r
       const erros = [];
       p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') erros.push(m.text()); });
       p.on('pageerror', (e) => erros.push('pageerror: ' + e.message));
-      await p.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+      await p.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
       await p.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
       if (nome === '404') {
         // GitHub Pages: qualquer caminho inexistente recebe o 404.html; os recursos usam /empresa-jp/...
@@ -116,7 +116,7 @@ function ok(cond, msg) { if (!cond) { falhas++; console.log('  ✘ ' + msg); } r
   // "Pular para o conteúdo" leva o foco ao <main>
   {
     const p = await browser.newPage({ viewport: { width: 375, height: 800 } });
-    await p.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+    await p.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
     await p.goto(SITE, { waitUntil: 'networkidle' });
     await p.keyboard.press('Tab');
     await p.keyboard.press('Enter');

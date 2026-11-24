@@ -35,7 +35,7 @@ async function novaPagina(browser, opcoes) {
     if (r.url() === CDN) p.rede.cdn++;
     else if (r.url().startsWith(API)) p.rede.api++;
   });
-  await p.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
   await p.route(CDN, async (r) => {
     // Registra se a biblioteca foi pedida antes do evento load da página.
     p.rede.cdnAntesDoLoad = p.rede.cdnAntesDoLoad || await p.evaluate(() => document.readyState !== 'complete').catch(() => false);
