@@ -232,14 +232,20 @@ async function axe(p, rotulo) {
   await v.waitForFunction(() => document.querySelectorAll('.chat__lista li').length >= 5, null, { timeout: 5000 });
   ok(await v.locator('.chat__inicio').isHidden(), 'após recarregar: histórico restaurado, sem formulário inicial');
 
-  // Limite anti-spam
-  for (let i = 0; i < 20; i++) {
+  // Limite anti-spam no servidor (melhoria 96): 8 mensagens do visitante por minuto
+  let enviadas = 0;
+  for (let i = 0; i < 12; i++) {
     await v.fill('#chat-texto', 'spam ' + i);
     await v.press('#chat-texto', 'Enter');
     await v.waitForFunction(() => !document.querySelector('.chat__enviar').disabled);
+    if (await v.locator('.chat__erro').isVisible()) break;
+    enviadas++;
   }
-  ok((await v.textContent('.chat__erro')).includes('muitas mensagens'), 'limite de 20 mensagens/10 min avisado ao visitante');
-  ok(Number(psql("select count(*) from public.mensagens where autor = 'visitante'")) === 20, 'banco guardou só 20 mensagens do visitante');
+  ok((await v.textContent('.chat__erro')).includes('Aguarde um pouco antes de enviar de novo'), 'limite por minuto avisado ao visitante');
+  ok((await v.getAttribute('.chat__erro', 'role')) === 'alert', 'aviso do limite num role="alert"');
+  ok((await v.inputValue('#chat-texto')).startsWith('spam '), 'mensagem recusada continua no campo');
+  ok(Number(psql("select count(*) from public.mensagens where autor = 'visitante' and criado_em > now() - interval '1 minute'")) === 8,
+    'banco guardou só 8 mensagens do visitante no último minuto (' + enviadas + ' enviadas neste trecho)');
 
   // Token adulterado: não lê a conversa de outro, recomeça do zero
   console.log('\n[4] Segurança no navegador');

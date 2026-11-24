@@ -46,6 +46,7 @@
     "briefing-pendente": "node e2e/briefing-pendente.test.js",
     "depois-pagar": "node e2e/depois-pagar.test.js",
     "chat-acessivel": "node e2e/chat-acessivel.test.js",
+    "chat-limite": "node e2e/chat-limite.test.js",
     "busca-global": "node e2e/busca-global.test.js",
     "atalhos-painel": "node e2e/atalhos-painel.test.js",
     "css-critico": "node e2e/css-critico.test.js",
