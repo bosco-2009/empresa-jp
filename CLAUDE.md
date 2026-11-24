@@ -101,7 +101,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── pedido.js          # Etapas do pedido para o cliente (pago → briefing → produção → entregue)
 │   │   ├── admin.js           # Painel: login, abas, conversas em tempo real (Fase 2+)
 │   │   ├── admin-respostas.js # Respostas rápidas do chat do painel (localStorage do admin)
-│   │   ├── admin-pedidos.js   # Aba Pedidos (Fase 3) + abandonado/WhatsApp (23) + pagos sem contato/boas-vindas (51) + lista de verificação local por pedido (66)
+│   │   ├── admin-pedidos.js   # Aba Pedidos (Fase 3) + abandonado/WhatsApp (23) + pagos sem contato/boas-vindas (51) + lista de verificação local por pedido (66) + atrasados pelo prazo do plano em dias úteis (83)
 │   │   ├── admin-briefings.js # Aba Briefings do painel (Fase 4)
 │   │   ├── admin-avisos.js    # Painel: não lidas no título/favicon e notificações do navegador (melhoria 8)
 │   │   ├── admin-exportar.js  # Painel: filtros de período/origem e CSV gerado no navegador (melhoria 20)

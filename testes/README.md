@@ -88,7 +88,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run impressao && npm run tempo-real-pausado && npm run jsonld-organizacao && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run exportar-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run pedidos-atrasados && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run impressao && npm run tempo-real-pausado && npm run jsonld-organizacao && npm run layout && npm run auditoria
 ```
 
 `briefing-erro-rede.test.js` (sem Postgres: RPCs, Edge Function e Storage respondidos pelo Playwright, item 82) derruba a rede
@@ -107,6 +107,11 @@ etapa 4 com foco no "Tentar de novo". Recusas (limite, tipo) continuam sumindo s
 também), no chat aberto, no simulador respondido, em `planos.html` com plano escolhido e no painel com dados. Destino de link =
 endereço sem `?v=` (`index.html` = pasta; WhatsApp pelo número); de botão = `aria-controls`/`value`/`data-*`. Repetiu? Use texto
 mais claro ou complemento `visualmente-oculto`. Um controle prova que o teste acusa dois "Saiba mais" diferentes.
+
+`pedidos-atrasados.test.js` (item 83) grava briefings N dias úteis antes de hoje (fuso de São Paulo) e confere o cálculo do
+prazo (dias úteis, fins de semana, `prazoDias` antes do texto, plano sem número = sem prazo), a etiqueta "Atrasado", o filtro
+"Atrasados", a linha "Prazo de entrega" do detalhe, o cartão do Resumo, que o cálculo não grava nada e que marcar "Site
+entregue" tira o atraso; 4 larguras + axe.
 
 `orcamento-bytes.test.js` (só o servidor estático, item 73) soma o que cada página pública carrega até o `load`: HTML,
 CSS, JS e fontes da própria origem (corpo sem compressão; supabase-js, prefetch e imagens ficam de fora), a 375 e 1280 px,

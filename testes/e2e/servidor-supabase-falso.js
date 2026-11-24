@@ -398,11 +398,13 @@ async function emitirBriefingsAlterados() {
   }
 }
 
+// Guarda a marca como texto do Postgres (microssegundos): o toISOString() corta em milissegundos e fazia o mesmo
+// pedido "mudar" a cada volta, recarregando o painel sem parar (e o networkidle dos testes nunca chegava).
 let ultimoPedido = new Date(0).toISOString();
 async function emitirPedidosAlterados() {
-  const r = await pool.query('select id, status, atualizado_em from public.pedidos where atualizado_em > $1 order by atualizado_em', [ultimoPedido]);
+  const r = await pool.query('select id, status, atualizado_em::text as marca from public.pedidos where atualizado_em > $1::timestamptz order by atualizado_em', [ultimoPedido]);
   for (const p of r.rows) {
-    ultimoPedido = p.atualizado_em.toISOString();
+    ultimoPedido = p.marca;
     emitirAdmin('pedidos', 'UPDATE', { id: p.id, status: p.status });
   }
 }
