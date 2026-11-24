@@ -87,9 +87,30 @@ do $$ begin
 end $$;
 \echo ok 7 isolamento entre visitantes
 
--- 8. Limite: 20 mensagens do visitante a cada 10 minutos (já há 1)
+-- 8. Limite: 20 mensagens do visitante a cada 10 minutos (já há 1). Desde a melhoria 96 também há
+--    um limite por minuto (testado a fundo em 70_limite_mensagens_test.sql), então as mensagens vão
+--    em blocos de 8 e as anteriores são "envelhecidas" para fora do minuto, mas dentro dos 10 minutos.
 do $$ begin
-  for i in 2..20 loop
+  for i in 2..8 loop
+    perform public.chat_enviar('11111111-1111-1111-1111-111111111111', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'msg ' || i);
+  end loop;
+end $$;
+reset role;
+update public.mensagens set criado_em = now() - interval '5 minutes'
+ where conversa_id = (select id from public.conversas where visitante_id = :v1) and autor = 'visitante';
+set role anon;
+do $$ begin
+  for i in 9..16 loop
+    perform public.chat_enviar('11111111-1111-1111-1111-111111111111', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'msg ' || i);
+  end loop;
+end $$;
+reset role;
+update public.mensagens set criado_em = now() - interval '3 minutes'
+ where conversa_id = (select id from public.conversas where visitante_id = :v1) and autor = 'visitante'
+   and criado_em > now() - interval '1 minute';
+set role anon;
+do $$ begin
+  for i in 17..20 loop
     perform public.chat_enviar('11111111-1111-1111-1111-111111111111', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'msg ' || i);
   end loop;
 end $$;
