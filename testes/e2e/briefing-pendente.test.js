@@ -2,6 +2,7 @@
 // Lembrete de briefing pendente (item 34 do MELHORIAS.md): filtro "Sem briefing" (aprovados há mais de 24 h sem briefing),
 // contador no selo da aba, mensagem pronta com o link de acompanhamento SEM o token, wa.me sem envio automático,
 // registro local de "lembrado", some quando o briefing chega; 4 larguras + axe.
+// Melhoria 56: botão "Copiar link do briefing" (briefing.html?pedido=, sem token) com aviso em role=status.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const { execSync } = require('child_process');
@@ -118,6 +119,18 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.trim(
   await a.fill('[data-recuperar-mensagem]', 'Oi Elisa, lembrete do briefing');
   await a.click('[data-recuperar-padrao]');
   ok((await a.inputValue('[data-recuperar-mensagem]')) === msg, '"Restaurar mensagem" volta ao texto do briefing');
+  // Melhoria 56: copiar o link do briefing (só o código, sem token), com aviso em role=status.
+  ok(await a.isVisible('[data-briefing-link]'), 'bloco "Link do briefing" visível no modo briefing');
+  const urlBriefing = await a.textContent('[data-briefing-link-url]');
+  ok(urlBriefing === 'https://bosco-2009.github.io/empresa-jp/briefing.html?pedido=PBR-EEEEE5', 'link do briefing exibido: ' + urlBriefing);
+  ok(!/#c=|[?&]t=|token/i.test(urlBriefing), 'link do briefing sem o token');
+  await a.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(SITE).origin });
+  await a.click('[data-briefing-copiar]');
+  await a.waitForFunction(() => document.querySelector('[data-briefing-copiado]').textContent !== '');
+  ok((await a.textContent('[data-briefing-copiado]')).startsWith('Link copiado'), 'aviso "Link copiado"');
+  ok((await a.getAttribute('[data-briefing-copiado]', 'role')) === 'status', 'aviso com role=status');
+  ok((await a.evaluate(() => navigator.clipboard.readText())) === urlBriefing, 'área de transferência com o link');
+  ok(psql(`select count(*) from public.mensagens where autor <> 'visitante'`) === '0', 'copiar não envia nada');
   await axe(a, 'detalhe briefing pendente');
   await a.screenshot({ path: SAIDA + '/briefing-pendente-1280.png' });
   const [popup] = await Promise.all([a.context().waitForEvent('page'), a.click('[data-recuperar-link]')]);
@@ -136,6 +149,7 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.trim(
     await a.click(`[data-lista-pedidos] .admin-item:has-text("${cod}")`);
     await a.waitForFunction((c) => document.querySelector('[data-pedido-titulo]').textContent.startsWith(c), cod);
     ok((await a.getAttribute('[data-recuperar]', 'data-modo')) === 'boas-vindas', cod + ': sem lembrete de briefing (só boas-vindas)');
+    ok(!(await a.isVisible('[data-briefing-link]')), cod + ': sem o bloco "Link do briefing"');
   }
 
   console.log('\n[4] O briefing chega: o lembrete some (tempo real)');
