@@ -37,8 +37,8 @@ const marcado = (p) => p.evaluate(() => { const r = document.querySelector('inpu
       const tb = document.querySelector('.tabela-comparativa');
       return {
         caption: tb.caption && tb.caption.textContent,
-        cols: [...tb.querySelectorAll('thead th[scope="col"]')].map((th) => th.textContent),
-        linhas: tb.querySelectorAll('tbody th[scope="row"]').length,
+        cols: [...tb.querySelectorAll('thead th[scope="col"]:not(.tabela-comparativa__canto)')].map((th) => th.querySelector('.tabela-comparativa__nome').textContent),
+        linhas: tb.querySelectorAll('tbody tr:not(.tabela-comparativa__acoes) th[scope="row"]').length,
         sim: tb.querySelectorAll('.comparativo__valor--sim .visualmente-oculto').length,
         nao: [...tb.querySelectorAll('.comparativo__valor--nao .visualmente-oculto')].map((s) => s.textContent),
         preco: tb.querySelector('tbody tr td').textContent,
