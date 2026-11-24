@@ -78,7 +78,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── tokens.css         # Variáveis: cores, tipografia, espaçamento, raios, sombras
 │   │   ├── main.css           # Reset, layout e componentes comuns a todas as páginas
 │   │   ├── home.css           # Só da home (hero/mockup, para quem, passos, simulador, CTA, abertura): logo após main.css
-│   │   ├── chat.css           # Widget do chat (Fase 2)
+│   │   ├── chat.css           # Widget do chat (Fase 2); a área do botão no rodapé é reservada em main.css desde a 1ª pintura (melhoria 115)
 │   │   ├── movimento.css      # Animações de rolagem comuns (a abertura de marca fica em home.css)
 │   │   ├── checkout.css       # planos.html, obrigado.html, pedido.html e portfolio.html (Fase 3)
 │   │   ├── briefing.css       # briefing.html em etapas (Fase 4)

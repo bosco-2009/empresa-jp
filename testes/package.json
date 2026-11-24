@@ -86,7 +86,8 @@
     "imagens": "node imagens/auditar.mjs",
     "imagens:otimizar": "node imagens/otimizar.mjs",
     "visibilidade-conteudo": "node e2e/visibilidade-conteudo.test.js",
-    "avisos-temporarios": "node e2e/avisos-temporarios.test.js"
+    "avisos-temporarios": "node e2e/avisos-temporarios.test.js",
+    "chat-rodape": "node e2e/chat-rodape.test.js"
   },
   "devDependencies": {
     "@supabase/supabase-js": "2.118.0",
