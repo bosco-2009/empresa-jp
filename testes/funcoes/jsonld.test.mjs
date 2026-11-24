@@ -99,7 +99,11 @@ test('JSON-LD estático: sem avaliações, números ou campos que exigiriam dado
   }
 });
 
-test('exemplos.html: CollectionPage + ItemList com os 6 exemplos da página, todos marcados como exemplo', () => {
+// Melhoria 99: as listas apontam só para páginas indexáveis (no sitemap), na ordem dos cartões visíveis.
+const noSitemap = new Set([...ler('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]));
+const h1De = (f) => (/<h1[^>]*>([^<]+)<\/h1>/.exec(ler(f)) || [])[1]?.trim();
+
+test('exemplos.html: CollectionPage + ItemList dos guias por segmento (indexáveis), na ordem dos cartões', () => {
   const html = ler('exemplos.html');
   const can = canonical(html);
   const todos = blocosLd(html).flatMap((d) => nos(d));
@@ -110,15 +114,41 @@ test('exemplos.html: CollectionPage + ItemList com os 6 exemplos da página, tod
   assert.match(pagina.description, /fictício/, 'descrição deixa claro que são fictícios');
   const lista = pagina.mainEntity;
   assert.equal(lista['@type'], 'ItemList');
-  const links = [...html.matchAll(/<a class="ex-cartao__link" href="([^"]+)"/g)].map((m) => SITE + m[1]);
-  assert.equal(links.length, 6, 'seis cartões de exemplo na página');
-  assert.equal(lista.numberOfItems, links.length);
-  assert.deepEqual(lista.itemListElement.map((i) => i.url), links, 'itens = links dos cartões, na mesma ordem');
+  const exemplos = [...html.matchAll(/<a class="ex-cartao__link" href="([^"]+)"/g)].map((m) => m[1]);
+  const guias = [...html.matchAll(/<a class="ex-cartao__guia" href="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(exemplos.length, 6, 'seis cartões de exemplo na página');
+  assert.equal(guias.length, exemplos.length, 'cada cartão tem o link visível do guia do segmento');
+  guias.forEach((g, i) => assert.equal(g.replace('segmentos/', ''), exemplos[i].replace('exemplos/', ''), `cartão ${i + 1}: guia do mesmo segmento`));
+  assert.equal(lista.numberOfItems, guias.length);
+  assert.deepEqual(lista.itemListElement.map((i) => i.url), guias.map((g) => SITE + g), 'itens = guias dos cartões, na mesma ordem');
   lista.itemListElement.forEach((it, i) => {
     assert.equal(it.position, i + 1);
-    assert.match(it.name, /\(site de exemplo\)$/, `item ${i + 1}: nome marcado como exemplo`);
-    assert.match(it.description, /^Site de exemplo fictício:/, `item ${i + 1}: descrição marcada como fictícia`);
+    assert.ok(!it.url.includes('/exemplos/'), `item ${i + 1}: nunca aponta para exemplo noindex`);
+    assert.ok(noSitemap.has(it.url), `item ${i + 1}: ${it.url} está no sitemap`);
+    assert.equal(it.name, h1De(guias[i]), `item ${i + 1}: nome = h1 da página do segmento`);
+    assert.ok(html.includes(`<span class="visualmente-oculto">: ${it.name}</span>`), `item ${i + 1}: nome também no link visível`);
   });
+});
+
+test('blog/index.html: ItemList com os artigos na ordem dos cartões, todos no sitemap', () => {
+  const html = ler('blog/index.html');
+  const todos = blocosLd(html).flatMap((d) => nos(d));
+  const listas = todos.filter((n) => n['@type'] === 'ItemList');
+  assert.equal(listas.length, 1, 'uma ItemList');
+  const cartoes = [...html.matchAll(/<h2 class="blog-cartao__titulo"><a href="([^"]+)">([^<]+)<\/a><\/h2>/g)]
+    .map((m) => ({ url: new URL(m[1], SITE + 'blog/').href, nome: m[2] }));
+  assert.ok(cartoes.length >= 1, 'cartões de artigo na página');
+  const itens = listas[0].itemListElement;
+  assert.equal(listas[0].numberOfItems, cartoes.length);
+  assert.deepEqual(itens.map((i) => i.url), cartoes.map((c) => c.url), 'URLs = links dos cartões, na mesma ordem');
+  itens.forEach((it, i) => {
+    assert.equal(it.position, i + 1);
+    assert.equal(it.name, cartoes[i].nome, `item ${i + 1}: nome = título visível`);
+    assert.ok(noSitemap.has(it.url), `item ${i + 1}: ${it.url} está no sitemap`);
+  });
+  // os artigos da lista são os mesmos do blogPost do Blog
+  const blog = todos.find((n) => n['@type'] === 'Blog');
+  assert.deepEqual(blog.blogPost.map((b) => b.url), itens.map((i) => i.url), 'ItemList = blogPost');
 });
 
 test('portfolio.html: sem JSON-LD de projetos no HTML (só o JS gera, e só com projetos reais do config.js)', () => {
