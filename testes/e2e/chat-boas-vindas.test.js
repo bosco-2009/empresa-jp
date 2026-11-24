@@ -40,7 +40,7 @@ async function abrir(browser, caminho, cfg, opcoes = {}) {
     } catch (e) { /* */ }
   }, opcoes.estado || null);
   await p.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
-  await p.route('**/config.js', (r) => r.fulfill({ body: cfg, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: cfg, contentType: 'application/javascript' }));
   await p.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js', (r) => r.fulfill({
     path: require.resolve('@supabase/supabase-js/dist/umd/supabase.js'), contentType: 'application/javascript',
     headers: { 'Access-Control-Allow-Origin': '*' }

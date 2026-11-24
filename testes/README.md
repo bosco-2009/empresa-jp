@@ -35,6 +35,9 @@ node --test testes/funcoes/*.test.mjs
   `config.planoIndicado` (todo artigo/segmento com regra, plano existente, sem preço no bloco). Mudou a regra ou um plano?
   `node testes/conteudo/indicado.mjs --gravar` (depois de `testes/segmentos/gerar.py`, rode de novo). E2E: `npm run indicado`.
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
+- `versao-arquivos.test.mjs` (item 69): toda referência local a CSS, JS e fonte (HTML e `url()` dos CSS) leva `?v=<8 hex do
+  sha256 do arquivo>`, atualizada; o preload da fonte é o mesmo endereço do `@font-face`. Mudou CSS/JS/fonte/`config.js`?
+  `node testes/cache/versionar.mjs` (`--conferir` só confere). Nos testes e2e, rotas do Playwright usam `'**/config.js*'`.
 
 O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então o código testado é o mesmo do deploy.
 

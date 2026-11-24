@@ -66,7 +66,7 @@ print(json.dumps(out))
     p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') erros.push(m.text()); });
     p.on('pageerror', (e) => erros.push(e.message));
     p.on('response', (r) => { if (r.status() >= 400) erros.push(r.status() + ' ' + r.url()); });
-    await p.route('**/config.js', (r) => r.fulfill({ body: configComProjeto, contentType: 'application/javascript' }));
+    await p.route('**/config.js*', (r) => r.fulfill({ body: configComProjeto, contentType: 'application/javascript' }));
     await p.route('**/assets/img/portfolio/*', (r) => {
       const arq = path.join(saida, path.basename(new URL(r.request().url()).pathname));
       return fs.existsSync(arq) ? r.fulfill({ path: arq }) : r.fulfill({ status: 404 });
@@ -109,7 +109,7 @@ print(json.dumps(out))
   // 3. Retina 2x no celular pede a versão maior
   const ctx2 = await b.newContext({ viewport: { width: 375, height: 800 }, deviceScaleFactor: 2 });
   const p2 = await ctx2.newPage();
-  await p2.route('**/config.js', (r) => r.fulfill({ body: configComProjeto, contentType: 'application/javascript' }));
+  await p2.route('**/config.js*', (r) => r.fulfill({ body: configComProjeto, contentType: 'application/javascript' }));
   await p2.route('**/assets/img/portfolio/*', (r) => r.fulfill({ path: path.join(saida, path.basename(new URL(r.request().url()).pathname)) }));
   await p2.goto(SITE + 'portfolio.html', { waitUntil: 'networkidle' });
   await p2.locator('.projeto img').scrollIntoViewIfNeeded();
@@ -120,7 +120,7 @@ print(json.dumps(out))
   const pedidas = [];
   const p3 = await ctx2.newPage();
   p3.on('request', (r) => { if (r.url().includes('/assets/img/portfolio/')) pedidas.push(r.url()); });
-  await p3.route('**/config.js', (r) => r.fulfill({ body: configBase, contentType: 'application/javascript' }));
+  await p3.route('**/config.js*', (r) => r.fulfill({ body: configBase, contentType: 'application/javascript' }));
   await p3.goto(SITE + 'portfolio.html', { waitUntil: 'networkidle' });
   ok(await p3.locator('.projeto').count() === 0 && await p3.isVisible('[data-portfolio-vazio]'), 'sem projetos: portfolio.html só mostra o aviso de vazio');
   ok(await p3.locator('script[data-ld-portfolio]').count() === 0, 'sem projetos: nenhum JSON-LD de portfólio');

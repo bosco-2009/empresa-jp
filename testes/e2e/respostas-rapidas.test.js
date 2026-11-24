@@ -42,7 +42,7 @@ async function novaPagina(browser, opcoes, configJs) {
   p.erros = [];
   p.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') p.erros.push(m.text()); });
   p.on('pageerror', (e) => p.erros.push('pageerror: ' + e.message));
-  await p.route('**/config.js', (r) => r.fulfill({ body: configJs || configTeste, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: configJs || configTeste, contentType: 'application/javascript' }));
   // Mesmo arquivo do CDN (conferido byte a byte com cmp); o SRI do <script> continua sendo verificado.
   await p.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js', (r) => r.fulfill({
     path: require.resolve('@supabase/supabase-js/dist/umd/supabase.js'), contentType: 'application/javascript',

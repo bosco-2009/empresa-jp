@@ -26,7 +26,7 @@ function paginas(dir, prefixo = '') {
   const todas = paginas('.');
   for (const p of todas) {
     const html = fs.readFileSync(path.join(RAIZ, p), 'utf8');
-    const folhas = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1].split('/').pop());
+    const folhas = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1].split('?')[0].split('/').pop());
     if (p === 'index.html') {
       ok(folhas.indexOf('home.css') === folhas.indexOf('main.css') + 1, 'index.html: home.css logo depois de main.css (mesma cascata)');
     } else if (folhas.includes('home.css')) {
@@ -50,7 +50,7 @@ function paginas(dir, prefixo = '') {
         const folhas = [];
         p.on('console', (m) => { if (m.type() === 'error') erros.push(m.text()); });
         p.on('pageerror', (e) => erros.push(e.message));
-        p.on('request', (r) => { if (r.resourceType() === 'stylesheet') folhas.push(r.url().split('/').pop()); });
+        p.on('request', (r) => { if (r.resourceType() === 'stylesheet') folhas.push(r.url().split('?')[0].split('/').pop()); });
         await p.addInitScript(() => {
           try { sessionStorage.setItem('pbr_abertura_vista', '1'); } catch (e) { /* sem sessionStorage */ }
           window.__cls = 0;

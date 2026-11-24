@@ -33,7 +33,7 @@ async function novaPagina(ctx) {
   p.erros = [];
   p.on('console', (m) => { if (m.type() === 'error') p.erros.push(m.text()); });
   p.on('pageerror', (e) => p.erros.push('pageerror: ' + e.message));
-  await p.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
   return p;
 }
 async function novoContexto(browser, opcoes) {

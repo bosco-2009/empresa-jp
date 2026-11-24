@@ -146,6 +146,9 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 - `<head>`, cabeçalho e rodapé se repetem em todas as páginas. Ao mudar um deles, mude em **todas**; o teste
   `testes/funcoes/paginas.test.mjs` compara cada página com a home (CSP, cabeçalho, rodapé, canonical, OG, noindex).
 - `config.js` e `assets/js/inicio.js` são os **únicos** scripts síncronos; todo o resto com `defer`.
+- CSS, JS e fontes locais são citados com `?v=<hash do conteúdo>` (melhoria 69): depois de mexer em qualquer um deles
+  (inclusive `config.js`), rode `node testes/cache/versionar.mjs`; `testes/funcoes/versao-arquivos.test.mjs` acusa o que ficou velho.
+  Seletores e testes que procuram um script pelo `src` não podem depender do fim do endereço (`src*=`, não `src$=`).
 
 **Segurança**
 - **CSP** por `<meta http-equiv>` em todas as páginas (o GitHub Pages não permite cabeçalhos): sem `unsafe-inline`,

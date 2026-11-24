@@ -80,7 +80,7 @@ test('sites de exemplo: aviso de exemplo, sempre noindex, um h1, CTA para os pla
     assert.match(h, /<strong>Site de exemplo<\/strong>/, `${f}: aviso visível de site de exemplo`);
     assert.match(h, /fictício/, `${f}: diz que o negócio é fictício`);
     assert.match(h, /href="\.\.\/planos\.html"/, `${f}: CTA para os planos`);
-    assert.match(h, /src="\.\.\/assets\/js\/chat\.js" defer/, `${f}: chat ao vivo (todas as páginas públicas)`);
+    assert.match(h, /src="\.\.\/assets\/js\/chat\.js(?:\?v=[0-9a-f]+)?" defer/, `${f}: chat ao vivo (todas as páginas públicas)`);
     assert.doesNotMatch(h, /wa\.me\/|tel:|mailto:/, `${f}: sem contatos falsos`);
   }
   const lista = ler('exemplos.html');
@@ -301,7 +301,7 @@ test('404.html usa caminhos absolutos do subcaminho (o GitHub Pages serve em qua
   const prefixo = new URL(SITE).pathname;
   const relativos = [...h.matchAll(/\s(?:href|src)="(?![#/]|https?:|mailto:|data:)([^"]+)"/g)].map((m) => m[1]);
   assert.deepEqual(relativos, [], 'sem caminhos relativos no 404');
-  assert.match(h, new RegExp(`src="${prefixo}config\\.js"`));
+  assert.match(h, new RegExp(`src="${prefixo}config\\.js(?:\\?v=[0-9a-f]+)?"`));
 });
 
 test('scripts: config.js e inicio.js síncronos no <head>; os demais com defer', () => {
@@ -309,10 +309,10 @@ test('scripts: config.js e inicio.js síncronos no <head>; os demais com defer',
     const head = bloco(ler(f), /<head>[\s\S]*?<\/head>/);
     const scripts = [...head.matchAll(/<script src="([^"]+)"( defer)?><\/script>/g)];
     for (const [, src, defer] of scripts) {
-      const sincrono = /(^|\/)(config\.js|assets\/js\/inicio\.js)$/.test(src);
+      const sincrono = /(^|\/)(config\.js|assets\/js\/inicio\.js)$/.test(src.replace(/\?v=[0-9a-f]+$/, ''));
       assert.equal(!defer, sincrono, `${f}: ${src} ${sincrono ? 'deve ser síncrono' : 'deve ter defer'}`);
     }
-    assert.match(head, /rel="preload" href="[^"]*plus-jakarta-sans-latin-wght\.woff2" as="font" type="font\/woff2" crossorigin/, `${f}: preload da fonte`);
+    assert.match(head, /rel="preload" href="[^"]*plus-jakarta-sans-latin-wght\.woff2(?:\?v=[0-9a-f]+)?" as="font" type="font\/woff2" crossorigin/, `${f}: preload da fonte`);
   }
 });
 

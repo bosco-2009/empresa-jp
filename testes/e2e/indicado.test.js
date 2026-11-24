@@ -126,7 +126,7 @@ async function axe(p) {
     const ctx = await browser.newContext({ viewport: { width: 375, height: 800 } });
     const cfg = fs.readFileSync(RAIZ + '/config.js', 'utf8').replace("'segmento:pet': 'profissional'", "'segmento:pet': 'premium'");
     const p = await ctx.newPage();
-    await p.route('**/config.js', (r) => r.fulfill({ body: cfg, contentType: 'application/javascript' }));
+    await p.route('**/config.js*', (r) => r.fulfill({ body: cfg, contentType: 'application/javascript' }));
     await p.goto(BASE + 'segmentos/pet.html', { waitUntil: 'networkidle' });
     ok(await p.locator('.indicado a[data-indicado-link]').getAttribute('href') === '../planos.html?plano=premium'
       && (await p.locator('.indicado__titulo').innerText()) === 'Plano Premium', 'regra nova aplicada pelo main.js');

@@ -33,7 +33,7 @@ async function novoContexto(browser, opcoes) {
   const ctx = await browser.newContext(opcoes);
   await ctx.addInitScript(() => { try { sessionStorage.setItem('pbr_abertura_vista', '1'); } catch (e) { /* */ } });
   await ctx.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
-  await ctx.route('**/config.js', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
+  await ctx.route('**/config.js*', (r) => r.fulfill({ body: configTeste, contentType: 'application/javascript' }));
   ctx.on('page', (p) => {
     p.on('console', (m) => { if (m.type() === 'error') errosConsole.push(p.url() + ' ' + m.text()); });
     p.on('pageerror', (e) => errosConsole.push('pageerror: ' + e.message));

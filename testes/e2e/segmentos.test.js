@@ -34,7 +34,7 @@ async function abrir(browser, caminho, cfg, opcoes = {}) {
   p.on('pageerror', (e) => p.erros.push('pageerror: ' + e.message));
   await p.addInitScript(() => { try { sessionStorage.setItem('pbr_abertura_vista', '1'); } catch (e) { /* */ } });
   await p.route('**/__axe.min.js', (r) => r.fulfill({ path: AXE, contentType: 'application/javascript' }));
-  await p.route('**/config.js', (r) => r.fulfill({ body: cfg, contentType: 'application/javascript' }));
+  await p.route('**/config.js*', (r) => r.fulfill({ body: cfg, contentType: 'application/javascript' }));
   await p.goto(new URL(caminho, BASE).href, { waitUntil: 'networkidle' });
   return p;
 }
