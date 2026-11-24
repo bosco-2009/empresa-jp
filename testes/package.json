@@ -35,6 +35,7 @@
     "prefetch": "node e2e/prefetch.test.js",
     "pedido": "node e2e/pedido.test.js",
     "chat-desempenho": "node e2e/chat-desempenho.test.js",
+    "chat-ocioso": "node e2e/chat-ocioso.test.js",
     "resumo": "node e2e/resumo.test.js",
     "tempo-resposta": "node e2e/tempo-resposta.test.js",
     "conteudos-resumo": "node e2e/conteudos-resumo.test.js",
