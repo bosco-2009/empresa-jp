@@ -25,6 +25,9 @@ node --test testes/funcoes/*.test.mjs
 - `paginas.test.mjs`: consistência entre as páginas estáticas (CSP igual e coerente com o `config.js`, cabeçalho e rodapé
   iguais aos da home, canonical/OG no subcaminho, imagem OG 1200×630, `noindex` conforme `config.rascunho`, sitemap,
   JSON-LD sem avaliações, 404 com caminhos absolutos, scripts síncronos só `config.js`/`inicio.js`).
+- `sitemap.test.mjs`: o `sitemap.xml` tem exatamente as páginas públicas (com o comentário de rascunho; `portfolio.html`
+  só com projetos reais), nunca exemplos/privadas/admin, canonical = `loc`, `lastmod` válido; o `blog/feed.xml` tem um item
+  por artigo. Para regerar: `node testes/seo/gerar-sitemap.mjs` (`--conferir` só confere). `lastmod` vem do `git log`.
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
 
 O Node 22+ importa os `.ts` das funções diretamente (remove os tipos), então o código testado é o mesmo do deploy.

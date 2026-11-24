@@ -67,7 +67,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 ├── config.js                  # ÚNICO lugar de textos/preços/contatos provisórios
 ├── manifest.webmanifest
 ├── robots.txt
-├── sitemap.xml
+├── sitemap.xml                # GERADO por testes/seo/gerar-sitemap.mjs (lastmod pelo git; teste funcoes/sitemap.test.mjs)
 ├── .nojekyll                  # GitHub Pages serve os arquivos como estão
 ├── assets/
 │   ├── css/
