@@ -211,10 +211,22 @@ const servidor = http.createServer(async (req, res) => {
       }
       // mensagens!inner: só conversas com pelo menos uma mensagem (como o PostgREST faz com !inner)
       const inner = /mensagens!inner/.test(url.searchParams.get('select') || '');
+      // Melhoria 88: apelidos primeira_visitante/primeira_resposta:mensagens(criado_em), com filtro, ordem e limite por
+      // apelido (?primeira_visitante.autor=eq.visitante&primeira_visitante.order=criado_em.asc&primeira_visitante.limit=1).
+      const primeiras = ['primeira_visitante', 'primeira_resposta']
+        .filter((a) => new RegExp('\\b' + a + ':mensagens\\(criado_em\\)').test(url.searchParams.get('select') || ''))
+        .map((a) => {
+          const autor = (url.searchParams.get(a + '.autor') || '').replace(/^eq\./, '');
+          const asc = (url.searchParams.get(a + '.order') || '') === 'criado_em.asc';
+          const lim = Number(url.searchParams.get(a + '.limit')) || 0;
+          if (!['visitante', 'admin'].includes(autor) || !asc || lim !== 1) throw new Error('consulta de ' + a + ' inesperada');
+          return `, coalesce((select json_agg(x) from (select m.criado_em from public.mensagens m
+                    where m.conversa_id = c.id and m.autor = '${autor}' order by m.criado_em asc limit 1) x), '[]') as ${a}`;
+        }).join('');
       const base = `
         select c.id, c.nome, c.whatsapp, c.pagina_origem, c.status, c.nao_lidas_admin, c.criado_em, c.atualizado_em,
                coalesce((select json_agg(x) from (select m.texto, m.autor, m.criado_em from public.mensagens m
-                          where m.conversa_id = c.id order by m.criado_em desc limit 1) x), '[]') as mensagens
+                          where m.conversa_id = c.id order by m.criado_em desc limit 1) x), '[]') as mensagens${primeiras}
           from public.conversas c
           ${inner ? 'where exists (select 1 from public.mensagens m where m.conversa_id = c.id)' : ''}`;
       const pg = pagina(300);

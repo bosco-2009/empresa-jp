@@ -107,9 +107,9 @@ const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julh
   ok(/\(este mês\)$/.test(opcao), 'mês padrão é o atual: ' + opcao);
   ok((await a.$$eval('[data-resumo-mes] option', (o) => o.length)) === 12, '12 meses para escolher');
   const rotulos = await textos(a, '.admin-kpi__rotulo');
-  ok(rotulos.join('|') === 'Conversas novas|Leads|Pedidos pagos|Valor recebido|Conversão do checkout|Pedidos atrasados', 'cinco cartões do mês + atrasados agora (melhoria 83): ' + rotulos.join(', '));
+  ok(rotulos.join('|') === 'Conversas novas|Leads|Pedidos pagos|Valor recebido|Conversão do checkout|Pedidos atrasados|Primeira resposta (mediana)|Primeira resposta (90%)', 'cinco cartões do mês + atrasados agora (melhoria 83) + primeira resposta (88): ' + rotulos.join(', '));
   const valores = await textos(a, '.admin-kpi__valor');
-  ok(valores.join('|') === '3|2|2|R$ 1.494,00|33,3%|0', 'valores: ' + valores.join(' | '));
+  ok(valores.join('|') === '3|2|2|R$ 1.494,00|33,3%|0|—|—', 'valores: ' + valores.join(' | '));
   const comps = (await textos(a, '.admin-kpi__comparacao')).map((t) => t.replace(/^[▲▼=] /, ''));
   ok(comps[0] === `2 a mais que em ${anterior} (1)`, 'conversas: ' + comps[0]);
   ok(comps[1] === `1 a mais que em ${anterior} (1)`, 'leads: ' + comps[1]);
@@ -126,18 +126,18 @@ const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julh
   console.log('\n[2] Mês anterior e mês sem dados');
   await a.selectOption('[data-resumo-mes]', { index: 1 });
   const v2 = await textos(a, '.admin-kpi__valor');
-  ok(v2.join('|') === '1|1|1|R$ 497,00|66,7%|0', 'mês anterior: ' + v2.join(' | '));
+  ok(v2.join('|') === '1|1|1|R$ 497,00|66,7%|0|—|—', 'mês anterior: ' + v2.join(' | '));
   const c2 = (await textos(a, '.admin-kpi__comparacao')).map((t) => t.replace(/^[▲▼=] /, ''));
   ok(c2[0] === `1 a mais que em ${retrasado} (0)`, 'comparação com o retrasado: ' + c2[0]);
   ok(c2[4] === `33,3 pontos percentuais abaixo de ${retrasado} (100%)`, 'conversão contra o retrasado: ' + c2[4]);
   await a.selectOption('[data-resumo-mes]', { index: 5 });
   const v3 = await textos(a, '.admin-kpi__valor');
-  ok(v3.join('|') === '0|0|0|R$ 0,00|—|0', 'mês vazio: ' + v3.join(' | '));
+  ok(v3.join('|') === '0|0|0|R$ 0,00|—|0|—|—', 'mês vazio: ' + v3.join(' | '));
   ok((await textos(a, '.admin-kpi__detalhe')).includes('Nenhum pedido iniciado no mês'), 'mês vazio explica a conversão');
 
   console.log('\n[3] Atualiza quando chega um pedido pago (dados já recarregados pelo painel)');
   await a.selectOption('[data-resumo-mes]', { index: 0 });
-  psql(`update public.pedidos set status = 'aprovado', pago_em = ${M} where codigo = 'PBR-CCCCC4';`);
+  psql(`update public.pedidos set status = 'aprovado', pago_em = ${M}, atualizado_em = now() where codigo = 'PBR-CCCCC4';`);
   await a.waitForFunction(() => document.querySelectorAll('.admin-kpi__valor')[2].textContent === '3', null, { timeout: 20000 }).catch(() => {});
   ok((await textos(a, '.admin-kpi__valor'))[2] === '3', 'pedidos pagos sobe para 3 sem recarregar a página');
   ok(a.erros.length === 0, 'console sem erros' + (a.erros.length ? ' -> ' + a.erros.join(' | ') : ''));

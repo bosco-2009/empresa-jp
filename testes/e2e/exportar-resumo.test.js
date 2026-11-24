@@ -128,6 +128,11 @@ const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julh
     '"Pedidos iniciados";"3";"1"',
     '"Pedidos iniciados que foram pagos";"2";"1"',
     '"Conversão do checkout (%)";"66,7";"100,0"',
+    // Melhoria 88: sem respostas do dono nos dados deste teste (o cálculo tem o próprio teste: tempo-resposta.test.js)
+    '"Primeira resposta, mediana (min)";"";""',
+    '"Primeira resposta, 90% em até (min)";"";""',
+    '"Conversas respondidas";"0";"0"',
+    '"Conversas sem resposta";"4";"1"',
     '',
     `"De onde vieram os pedidos — ${nome(agora)}";"Tipo";"Conversas";"Pedidos";"Pagos"`,
     '"Moda";"Página de segmento";"1";"2";"1"',
@@ -162,7 +167,7 @@ const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julh
   const l3 = linhasCsv(r3.bruto);
   ok(l3[1] === '"Conversas novas";"0";"0"' && l3.includes('"Conversão do checkout (%)";"";""') && l3.includes('"Total";"";"0";"0";"0"'), 'mês vazio: zeros e conversão em branco');
   await a.selectOption('[data-resumo-mes]', { index: 0 });
-  psql(`update public.pedidos set status = 'aprovado', pago_em = ${M} where codigo = 'PBR-BBBBB3';`);
+  psql(`update public.pedidos set status = 'aprovado', pago_em = ${M}, atualizado_em = now() where codigo = 'PBR-BBBBB3';`);
   await a.waitForFunction(() => /\| 2 \| 2$/.test([...document.querySelector('[data-resumo-conteudos-tabela] tbody tr').children].map((c) => c.textContent.trim()).join(' | ')), null, { timeout: 20000 }).catch(() => {});
   const r4 = await baixar(a, () => a.click('[data-resumo-baixar]'));
   ok(linhasCsv(r4.bruto).includes('"Moda";"Página de segmento";"1";"2";"2"'), 'CSV acompanha o tempo real sem recarregar');
