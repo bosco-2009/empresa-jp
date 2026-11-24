@@ -161,7 +161,7 @@ const codigo = (i) => 'PBR-' + [0, 1, 2, 3, 4, 5].map((k) => ALFA[Math.floor(i /
   await a.click('[data-lista-briefings] .admin-item >> nth=0');
   await a.waitForSelector('[data-briefing-ver-pedido]:visible');
   await a.click('[data-briefing-ver-pedido]');
-  await a.waitForFunction(() => location.hash === '#pedidos');
+  await a.waitForFunction(() => location.hash.split('/')[0] === '#pedidos');
   ok(await a.waitForFunction(() => /Comprador 200/.test((document.querySelector('[data-pedido-titulo]') || {}).textContent || ''), null, { timeout: 5000 }).then(() => true, () => false),
     'pedido mais antigo (fora dos 100 carregados) abre com os dados certos');
   ok(await contar(a, '[data-lista-pedidos] .admin-item') === 100, 'a lista de pedidos não muda por causa dele');
