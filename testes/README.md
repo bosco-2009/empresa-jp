@@ -86,7 +86,7 @@ cd testes && npm run mp                # Mercado Pago falso
 ```
 
 ```bash
-cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run layout && npm run auditoria
+cd testes && npm run chat && npm run checkout && npm run fase4 && npm run movimento && npm run mockup && npm run exemplos && npm run simulador && npm run comparativo && npm run para-quem && npm run respostas-rapidas && npm run origem && npm run tema && npm run faq && npm run linha-tempo && npm run microinteracoes && npm run exportar && npm run recuperacao && npm run whatsapp-contextual && npm run segmentos && npm run prefetch && npm run pedido && npm run chat-desempenho && npm run resumo && npm run conteudos-resumo && npm run briefing-pendente && npm run depois-pagar && npm run chat-acessivel && npm run busca-global && npm run atalhos-painel && npm run css-critico && npm run pedido-aberto && npm run tentar-de-novo && npm run form-celular && npm run briefing-revisao && npm run chat-boas-vindas && npm run paginacao-painel && npm run pagos-sem-contato && npm run checklist-pedido && npm run alvos-toque && npm run nomes-links && npm run sem-conexao && npm run resumo-erros && npm run fila-espera && npm run lcp && npm run orcamento-bytes && npm run lembrar-simulador && npm run barra-plano && npm run layout && npm run auditoria
 ```
 
 `briefing-revisao.test.js` (sem Postgres: RPCs respondidas pelo Playwright) cobre a prévia do briefing antes de enviar
@@ -110,6 +110,12 @@ página pública sem orçamento e orçamento frouxo (> medido + 25 %). Página c
 no passo 1 sem marcar nada; "Marcar" (teclado) marca, foca o plano e anuncia em `aria-live`; marcar à mão também fecha;
 "Dispensar" apaga e não volta; com `?plano=`, indicado já marcado, vencido (> 30 dias), data futura, plano inexistente ou
 JSON quebrado não mostra; `localStorage` bloqueado não quebra; 4 larguras × claro/escuro com axe, alvos e console.
+
+`barra-plano.test.js` (só o servidor estático, item 75) cobre o resumo fixo do plano no celular em `planos.html`: a 320/375 px
+a barra fica oculta com o formulário na tela e aparece ao descer até o comparativo, com nome e preço exibido iguais ao `config.js`
+(acompanhando a troca de plano); "Continuar" leva ao 1º campo vazio, depois ao aceite e ao botão de pagar; some com campo de texto
+em foco (teclado); não cobre o rodapé no fim da página nem o botão do chat; CLS 0, entrada animada só sem movimento reduzido,
+axe (claro e escuro) e console. A 768/1280 px e sem JS nunca aparece nem reserva espaço.
 
 `paginacao-painel.test.js` (Supabase falso, 200 registros de teste) cobre as listas longas do painel (melhoria 49): conversas,
 pedidos e briefings em páginas de 50 (`range` + `count: 'exact'`), "Mostrando X de Y" e "Carregar mais", foco no primeiro item
