@@ -265,8 +265,10 @@ const servidor = http.createServer(async (req, res) => {
         : `id, codigo, plano_id, plano_nome, valor_centavos, nome, email, whatsapp, status,
         mp_preference_id, mp_payment_id, mp_status, mp_status_detalhe, aceite_termos_em, pago_em, criado_em, atualizado_em`;
       const umId = (url.searchParams.get('id') || '').replace(/^eq\./, '');
-      const base = `select ${lista} from public.pedidos` + (umId ? ' where id = $1' : '');
-      const params = umId ? [umId] : [];
+      // ?codigo=eq.PBR-XXXXXX: link direto do painel para um pedido (melhoria 118)
+      const umCodigo = (url.searchParams.get('codigo') || '').replace(/^eq\./, '');
+      const base = `select ${lista} from public.pedidos` + (umId ? ' where id = $1' : umCodigo ? ' where codigo = $1' : '');
+      const params = umId ? [umId] : umCodigo ? [umCodigo] : [];
       const pg = pagina(500);
       let r;
       try {

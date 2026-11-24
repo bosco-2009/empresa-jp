@@ -255,7 +255,7 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   ok(psql(`select status from public.briefings`) === 'em_producao', 'admin muda o status para "em produção"');
   await a.click('[data-briefing-ver-pedido]');
   await a.waitForSelector('[data-pedido-detalhe]:not([hidden])');
-  ok(a.url().endsWith('#pedidos') && (await a.textContent('[data-pedido-titulo]')).includes(codigo), '"Ver o pedido" abre o pedido na aba Pedidos');
+  ok(a.url().endsWith('#pedidos/' + codigo) && (await a.textContent('[data-pedido-titulo]')).includes(codigo), '"Ver o pedido" abre o pedido na aba Pedidos');
   ok((await a.textContent('[data-pedido-dados]')).includes('Recebido (em produção)'), 'aba Pedidos mostra o briefing do pedido');
   ok((await a.textContent('[data-lista-pedidos]')).includes('briefing ✓') && (await a.textContent('[data-lista-pedidos]')).includes('João Pix'), 'lista de pedidos indica quem tem briefing');
 

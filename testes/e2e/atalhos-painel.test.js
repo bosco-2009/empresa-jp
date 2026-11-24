@@ -151,7 +151,7 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.repla
   await a.screenshot({ path: SAIDA + '/atalhos-1280.png' });
   await axe(a, 'diálogo 1280');
   await a.keyboard.press('g'); await a.keyboard.press('c');
-  ok(await a.evaluate(() => location.hash === '#pedidos'), 'com o diálogo aberto os atalhos não agem');
+  ok(await a.evaluate(() => location.hash.split('/')[0] === '#pedidos'), 'com o diálogo aberto os atalhos não agem'); // #pedidos/<codigo> com o pedido aberto (melhoria 118)
   await a.keyboard.press('Escape');
   ok(await a.evaluate(() => !document.querySelector('[data-atalhos-dialogo]').open), 'Esc fecha');
   ok(await a.waitForFunction((id) => document.activeElement.getAttribute('data-id') === id, ids[0], { timeout: 2000 }).then(() => true, () => false), 'foco volta para onde estava');
@@ -166,7 +166,7 @@ const textos = (a, s) => a.$$eval(s, (els) => els.map((e) => e.textContent.repla
   ok((await ativo(a)) === 'BUTTON' || (await a.evaluate(() => document.activeElement.matches('[data-atalhos-abrir]'))), 'Fechar devolve o foco ao botão');
   await a.keyboard.press('g'); await a.keyboard.press('c');
   await a.keyboard.press('Shift+?');
-  ok(await a.evaluate(() => location.hash === '#pedidos' && !document.querySelector('[data-atalhos-dialogo]').open), 'desligados: g c e ? não fazem nada');
+  ok(await a.evaluate(() => location.hash.split('/')[0] === '#pedidos' && !document.querySelector('[data-atalhos-dialogo]').open), 'desligados: g c e ? não fazem nada');
   await a.reload({ waitUntil: 'load' });
   await a.waitForSelector('[data-tela="painel"]:not([hidden])');
   ok(await a.evaluate(() => !document.querySelector('[data-atalhos-ligados]').checked), 'preferência lembrada depois de recarregar');
