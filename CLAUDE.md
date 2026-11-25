@@ -116,7 +116,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   ├── admin-tempo-real.js # Painel: aviso "tempo real pausado" com Atualizar quando um canal Realtime cai (melhoria 79)
 │   │   ├── admin-atalhos.js   # Painel: atalhos g c/p/b/r, /, j/k e ? (desligáveis, WCAG 2.1.4); foco mantido no redesenho (melhoria 41)
 │   │   ├── briefing.js        # Briefing em etapas + upload por URL assinada (Fase 4); rascunho local com retomada da etapa (melhoria 43); revisão com "Editar" por etapa (50); falha de rede/5xx/tempo esgotado com "Tentar de novo" no envio e por arquivo, sem duplicar (82)
-│   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4)
+│   │   ├── legal.js           # Preenche termos/privacidade com dados do config.js (Fase 4); os dados já vêm gravados no HTML por testes/legal/gravar.mjs --gravar e ele só troca o que mudou (CLS 0, melhoria 125)
 │   │   ├── resumo-erros.js    # Resumo "Corrija N campos" com links para os campos (planos e briefing; melhoria 59); erro de campo com "Erro:" no aria-describedby, anunciado uma vez ao sair do campo (102)
 │   │   └── supabase-client.js # Carrega supabase-js do CDN (versão fixa + SRI) sob demanda; preconnect ao Supabase só em planos/briefing/obrigado/pedido e na intenção do chat (94)
 │   ├── fonts/                 # Fontes self-hosted (sem Google Fonts): subconjunto pt-BR, pesos 400–800, ~14 KB
