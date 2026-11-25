@@ -66,6 +66,8 @@ test('CSP idêntica em todas as páginas (e no painel), sem unsafe-inline/eval e
   assert.ok(ref, 'index.html tem CSP');
   for (const f of [...TODAS, ...DEMOS, 'admin/index.html']) assert.equal(csp(ler(f)), ref, `${f}: CSP igual à da home`);
   assert.doesNotMatch(ref, /unsafe-inline|unsafe-eval|\*/);
+  // melhoria 124: a regra speculationrules (só dados) do main.js entra por esta fonte, nunca por unsafe-inline
+  assert.match(ref, /script-src 'self' 'inline-speculation-rules' /, "script-src libera só 'inline-speculation-rules'");
   const host = new URL(config.supabase.url).host;
   assert.match(ref, new RegExp(`connect-src [^;]*https://${host.replace(/\./g, '\\.')}`), 'connect-src com o Supabase do config.js');
   assert.match(ref, new RegExp(`connect-src [^;]*wss://${host.replace(/\./g, '\\.')}`), 'Realtime (wss) liberado');

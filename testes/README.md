@@ -189,7 +189,7 @@ prazo (dias úteis, fins de semana, `prazoDias` antes do texto, plano sem númer
 entregue" tira o atraso; 4 larguras + axe.
 
 `orcamento-bytes.test.js` (só o servidor estático, item 73) soma o que cada página pública carrega até o `load`: HTML,
-CSS, JS e fontes da própria origem (corpo sem compressão; supabase-js, prefetch e imagens ficam de fora), a 375 e 1280 px,
+CSS, JS e fontes da própria origem (corpo sem compressão; supabase-js, prefetch e imagens ficam de fora; a regra Speculation Rules da melhoria 124 somou ~1,8 KB ao `main.js` sem compressão, dentro da margem de todas as páginas), a 375 e 1280 px,
 e falha se passar do mapa `ORCAMENTO` (medido + 10 %), listando os 5 maiores arquivos. Também barra script externo na carga,
 página pública sem orçamento e orçamento frouxo (> medido + 25 %). Página cresceu de propósito?
 `node e2e/orcamento-bytes.test.js --medir` imprime o mapa novo para colar no teste.
@@ -487,3 +487,11 @@ Capturas em `testes/e2e/saida/planos-404/`.
 é montado no ócio), e rolado até o fim nenhum texto do rodapé fica sob o botão, em 320/375/768/1280 px. Repete o cenário
 que deixava o `contraste-escuro.test.js` intermitente (viewport da altura da página medida antes de o chat montar).
 Sem JS, nada é reservado.
+
+## Pré-carregamento (melhoria 124)
+
+`npm run prefetch` (`e2e/prefetch.test.js`) confere, pelo CDP (`Preload.*`), que o Chromium recebe UMA regra Speculation Rules
+`prefetch`/`moderate` válida (sem erro de CSP: a fonte é `'inline-speculation-rules'`), que o hover e o toque pré-carregam
+`planos.html`/`exemplos.html`, que a própria página fica fora, que Save-Data/2g desligam tudo, que o foco pelo teclado usa
+`<link rel="prefetch">` e que, sem suporte a Speculation Rules, o caminho antigo (melhoria 28) continua igual.
+Medição local: um hover de ~200 ms deixa `exemplos.html` com status `Ready` antes do clique; nenhum byte é baixado só por abrir a página.
