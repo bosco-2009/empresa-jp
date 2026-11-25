@@ -94,6 +94,14 @@ const idFoco = (p) => p.evaluate(() => document.activeElement.id || document.act
     (document.getElementById(id).getAttribute('aria-describedby') || '').split(' ').map((d) => document.getElementById(d) ? 'ok' : 'falta:' + d).join(',')));
   ok(descricoes.every((d) => d && !d.includes('falta')), 'campos opcionais descritos pela dica e pelo aviso de privacidade: ' + descricoes.join(' | '));
 
+  // Melhoria 123 (WCAG 1.3.5): preenchimento automático e teclado certos nos campos do chat.
+  const tokens = await v.evaluate(() => ['chat-nome', 'chat-whatsapp', 'chat-texto'].map((id) => {
+    const e = document.getElementById(id);
+    return [e.getAttribute('autocomplete'), e.getAttribute('inputmode'), e.getAttribute('enterkeyhint')].join('/');
+  }));
+  ok(tokens[0] === 'name//next' && tokens[1] === 'tel-national/tel/next' && tokens[2] === '//send',
+    'chat: nome autocomplete=name, WhatsApp tel-national com teclado de telefone, mensagem com Enter "enviar": ' + tokens.join(' | '));
+
   const vivas = await v.evaluate(() => [...document.querySelectorAll('[data-chat] [aria-live], [data-chat] [role="log"], [data-chat] [role="status"]')].map((x) => x.getAttribute('data-chat-anuncio') !== null ? 'anuncio' : x.className));
   ok(vivas.length === 1 && vivas[0] === 'anuncio', 'uma só região aria-live no widget (o anúncio), histórico não é região viva: ' + vivas.join(','));
 

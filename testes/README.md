@@ -44,6 +44,9 @@ node --test testes/funcoes/*.test.mjs
 - `segmentos-datas.test.mjs` (item 117): páginas de `segmentos/` com nó `WebPage` (datePublished/dateModified, `mainEntity` →
   Service) e linha visível "Publicado em … · atualizado em …"; só o texto lido do `<main>` conta (sem tags, sem "Plano indicado");
   datas iguais ao git. Depois de `gerar.py` ou de mudar o texto: `node testes/segmentos/data-modificacao.mjs --gravar`.
+- `autocomplete.test.mjs` (item 123, WCAG 1.3.5): tabela com cada campo de texto do site (HTML e os criados pelo `chat.js`/
+  `briefing.js`) e o `autocomplete`/`inputmode`/`enterkeyhint` esperado; campo novo fora da tabela falha. WhatsApp sempre
+  `tel-national` + teclado de telefone, e-mail com teclado de e-mail, `autocomplete="off"` só nas buscas que filtram ao digitar.
 - `precos.test.mjs`: o `config.js` (preço exibido) bate com a tabela `planos` das migrations (preço cobrado).
 - `versao-arquivos.test.mjs` (item 69): toda referência local a CSS, JS e fonte (HTML e `url()` dos CSS) leva `?v=<8 hex do
   sha256 do arquivo>`, atualizada; o preload da fonte é o mesmo endereço do `@font-face`. Mudou CSS/JS/fonte/`config.js`?
