@@ -7,6 +7,7 @@
     "funcoes": "node --test funcoes/*.test.mjs",
     "briefing-erro-rede": "node e2e/briefing-erro-rede.test.js",
     "briefing-etapa-anuncio": "node e2e/briefing-etapa-anuncio.test.js",
+    "briefing-resumo-pedido": "node e2e/briefing-resumo-pedido.test.js",
     "servidor": "node e2e/servidor-supabase-falso.js",
     "mp": "node e2e/mercadopago-falso.js",
     "layout": "node e2e/layout.test.js",
