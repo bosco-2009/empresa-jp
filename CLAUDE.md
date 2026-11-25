@@ -220,6 +220,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
   sem deslocamento com a fonte atrasada; `testes/e2e/fonte-reserva.test.js`); um só arquivo variável pré-carregado (a 1ª tela usa 400–800); scripts com `defer`; imagens com `width`/`height` e `loading="lazy"` abaixo da dobra.
 - Imagens: `decoding="async"` em todas; `fetchpriority="high"` só no elemento LCP real (hoje a 1ª foto de
   `portfolio.html`, posta pelo `main.js`, e a miniatura do 1º cartão de `blog/index.html`, sem lazy; melhoria 106); LCP esperado de cada página travado em `testes/e2e/lcp.test.js` (melhoria 64).
+  Imagens `og/` só nas metatags/JSON-LD (nunca baixadas na carga) e toda imagem fora da 1ª tela (inclusive dentro de algo
+  oculto, como o avatar do chat) com `loading="lazy"`: `testes/e2e/imagens-carga.test.js` (melhoria 130). Cache do GitHub Pages: `PUBLICAR.md` §9.
 - `content-visibility: auto` (melhoria 109) nas seções abaixo da dobra da home (`home.css`) e no fim dos artigos (`blog.css`),
   só em `@media screen`, com `--altura-estimada` = maior altura do conteúdo na faixa (nunca menor; teste
   `testes/e2e/visibilidade-conteudo.test.js`). Mudou o conteúdo de uma seção? Meça de novo. JS que mede elementos na carga
