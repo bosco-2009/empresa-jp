@@ -8,8 +8,9 @@
 //  [2] Fonte atrasada 1,5 s (internet lenta): o texto aparece antes da fonte (sem FOIT), na face de reserva com
 //      métricas ajustadas; a troca não muda a altura de nada e o CLS fica < 0,005 (sem a reserva, a home a 375 px
 //      chegava a 0,028).
-//  [3] Fonte rápida: CLS 0 (planos.html e termos.html ficam de fora: têm um deslocamento pequeno que não vem da
-//      fonte e já existia antes; planos é o item 44 da fila, termos o item 125).
+//  [3] Fonte rápida: CLS 0 (planos.html fica de fora: tem um deslocamento pequeno que não vem da fonte e já existia
+//      antes; é o item 44 da fila). Termos e privacidade entraram na melhoria 125: os dados do config.js já vêm
+//      gravados no HTML (testes/legal/gravar.mjs) e o legal.js não troca nada na carga.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -26,9 +27,9 @@ function paginas(dir, prefixo = '') {
   });
 }
 
-const LENTAS = ['index.html', 'planos.html', 'blog/site-ou-instagram.html', 'exemplos/moda.html', 'segmentos/moda.html', 'termos.html'];
+const LENTAS = ['index.html', 'planos.html', 'blog/site-ou-instagram.html', 'exemplos/moda.html', 'segmentos/moda.html', 'termos.html', 'privacidade.html'];
 const CLS_LENTA = 0.005;
-const RAPIDAS = LENTAS.filter((p) => !['planos.html', 'termos.html'].includes(p));
+const RAPIDAS = LENTAS.filter((p) => p !== 'planos.html');
 
 function observarCls() {
   window.__cls = 0;

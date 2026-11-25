@@ -36,6 +36,9 @@ node --test testes/funcoes/*.test.mjs
 - `blog-leitura.test.mjs` (item 57): "leitura de N min" (200 palavras/min, arredondado) igual no artigo, no cartão de
   `blog/index.html`, nos cartões de "Leia também" e no JSON-LD (`wordCount`/`timeRequired`); cada artigo tem 2–3 relacionados
   fixos no HTML com exatamente um link para página de segmento. Mudou um artigo? `node testes/blog/leitura.mjs --gravar`.
+- `legal-gravado.test.mjs` (item 125): os dados do `config.js` usados em `termos.html` e `privacidade.html` (`[data-cfg]`, e-mail e
+  WhatsApp) já vêm gravados no HTML, iguais ao que o `legal.js` produziria (vazio = `[PROVISÓRIO: ...]` com a classe), para a página
+  não se deslocar na carga e funcionar sem JS. Mudou um desses dados no `config.js`? `node testes/legal/gravar.mjs --gravar`.
 - `indicado.test.mjs` (item 65): bloco "Plano indicado" no fim dos artigos e das páginas de segmento igual à regra
   `config.planoIndicado` (todo artigo/segmento com regra, plano existente, sem preço no bloco). Mudou a regra ou um plano?
   `node testes/conteudo/indicado.mjs --gravar` (depois de `testes/segmentos/gerar.py`, rode de novo). E2E: `npm run indicado`.
