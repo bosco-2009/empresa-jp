@@ -151,6 +151,21 @@ Depois crie o arquivo `CNAME` com o domínio e configure o DNS conforme a docume
 - **Mudou algum CSS, JS, fonte ou o `config.js`?** Rode `node testes/cache/versionar.mjs` antes do commit. Ele atualiza o
   sufixo `?v=<hash>` das referências nas páginas (o GitHub Pages não permite cabeçalhos de cache; com a versão no endereço,
   o visitante nunca fica com arquivo velho). O teste `versao-arquivos.test.mjs` acusa referência desatualizada.
+- **Como o cache funciona no GitHub Pages (melhoria 130).** Não dá para configurar cabeçalhos: todo arquivo sai com
+  `Cache-Control: max-age=600` (10 minutos), `ETag` e `Last-Modified` (conferido na prévia em 2026-11-25). Na prática:
+  - **CSS, JS e a fonte** levam `?v=<hash do conteúdo>`. Mudou o arquivo, muda o endereço: o visitante baixa o novo na
+    hora em que pega o HTML novo, e nunca mistura HTML novo com CSS/JS velho.
+  - **Páginas (`.html`)** podem aparecer na versão anterior por até 10 minutos depois do push (o próprio GitHub Pages
+    também leva alguns minutos para publicar). Depois disso o navegador revalida pelo `ETag` e só baixa se mudou.
+  - **Imagens, favicon, `manifest.webmanifest` e `blog/feed.xml`** ficam sem `?v=` de propósito (endereços fixos, que o
+    navegador, o leitor de RSS e o Google pedem sem passar pela página). Trocar o conteúdo de uma delas também pode
+    levar até 10 minutos para aparecer.
+  - **Imagens de compartilhamento (`assets/img/og/`)**: só as metatags `og:image`/`twitter:image` e o JSON-LD citam
+    esses arquivos; nenhuma página os baixa na carga (`testes/e2e/imagens-carga.test.js`). WhatsApp, Facebook e LinkedIn
+    guardam a prévia por dias: se a imagem de uma página mudar e a prévia antiga continuar, peça nova leitura no
+    [Sharing Debugger](https://developers.facebook.com/tools/debug/) do Facebook (vale para o WhatsApp também).
+  - Arquivo de **tipo novo** citado pelas páginas (ex.: `.json`, `.mp4`) faz o `versao-arquivos.test.mjs` falhar até
+    alguém decidir: versionar no `testes/cache/versionar.mjs` ou entrar na lista de exceções, com o motivo.
 - **Projeto Supabase ou versão do supabase-js mudou?** Atualize a CSP (`<meta http-equiv="Content-Security-Policy">`)
   em todas as páginas e no `admin/index.html`. O teste `paginas.test.mjs` confere se estão iguais e coerentes com o `config.js`.
 - **Retenção de dados:** a rotina automática de limpeza (conversas, briefings e arquivos antigos, conforme `legal.retencao*`)
