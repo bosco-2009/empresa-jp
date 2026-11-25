@@ -90,7 +90,7 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 │   │   └── admin.css          # Painel /admin/ (Fase 2+)
 │   ├── js/
 │   │   ├── inicio.js          # Síncrono no <head>: classes sem-js/modo-rascunho antes da 1ª pintura
-│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades, prefetch de planos/exemplos, PBRRede (sem internet, melhoria 53); foco no destino das âncoras e --altura-topo do cabeçalho (melhoria 107); PBRAviso: avisos temporários ≥ 5 s, presos ao foco/ponteiro e Esc (112); "Continuar com o plano X" no bloco indicado de artigos/segmentos para quem já começou a contratar (116)
+│   │   ├── main.js            # Renderiza conteúdo do config.js, menu, JSON-LD dos planos, utilidades, prefetch de planos/exemplos (Speculation Rules "moderate" onde houver + `<link rel=prefetch>` no foco e nos outros navegadores, melhoria 124), PBRRede (sem internet, melhoria 53); foco no destino das âncoras e --altura-topo do cabeçalho (melhoria 107); PBRAviso: avisos temporários ≥ 5 s, presos ao foco/ponteiro e Esc (112); "Continuar com o plano X" no bloco indicado de artigos/segmentos para quem já começou a contratar (116)
 │   │   ├── abertura.js        # Pular/encerrar a abertura de marca (a animação é CSS)
 │   │   ├── revelar.js         # Rolagem: seções/cards revelados, sublinhado dos títulos, celular 3D, linha do tempo
 │   │   ├── mockup.js          # Celular do hero alterna 3 sites de EXEMPLO (com botão de pausa)
@@ -161,7 +161,8 @@ preencher os itens `[PROVISÓRIO]` do `config.js`. Para publicar, siga o **`PUBL
 
 **Segurança**
 - **CSP** por `<meta http-equiv>` em todas as páginas (o GitHub Pages não permite cabeçalhos): sem `unsafe-inline`,
-  sem `unsafe-eval`. Nada de `<script>` ou `style=""` inline (o JSON-LD é permitido por não ser executado).
+  sem `unsafe-eval`. Nada de `<script>` ou `style=""` inline (o JSON-LD é permitido por não ser executado; a regra
+  `speculationrules` do `main.js` é só dados e entra pela fonte `'inline-speculation-rules'`, que não libera script executável).
   `connect-src` lista o Supabase do `config.js`; `script-src` lista a versão exata do supabase-js.
 - Links externos com `target="_blank"` sempre com `rel="noopener"`.
 - Imagens com limite de bytes por tipo, `width`/`height` sempre (inclusive as criadas pelo JS) e SVG sem script/recurso
