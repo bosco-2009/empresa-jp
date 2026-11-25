@@ -38,6 +38,7 @@
     "segmentos": "node e2e/segmentos.test.js",
     "prefetch": "node e2e/prefetch.test.js",
     "pedido": "node e2e/pedido.test.js",
+    "pedido-etapa-anuncio": "node e2e/pedido-etapa-anuncio.test.js",
     "chat-desempenho": "node e2e/chat-desempenho.test.js",
     "preconexao": "node e2e/preconexao.test.js",
     "chat-ocioso": "node e2e/chat-ocioso.test.js",

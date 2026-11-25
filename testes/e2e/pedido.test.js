@@ -67,7 +67,7 @@ async function axe(p, rotulo) {
 
 const titulo = (p) => p.textContent('[data-acompanhar-titulo]');
 const estados = (p) => p.$$eval('[data-etapas] .etapas__item', (els) => els.map((e) =>
-  e.className.replace(/.*etapas__item--/, '') + (e.getAttribute('aria-current') === 'step' ? '*' : '')));
+  e.className.replace(/ etapas__item--recem/, '').replace(/.*etapas__item--/, '') + (e.getAttribute('aria-current') === 'step' ? '*' : '')));
 async function esperarEstado(p, estado) {
   await p.waitForFunction((e) => document.querySelector('[data-acompanhar]').getAttribute('data-estado') === e, estado, { timeout: 8000 });
 }
