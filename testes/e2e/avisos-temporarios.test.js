@@ -155,7 +155,7 @@ const console0 = (p, rotulo) => ok(p.erros.length === 0, `console limpo (${rotul
     ok(await semRolagem(p), `${w}px: sem rolagem horizontal com a recusa`);
     if (w === 320 || w === 1280) {
       await axe(p, `briefing com recusa, ${w}px`);
-      await p.screenshot({ path: `${SAIDA}/avisos-temporarios-briefing-${w}.png`, clip: await p.locator('[data-lista-arquivos]').boundingBox() });
+      await p.locator('[data-lista-arquivos]').screenshot({ path: `${SAIDA}/avisos-temporarios-briefing-${w}.png` }); // rola até a lista (o lembrete do pedido, item 126, empurra o formulário)
       await p.click(recusado + ' [data-arquivo-fechar]'); // o tempo real gasto pelo axe não conta: recomeça
       await escolher();
       await p.waitForSelector(recusado);
